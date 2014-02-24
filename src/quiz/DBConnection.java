@@ -63,4 +63,13 @@ public class DBConnection {
 		return null;
 	} //getLogonSalt
 	
+	public boolean setPassword(int userID, String password) {
+		return false;
+	} //setPassword
+	
+	public String getPassword(int userID) {
+		return null;
+	} //getPassword
+	
+	
 }
