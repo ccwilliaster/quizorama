@@ -36,8 +36,15 @@ public class DBConnection {
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
-
 	} //Constructor
+	
+	public void close() {
+		try {
+			conn.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	} //close
 	
 	public ResultSet getQuizInformation (int quizID) {
 		return null;
@@ -71,5 +78,26 @@ public class DBConnection {
 		return null;
 	} //getPassword
 	
+	/**
+	 * This function queries the database to get all of the user messages related to 
+	 * a particular user and returns them. Usually called by the Message class when 
+	 * displaying a user's mailbox
+	 * @param userID User ID for which to return messages
+	 * @return ResultSet of all columns and all messages
+	 */
+	public ResultSet getUserMessages(int userID) {
+		return null;
+	} //getUserMessages
+	
+	public void addMessage (Message message) {
+		// count on it having getXXX for all attributes in the Message table (I can also fill this in if you add the DBConnection on git) 
+	} //addMessage
+	public void updateMessage (Message message) {
+		// message.getMessageID() for which entry
+	} //updateMessage
+
+	public void setUserName(int userID, String userName) {
+		//TODO: Update the userName for this user
+	}
 	
 }
