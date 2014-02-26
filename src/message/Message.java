@@ -77,12 +77,18 @@ public class Message {
 	 * Note: specialized child Message types are not made, but these parent
 	 * Messages can still be filtered based on their messageType
 	 * @param messageQuery 
-	 * @param validType Messages of a type not contained in this set are 
-	 * filtered. Alternatively, if this is null, all message types are returned.
-	 * @return list of Messages made from the values in the ResultSet
+	 * @param validType If not null, Messages of a type not contained in this 
+	 * set are filtered. 
+	 * @param validToUserID if not null, Messages with a toUserID different from
+	 * this value are filtered
+	 * @param validFromUserID if not null, Messages with a fromUserID different
+	 * from this value are filtered
+	 * @return list of unfiltered Messages made from the values in the ResultSet
 	 */
 	public static ArrayList<Message> 
-	loadMessages(ResultSet messageQuery, Set<Integer> validTypes) {
+	loadMessages(ResultSet messageQuery, Set<Integer> validTypes,
+				 Integer validToUserID, Integer validFromUserID) {
+
 		ArrayList<Message> messages = new ArrayList<Message>();
 		
 		Message currMessage;
@@ -95,7 +101,7 @@ public class Message {
 		try {
 			while ( messageQuery.next() ) {
 				
-				// Fetch variables by name, no magic numbers / col indices
+				// Fetch variables by name, no magic numbers / column indices
 				messageID   = (Integer) messageQuery.getObject("messageID");
 				messageType = (Integer) messageQuery.getObject("messageType");
 				toUserID    = (Integer) messageQuery.getObject("toUserID");
@@ -105,14 +111,21 @@ public class Message {
 				date        = (Date)    messageQuery.getObject("date");
 				messageRead	= (Integer) messageQuery.getObject("messageRead");
 				
-				// Initialize and add message if its type is valid
-				if (validTypes == null || validTypes.contains(messageType) ) {
-					currMessage = new Message(messageID, messageType, toUserID, 
-											  fromUserID, subject, content, date, 
-											  messageRead);
-					
-					messages.add( currMessage );
+				// Construct a Message only if it passes possible filters
+				if (validToUserID != null && toUserID != validToUserID ) {
+					continue;
+				}  
+				if (validFromUserID != null && fromUserID != validFromUserID) {
+					continue;
 				}
+				if (validTypes != null && !validTypes.contains(messageType) ) {
+					continue;
+				}
+				currMessage = new Message(messageID, messageType, toUserID, 
+										  fromUserID, subject, content, date, 
+										  messageRead);
+				
+				messages.add( currMessage );
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -190,4 +203,6 @@ public class Message {
 	 * @return whether the recipient User has read this Message
 	 */
 	public Integer getMesssageRead() { return messageRead; }
+	
+	// TODO: add comparable
 }
