@@ -4,10 +4,9 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<link src="" >
-<title>Quiz Summary!</title>
+<title>Error</title>
 </head>
 <body>
-
+	<p>Something went wrong!</p>
 </body>
 </html>

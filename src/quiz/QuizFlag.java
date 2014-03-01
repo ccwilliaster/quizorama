@@ -1,4 +1,4 @@
-package message;
+package quiz;
 
 public class QuizFlag extends Message {
 
@@ -17,10 +17,10 @@ public class QuizFlag extends Message {
 		
 		StringBuilder content = new StringBuilder();
 		
-		content.append("<p><a href=\"userpage.jsp?userID=" + fromUserID + ">");
+		content.append("<a href=\"userpage.jsp?userID=" + fromUserID + ">");
 		content.append(fromUserID + "</a> flagged the quiz "); 
 		content.append("<a href=\"quiz.jsp?quizID=" + quizID + ">" + quizID );
-		content.append("</a> as inappropriate. Take action by following the link</p>");
+		content.append("</a> as inappropriate. Take action by following the link");
 		
 		addContent( content.toString() );
 	}

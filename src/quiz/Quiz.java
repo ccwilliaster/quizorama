@@ -1,9 +1,9 @@
-package quizController;
+package quiz;
 
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * Class only for testing
+ * Fake Quiz class for testing QuizControllerServlet
  */
 public class Quiz {
 	private int ct;
@@ -14,13 +14,18 @@ public class Quiz {
 	
 	public String getName() { return "test quiz"; }
 	
+	public boolean hasMoreHTML() {
+		if (ct > 1) return false;
+		return true;
+	}
+	
 	public String getNextHTML() {
 		if (ct == 0) { 
 			return "first question";
 		} else if (ct == 1) {
 			return "last question (also second)";
 		} else {
-			return null;
+			return "error! should not be called";
 		}	
 	}
 	
