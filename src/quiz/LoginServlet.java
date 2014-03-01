@@ -2,6 +2,9 @@ package quiz;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import java.sql.SQLException;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -9,6 +12,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  * Servlet implementation class LoginServlet
@@ -21,7 +25,6 @@ public class LoginServlet extends HttpServlet {
      * @see HttpServlet#HttpServlet()
      */
     public LoginServlet() {
-        super();
         // Do nothing special
     }
 
@@ -39,29 +42,63 @@ public class LoginServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		String account = request.getParameter("userName");
-		String password = request.getParameter("password");
-		
+		String origin = request.getParameter("origin");
 		DBConnection dbConnection = (DBConnection) this.getServletContext().getAttribute("DBConnection");
+
+		String userName = request.getParameter("userName");
+		String password = request.getParameter("password");
+		int userID = -1;
 		
-		generateWelcomePage(response,account);
-		
+		if (origin.equals("CreateAccount")) {
+			try {
+				String passwordHash;
+				passwordHash = PasswordHash.createHash(password);
+				
+				userID = dbConnection.createUser(userName, passwordHash);
+			} catch (SQLException e) {
+				goToFail(request, response);
+				return;
+			}
+			catch (NoSuchAlgorithmException ignore) { } 
+			catch (InvalidKeySpecException ignore) { } //catch
+		} //if
+		else if (origin.equals("Login")) {
+			//Check to see if the password is correct. If it is, then log on, if not, then kick user back to login screen
+			try {
+				String dbPassword = dbConnection.getPassword(userName);
+				if (PasswordHash.validatePassword(password, dbPassword)) {
+					userID = dbConnection.getUserID(userName);
+				}
+				else {
+					goToFail(request, response);
+					return;
+				}
+			} catch (SQLException e) {
+				goToFail(request, response);
+				return;
+			}
+			catch (NoSuchAlgorithmException ignore) { } 
+			catch (InvalidKeySpecException ignore) { } //catch
+
+		} //else if
+		else {
+			goToFail(request, response);
+			return;
+		} //else
+
+		//This code will run no matter which correct page called this, the user created will be different based on 
+		// whether a correct password of a previous user was used or a new user was created
+		User user = new User(userID, userName, dbConnection);
+		HttpSession httpSession = request.getSession();
+		httpSession.setAttribute("user", user);
+		RequestDispatcher requestDispatcher = request.getRequestDispatcher("userHomepage.html");
+		requestDispatcher.forward(request, response);
 	} //doPost
-
-	protected static void generateWelcomePage(HttpServletResponse response, String account) throws IOException {
-		response.setContentType("text/html; charset=UTF-8"); 
-
-		PrintWriter out = response.getWriter();
-		out.println("<!DOCTYPE html>");
-		out.println("<head>");
-		out.println("<meta charset=\"UTF-8\" />"); 
-		out.println("<title>Welcome " + account + "</title>"); 
-		out.println("</head>");
-		out.println("<body>");
-		out.println("<h1>Welcome " + account + "</h1>"); 
-		out.println("</body>"); 
-		out.println("</html>");
-
-	} //generateWelcomePage
+	
+	static void goToFail(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		RequestDispatcher requestDispatcher = request.getRequestDispatcher("error.html");
+		requestDispatcher.forward(request, response);
+		return;
+	} //goToFail
 	
 }

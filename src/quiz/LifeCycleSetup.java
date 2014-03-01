@@ -29,28 +29,17 @@ public class LifeCycleSetup implements ServletContextListener {
      */
     public void contextInitialized(ServletContextEvent servletContextEvent) {
     	ServletContext servletContext = servletContextEvent.getServletContext();
-    	String server = MyDBInfo.MYSQL_DATABASE_SERVER;
-    	String account = MyDBInfo.MYSQL_USERNAME;
-    	String password = MyDBInfo.MYSQL_PASSWORD;
-    	String database = MyDBInfo.MYSQL_DATABASE_NAME;
     	
-    	DBConnection dbConnection = new DBConnection();
-    	
-    	Connection conn = null;
+    	DBConnection dbConnection = null;
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			
-			conn = DriverManager.getConnection
-					( "jdbc:mysql://" + server, account, password);
-			PreparedStatement sql = conn.prepareStatement("USE " + database);
-			sql.execute();
-		} catch (SQLException e) {
-			e.printStackTrace();
+			dbConnection = new DBConnection();
 		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
     			
-		servletContext.setAttribute("DBConnection", conn);
+		servletContext.setAttribute("DBConnection", dbConnection);
     } //contextInitialized
 
 	/**
@@ -59,9 +48,9 @@ public class LifeCycleSetup implements ServletContextListener {
     public void contextDestroyed(ServletContextEvent servletContextEvent) {
 ServletContext servletContext = servletContextEvent.getServletContext();
     	
-    	Connection conn = (Connection) servletContext.getAttribute("DBConnection");
+    	DBConnection dbConnection= (DBConnection) servletContext.getAttribute("DBConnection");
     	try {
-			conn.close();
+			dbConnection.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

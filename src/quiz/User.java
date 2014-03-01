@@ -2,6 +2,7 @@ package quiz;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.sql.SQLException;
 
 /**
  * This class is used to store information about the user for the quiz website
@@ -39,31 +40,24 @@ public class User {
 		this.userID = userID;
 	} //setUserName
 
-	public void setUserName(String userName) {
+	public void setUserName(String userName) throws SQLException {
 		this.userName = userName;
 		if (dbConnection == null)
 			return;
 		dbConnection.setUserName(userID, userName); //Get it into the db as well
 	} //setUserName
 	
-	public boolean setPassword(String password) {
+	public boolean setPassword(String password) throws SQLException, NoSuchAlgorithmException, InvalidKeySpecException {
 		if (dbConnection == null)
 			return false; //Didn't succeed
 		String passwordHash;
-		try {
-			passwordHash = PasswordHash.createHash(password);
-		} catch (NoSuchAlgorithmException e) {
-			return false;
-		} catch (InvalidKeySpecException e) {
-			return false;
-		}
-		
+		passwordHash = PasswordHash.createHash(password);
 		dbConnection.setPassword(userID, passwordHash);
 		
 		return true;
 	} //setPassword
 	
-	public boolean checkPassword(String password) {
+	public boolean checkPassword(String password) throws SQLException {
 		String correctHash = dbConnection.getPassword(userID);
 		
 		try {

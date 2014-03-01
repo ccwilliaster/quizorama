@@ -2,6 +2,8 @@ package quiz;
 
 import static org.junit.Assert.*;
 
+import java.sql.SQLException;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -26,7 +28,12 @@ public class UserTest {
 		assertEquals(1,filledInUser.getUserID());
 		assertEquals(-1,newUser.getUserID());
 		assertEquals("FilledInUser", filledInUser.getUserName());
-		filledInUser.setUserName("Yes");
+		try {
+			filledInUser.setUserName("Yes");
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		assertEquals("Yes", filledInUser.getUserName());
 	}
 

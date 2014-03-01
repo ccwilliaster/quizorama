@@ -1,6 +1,7 @@
 package quiz;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -16,68 +17,52 @@ import java.sql.SQLException;
  *
  */
 public class DBConnection {
-	private final String server = MyDBInfo.MYSQL_DATABASE_SERVER;
-	private final String account = MyDBInfo.MYSQL_USERNAME;
-	private final String password = MyDBInfo.MYSQL_PASSWORD;
-	private final String database = MyDBInfo.MYSQL_DATABASE_NAME;
+	private final String db_server = MyDBInfo.MYSQL_DATABASE_SERVER;
+	private final String db_account = MyDBInfo.MYSQL_USERNAME;
+	private final String db_password = MyDBInfo.MYSQL_PASSWORD;
+	private final String db_database = MyDBInfo.MYSQL_DATABASE_NAME;
+	private final String userTable = "users";
+	private final String messagesTable = "message";
+	private final String quizTable = "quizzes";
+	private final String quizQuestionTable = "quizQuestions";
+	private final String questionAnswerTable = "quizAnswers";
+	private final String quizHistoryTable = "quizHistory";
 	private Connection conn;
 		
-	public DBConnection() {
-    	Connection conn = null;
-		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			
-			conn = DriverManager.getConnection
-					( "jdbc:mysql://" + server, account, password);
-			PreparedStatement sql = conn.prepareStatement("USE " + database);
-			sql.execute();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
+	public DBConnection() throws ClassNotFoundException, SQLException {
+		Class.forName("com.mysql.jdbc.Driver");
+		
+		conn = DriverManager.getConnection
+				( "jdbc:mysql://" + db_server, db_account, db_password);
+		PreparedStatement sql = conn.prepareStatement("USE " + db_database);
+		sql.execute();
 	} //Constructor
 	
-	public void close() {
-		try {
-			conn.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+	public void close() throws SQLException {
+		conn.close();
 	} //close
 	
-	public ResultSet getQuizInformation (int quizID) {
-		return null;
+	public ResultSet getQuizInformation (int quizID) throws SQLException {
+		String select = "SELECT * FROM " + quizTable + " WHERE quizID = ?";
+		PreparedStatement sql = conn.prepareStatement(select);
+		sql.setInt(1, quizID);
+		return sql.executeQuery();
 	} //getQuizInformation
 
-	public ResultSet getQuestionsForQuiz (int quizID) {
-		return null;
+	public ResultSet getQuestionsForQuiz (int quizID) throws SQLException {
+		String select = "SELECT * FROM " + quizQuestionTable + " WHERE quizID = ?";
+		PreparedStatement sql = conn.prepareStatement(select);
+		sql.setInt(1, quizID);
+		return sql.executeQuery();
 	} //getQuestionsForQuiz
 
-	public ResultSet getAnswersForQuestion (int questionID) {
-		return null;
+	public ResultSet getAnswersForQuestion (int questionID) throws SQLException {
+		String select = "SELECT * FROM " + questionAnswerTable + " WHERE questionID = ?";
+		PreparedStatement sql = conn.prepareStatement(select);
+		sql.setInt(1, questionID);
+		return sql.executeQuery();
 	} //getAnswersForQuestion
 
-	public ResultSet getMessageList(int userID) {
-		return null;
-	} //getMessages
-	
-	public ResultSet getLogonHash(int userID) {
-		return null;
-	}
-	
-	public ResultSet getLogonSalt(int userID) {
-		return null;
-	} //getLogonSalt
-	
-	public boolean setPassword(int userID, String password) {
-		return false;
-	} //setPassword
-	
-	public String getPassword(int userID) {
-		return null;
-	} //getPassword
-	
 	/**
 	 * This function queries the database to get all of the user messages related to 
 	 * a particular user and returns them. Usually called by the Message class when 
@@ -85,19 +70,147 @@ public class DBConnection {
 	 * @param userID User ID for which to return messages
 	 * @return ResultSet of all columns and all messages
 	 */
-	public ResultSet getUserMessages(int userID) {
-		return null;
+	public ResultSet getUserMessages (int userID) throws SQLException {
+		String select = "SELECT * FROM " + messagesTable + " WHERE userID = ?";
+		PreparedStatement sql = conn.prepareStatement(select);
+		sql.setInt(1, userID);
+		return sql.executeQuery();
 	} //getUserMessages
+
+	public boolean setPassword(int userID, String password) throws SQLException {
+		String passwordSet = "UPDATE " + userTable + " SET password = ? "
+				+ "WHERE userID = ?";
+		PreparedStatement sql = conn.prepareStatement(passwordSet);
+		sql.setInt(2, userID);
+		sql.setString(1, password);
+		return sql.execute();
+	} //setPassword
 	
-	public void addMessage (Message message) {
-		// count on it having getXXX for all attributes in the Message table (I can also fill this in if you add the DBConnection on git) 
+	public String getPassword(int userID) throws SQLException {
+		String passwordGet = "SELECT password FORM users WHERE userID = ?";
+		PreparedStatement sql = conn.prepareStatement(passwordGet);
+		sql.setInt(1, userID);
+		ResultSet rs = sql.executeQuery();
+		if (!rs.first())
+			return "";
+		return rs.getString(1);
+	} //getPassword
+	
+	public String getPassword(String userName) throws SQLException {
+		String userIDGet = "SELECT userID FROM users WHERE userName = ?";
+		PreparedStatement sql = conn.prepareStatement(userIDGet);
+		sql.setString(1, userName);
+		ResultSet rs = sql.executeQuery();
+		rs.first();
+		int userID = rs.getInt(1);
+		
+		String passwordGet = "SELECT password FROM users WHERE userID = ?";
+		sql = conn.prepareStatement(passwordGet);
+		sql.setInt(1, userID);
+		rs = sql.executeQuery();
+		if (!rs.first())
+			return "";
+		return rs.getString(1);
+	} //getPassword
+
+	
+	public boolean addMessage (Message message) throws SQLException {
+		String set = "INSERT INTO " + messagesTable + " VALUES ( ?, ?, ?, ?, ?, ?, ?, ? )";
+		PreparedStatement sql = conn.prepareStatement(set);
+		sql.setInt(1, message.getID());
+		sql.setInt(2, message.getType());
+		sql.setInt(3, message.getToUser());
+		sql.setInt(4, message.getFromUser());
+		sql.setString(5,message.getSubject());
+		sql.setString(6,message.getBody());
+		sql.setDate(7, message.getDate());
+		sql.setInt(8,message.getReadStatus());
+		return sql.execute();
 	} //addMessage
-	public void updateMessage (Message message) {
+	
+	public boolean updateMessage (Message message) throws SQLException {
+		String set = "UPDATE " + messagesTable + " SET messageID = ?"
+				+ ", messageType = ?, toUserID = ?, fromUserID = ?"
+				+ ", subject = ?, content = ?, date = ?, messageRead = ?"
+				+ " WHERE messageID = ?";
+				
+		PreparedStatement sql = conn.prepareStatement(set);
+		sql.setInt(1, message.getID());
+		sql.setInt(2, message.getType());
+		sql.setInt(3, message.getToUser());
+		sql.setInt(4, message.getFromUser());
+		sql.setString(5,message.getSubject());
+		sql.setString(6,message.getBody());
+		sql.setDate(7, message.getDate());
+		sql.setInt(8,message.getReadStatus());
+		sql.setInt(9, message.getID());
+		return sql.execute();
 		// message.getMessageID() for which entry
 	} //updateMessage
 
-	public void setUserName(int userID, String userName) {
-		//TODO: Update the userName for this user
+	public boolean setUserName(int userID, String userName) throws SQLException {
+		String set = "UPDATE " + userTable + " SET userName = ? "
+				+ "WHERE userID = ?";
+		PreparedStatement sql = conn.prepareStatement(set);
+		sql.setInt(2, userID);
+		sql.setString(1, userName);
+		return sql.execute();
 	}
+	
+	public boolean addQuizHistory(int quizID, int userID, int score) throws SQLException {
+		String set = "INSERT INTO " + quizHistoryTable + " (quizID, userID, dateTaken, score, completed?, timeStamp) VALUES ( ?, ?, ?, ?, ?, ? )";
+		PreparedStatement sql = conn.prepareStatement(set);
+		java.util.Date utilDate = new java.util.Date();
+		Date date = new Date(utilDate.getTime());
+		sql.setInt(1, quizID);
+		sql.setInt(2, userID);
+		sql.setDate(3, date);
+		sql.setInt(4, score);
+		sql.setInt(5,1); //Completed = true
+		sql.setDate(6, date);
+		return sql.execute();
+	} //addQuizHistory
+
+	public int getUserID(String userName) throws SQLException {
+		String userIDGet = "SELECT userID FROM users WHERE userName = ?";
+		PreparedStatement sql = conn.prepareStatement(userIDGet);
+		sql.setString(1, userName);
+		ResultSet rs = sql.executeQuery();
+		rs.first();
+		return rs.getInt(1);
+	} //getUserID
+
+	
+	public ResultSet getUser(int userID) throws SQLException {
+		String passwordGet = "select * from " + userTable + " where userID = ?;";
+		PreparedStatement sql = conn.prepareStatement(passwordGet);
+		sql.setInt(1, userID);
+		return sql.executeQuery();
+	} //getUser
+
+	public ResultSet getAllUsers() throws SQLException {
+		String passwordGet = "select * from " + userTable + " ;";
+		PreparedStatement sql = conn.prepareStatement(passwordGet);
+		ResultSet rs = sql.executeQuery();
+		return rs;
+	} //getAllUsers
+	
+	public int createUser(String userName, String password) throws SQLException {
+		ResultSet genKey = null;
+		String insert = "insert into " + userTable + " (userName, password) VALUES (?, ?);";
+		PreparedStatement sql = conn.prepareStatement(insert);
+		sql.setString(1, userName);
+		sql.setString(2, password);
+		int affectedRows = sql.executeUpdate();
+		if (affectedRows == 0) {
+			throw new SQLException("Creating user failed, no rows affected.");
+	    }
+		
+		genKey = sql.getGeneratedKeys();
+		if (!genKey.first())
+			throw new SQLException("Creating user failed, no gen key obtained.");			
+		return genKey.getInt(1);
+	} //createUser
+
 	
 }

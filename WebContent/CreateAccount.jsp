@@ -12,12 +12,13 @@
 <br><br>
 Please enter proposed username and password.
 
-<form action="AccountCreate" method="post">
+<form action="LoginServlet" method="post">
 	User Name: <input name="userName">
 	<br><br>
 	Password: <input name="password">
 	<br><br>
-	<button>Login</button>
+	<button>Create Login</button>
+	<input name="origin" type="hidden" value="CreateAccount" />
 </form>
 
 </body>
