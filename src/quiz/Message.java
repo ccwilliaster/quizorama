@@ -4,7 +4,7 @@ import java.sql.Date;
 
 public class Message {
 
-	public int getID() {
+	public Integer getID() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
@@ -14,12 +14,12 @@ public class Message {
 		return 0;
 	}
 
-	public int getToUser() {
+	public int getToUserID() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
-	public int getFromUser() {
+	public int getFromUserID() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
@@ -34,7 +34,7 @@ public class Message {
 		return null;
 	}
 
-	public String getBody() {
+	public String getContent() {
 		// TODO Auto-generated method stub
 		return null;
 	}

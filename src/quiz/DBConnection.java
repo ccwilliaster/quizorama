@@ -119,10 +119,10 @@ public class DBConnection {
 		PreparedStatement sql = conn.prepareStatement(set);
 		sql.setInt(1, message.getID());
 		sql.setInt(2, message.getType());
-		sql.setInt(3, message.getToUser());
-		sql.setInt(4, message.getFromUser());
+		sql.setInt(3, message.getToUserID());
+		sql.setInt(4, message.getFromUserID());
 		sql.setString(5,message.getSubject());
-		sql.setString(6,message.getBody());
+		sql.setString(6,message.getContent());
 		sql.setDate(7, message.getDate());
 		sql.setInt(8,message.getReadStatus());
 		return sql.execute();
@@ -137,10 +137,10 @@ public class DBConnection {
 		PreparedStatement sql = conn.prepareStatement(set);
 		sql.setInt(1, message.getID());
 		sql.setInt(2, message.getType());
-		sql.setInt(3, message.getToUser());
-		sql.setInt(4, message.getFromUser());
+		sql.setInt(3, message.getToUserID());
+		sql.setInt(4, message.getFromUserID());
 		sql.setString(5,message.getSubject());
-		sql.setString(6,message.getBody());
+		sql.setString(6,message.getContent());
 		sql.setDate(7, message.getDate());
 		sql.setInt(8,message.getReadStatus());
 		sql.setInt(9, message.getID());
