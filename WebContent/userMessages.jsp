@@ -11,6 +11,7 @@
 
 <body>
 	<!-- Display inbox vs sent based on navtab attr -->
+	<!-- Make unread bold -->
 	<% //empty for now %>
 
 </body>
