@@ -1,2 +1,7 @@
 build/
 *.mwb.bak
+.DS_Store
+.classpath
+.project
+.settings
+

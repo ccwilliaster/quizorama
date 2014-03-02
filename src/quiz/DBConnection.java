@@ -27,6 +27,11 @@ public class DBConnection {
 	private final String quizQuestionTable = "quizQuestions";
 	private final String questionAnswerTable = "quizAnswers";
 	private final String quizHistoryTable = "quizHistory";
+	private final String quizTagsTable = "quizTags";
+	private final String tagsTable = "tags";
+	private final String quizCategoriesTable = "quizCategories";
+	private final String categoriesTable = "categories";
+	private final String userQuizRatingsTable = "userQuizRatings";
 	private Connection conn;
 		
 	public DBConnection() throws ClassNotFoundException, SQLException {
@@ -212,5 +217,37 @@ public class DBConnection {
 		return genKey.getInt(1);
 	} //createUser
 
+	public ResultSet getHistories(int quizID) throws SQLException {
+		String select = "SELECT * FROM " + quizHistoryTable + " WHERE quizID = ?";
+		PreparedStatement sql = conn.prepareStatement(select);
+		sql.setInt(1, quizID);
+		return sql.executeQuery();		
+	} //getHistories
+	
+	public ResultSet getTags(int quizID) throws SQLException {
+		String select = "SELECT a.quizID, a.quizName, c.tagName FROM " + quizTable + " a LEFT JOIN "
+			+ quizTagsTable + " b ON a.quizID = b.quizID LEFT JOIN "
+			+ tagsTable + " c ON b.tagID = c.tagID WHERE a.quizID = ?";
+		PreparedStatement sql = conn.prepareStatement(select);
+		sql.setInt(1, quizID);
+		return sql.executeQuery();
+	} //getTags
+	public ResultSet getCategories(int quizID) throws SQLException {
+		//returns the category name
+		String select = "SELECT a.quizID, a.quizName, c.categoryName FROM " + quizTable + " a LEFT JOIN "
+			+ quizCategoriesTable + " b ON a.quizID = b.quizID LEFT JOIN "
+			+ categoriesTable + " c ON b.categoryID = c.categoryID WHERE a.quizID = ?";
+		PreparedStatement sql = conn.prepareStatement(select);
+		sql.setInt(1, quizID);
+		return sql.executeQuery();	
+	} //getCategories
+	public ResultSet getRatings(int quizID) throws SQLException {
+		//returns a resultSet of all the ratings so that I can find the average rating value and the different ratingReviews.
+		String select = "SELECT * FROM " + userQuizRatingsTable + " WHERE quizID = ?";
+		PreparedStatement sql = conn.prepareStatement(select);
+		sql.setInt(1, quizID);
+		return sql.executeQuery();
+	} //getRatings
+	
 	
 }
