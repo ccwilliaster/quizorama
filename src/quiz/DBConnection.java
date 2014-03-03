@@ -54,12 +54,12 @@ public class DBConnection {
 		return sql.executeQuery();
 	} //getQuizInformation
 
-	public ResultSet getQuestionsForQuiz (int quizID) throws SQLException {
+	public ResultSet getQuizQuestions (int quizID) throws SQLException {
 		String select = "SELECT * FROM " + quizQuestionTable + " WHERE quizID = ?";
 		PreparedStatement sql = conn.prepareStatement(select);
 		sql.setInt(1, quizID);
 		return sql.executeQuery();
-	} //getQuestionsForQuiz
+	} //getQuizQuestions
 
 	public ResultSet getAnswersForQuestion (int questionID) throws SQLException {
 		String select = "SELECT * FROM " + questionAnswerTable + " WHERE questionID = ?";
