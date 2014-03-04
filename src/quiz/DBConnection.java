@@ -128,7 +128,7 @@ public class DBConnection {
 		sql.setInt(4, message.getFromUserID());
 		sql.setString(5,message.getSubject());
 		sql.setString(6,message.getContent());
-		sql.setDate(7, message.getDate());
+		sql.setDate(7, (java.sql.Date) message.getDate());
 		sql.setInt(8,message.getReadStatus());
 		return sql.execute();
 	} //addMessage
@@ -146,7 +146,7 @@ public class DBConnection {
 		sql.setInt(4, message.getFromUserID());
 		sql.setString(5,message.getSubject());
 		sql.setString(6,message.getContent());
-		sql.setDate(7, message.getDate());
+		sql.setDate(7, (java.sql.Date) message.getDate());
 		sql.setInt(8,message.getReadStatus());
 		sql.setInt(9, message.getID());
 		return sql.execute();

@@ -38,13 +38,13 @@ public class QuizControllerServlet extends HttpServlet {
 		
 		try { // Get Context, HttpSession, and Quiz
 			ServletContext context  = getServletContext();
-			//DBConnection connection = context.getAttribute("DBConnection");
+			DBConnection connection = (DBConnection) context.getAttribute("DBConnection");
 			HttpSession session     = request.getSession();
 			Quiz currQuiz           = (Quiz) session.getAttribute("quiz");
 				
 			if (currQuiz == null) { // first time servlet is being called
-				//String quizID = request.getAttribute("quizID");
-				currQuiz = new Quiz(); // Quiz( quizID, connection );
+				Integer quizID = Integer.parseInt(request.getParameter("quizID"));
+				currQuiz = new Quiz(quizID, connection);
 				session.setAttribute("quiz", currQuiz);
 				currQuiz.startQuiz();
 				

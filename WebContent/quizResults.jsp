@@ -6,11 +6,11 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title><%= quiz.getName() + " results" %></title>
+<title><%= quiz.getquizName() + " results" %></title>
 </head>
 <body>
 	<% 
-		out.println( "You just finished " + quiz.getName() + "!!!");
+		out.println( "You just finished " + quiz.getquizName() + "!!!");
 	%>
 </body>
 </html>

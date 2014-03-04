@@ -9,8 +9,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import com.sun.tools.javac.tree.Pretty;
-
 public class Message implements Comparable<Message>{
 
 	// Possible message types
@@ -169,12 +167,12 @@ public class Message implements Comparable<Message>{
 	 * Updates the messageRead attribute of the Message to reflect that
 	 * the message has been opened by the toUserID User
 	 */
-//	public void setMessageRead(DBConnection connection) {
-//		if (messageRead == 0) {
-//			messageRead = 1;
-//			// connection.updateMessage( this );
-//		}
-//	}
+	public void setMessageRead(DBConnection connection) throws SQLException {
+		if (messageRead == 0) {
+			messageRead = 1;
+			connection.updateMessage( this );
+		}
+	}
 	
 	/**
 	 * Getter that returns the type of the Message
