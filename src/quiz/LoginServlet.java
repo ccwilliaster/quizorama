@@ -53,9 +53,11 @@ public class LoginServlet extends HttpServlet {
 			try {
 				String passwordHash;
 				passwordHash = PasswordHash.createHash(password);
-				
+
 				userID = dbConnection.createUser(userName, passwordHash);
+				System.out.println("created user");
 			} catch (SQLException e) {
+				e.printStackTrace();
 				goToFail(request, response);
 				return;
 			}
@@ -96,7 +98,7 @@ public class LoginServlet extends HttpServlet {
 	} //doPost
 	
 	static void goToFail(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		RequestDispatcher requestDispatcher = request.getRequestDispatcher("error.html");
+		RequestDispatcher requestDispatcher = request.getRequestDispatcher("error.jsp");
 		requestDispatcher.forward(request, response);
 		return;
 	} //goToFail

@@ -38,9 +38,10 @@ public class NewMessageServlet extends HttpServlet {
 		try { 
 			ServletContext context  = getServletContext();
 			HttpSession session     = request.getSession();
-			//DBConnection connection = context.getAttribute("DBConnection");
-			//User user               = (User) session.getAttribute("user");
-			Integer userID          =  0; //(Integer) user.getUserID;
+			DBConnection connection = (DBConnection) context.getAttribute("DBConnection");
+			User user               = (User) session.getAttribute("user");
+			int userID              = user.getUserID();
+			String userName         = user.getUserName();
 			String messageType      = request.getParameter("type");
 			String hasContent       = request.getParameter("hasContent");
 			

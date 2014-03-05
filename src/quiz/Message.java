@@ -71,27 +71,6 @@ public class Message implements Comparable<Message>{
 	}	
 	
 	/**
-	 * Static helper method for in-place sorting of a list of Messages (based on 
-	 * date sent) and truncating the list to a specified size. Note: does NOT
-	 * copy the objects.
-	 * @param messages list of messages which will be sorted and then truncated
-	 * to a specified size
-	 * @param number After sorting the list of Messages, the list will be truncated
-	 * to the first 'number' Messages. If number > input length, the entire 
-	 * Message list is returned
-	 */
-	public static void 
-	sortAndTruncateMessageList(ArrayList<Message> messages, int number) {
-		Collections.sort( messages );
-		try {
-			List<Message> toClear = messages.subList(number, messages.size());
-			toClear.clear();
-		} catch (IndexOutOfBoundsException ignored) {
-			 // don't have 'number' of Messages, leave as full length
-		}
-	}
-	
-	/**
 	 * Static helper method for constructing Messages from a SQL message 
 	 * ResultSet query. Returns a list of Message objects, one for each row in 
 	 * the ResultSet with Message attributes corresponding to column values. 
@@ -159,7 +138,7 @@ public class Message implements Comparable<Message>{
 	 * @return pretty print date message was created
 	 */
 	public String printDate() {
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm a");
+		SimpleDateFormat dateFormat = new SimpleDateFormat("hh:mm a yyyy-MM-dd");
 		return dateFormat.format( date );
 	} 
 	

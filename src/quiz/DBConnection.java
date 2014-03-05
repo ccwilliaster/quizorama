@@ -6,6 +6,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * This class controls the connection from the quiz website to the database
@@ -203,7 +204,7 @@ public class DBConnection {
 	public int createUser(String userName, String password) throws SQLException {
 		ResultSet genKey = null;
 		String insert = "insert into " + userTable + " (userName, password) VALUES (?, ?);";
-		PreparedStatement sql = conn.prepareStatement(insert);
+		PreparedStatement sql = conn.prepareStatement(insert, Statement.RETURN_GENERATED_KEYS);
 		sql.setString(1, userName);
 		sql.setString(2, password);
 		int affectedRows = sql.executeUpdate();
