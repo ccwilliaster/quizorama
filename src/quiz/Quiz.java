@@ -52,7 +52,7 @@ public class Quiz {
 		while (questions.next()) {
 			int questionID = questions.getInt("questionID");
 			//ResultSet questionInfo = connection.getQuestionInfo(questionID); USE THIS TO TELL QUESTION WHAT TYPE IT IS
-			Question currQuestion = new Question(questionID);
+			Question currQuestion = new QuestionResponse(questionID);
 			questionList.add(currQuestion);
 		}
 	}
