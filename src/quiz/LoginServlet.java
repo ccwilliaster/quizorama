@@ -93,7 +93,7 @@ public class LoginServlet extends HttpServlet {
 		User user = new User(userID, userName, dbConnection);
 		HttpSession httpSession = request.getSession();
 		httpSession.setAttribute("user", user);
-		RequestDispatcher requestDispatcher = request.getRequestDispatcher("userHomepage.html");
+		RequestDispatcher requestDispatcher = request.getRequestDispatcher("showUserMessages.jsp");
 		requestDispatcher.forward(request, response);
 	} //doPost
 	

@@ -77,9 +77,10 @@ public class DBConnection {
 	 * @return ResultSet of all columns and all messages
 	 */
 	public ResultSet getUserMessages (int userID) throws SQLException {
-		String select = "SELECT * FROM " + messagesTable + " WHERE userID = ?";
+		String select = "SELECT * FROM " + messagesTable + " WHERE toUserID = ? OR fromUserID = ?";
 		PreparedStatement sql = conn.prepareStatement(select);
 		sql.setInt(1, userID);
+		sql.setInt(2, userID);
 		return sql.executeQuery();
 	} //getUserMessages
 

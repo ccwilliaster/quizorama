@@ -19,7 +19,8 @@ public class Message implements Comparable<Message>{
 	public static final int TYPE_QUIZ_FLAG    = 4;
 	
 	// Instance variables, match fields in database message table
-	protected int messageType, fromUserID, toUserID, messageRead;
+	protected int messageType, fromUserID, toUserID;
+	protected boolean messageRead;
 	protected Integer messageID;
 	protected String subject, content; 
 	protected Date date;
@@ -33,7 +34,7 @@ public class Message implements Comparable<Message>{
 		messageID   = null;
 		subject     = null;
 		content     = null;
-		messageRead = 0;
+		messageRead = false;
 		date        = new Date();
 	}
 	
@@ -43,12 +44,12 @@ public class Message implements Comparable<Message>{
 	 */
 	public Message(Integer messageID, int messageType, int toUserID, 
 			       int fromUserID, String subject, String content, 
-			       Date date, int messageRead) {
+			       Date date, Boolean messageRead2) {
 		this.messageID   = messageID;
 		this.messageType = messageType;
 		this.toUserID    = toUserID;
 		this.fromUserID  = fromUserID;
-		this.messageRead = messageRead;
+		this.messageRead = messageRead2;
 		this.subject     = subject;
 		this.content     = content;
 		this.date        = date;
@@ -95,7 +96,8 @@ public class Message implements Comparable<Message>{
 		ArrayList<Message> messages = new ArrayList<Message>();
 		
 		Message currMessage;
-		int messageType, toUserID, fromUserID, messageRead;
+		int messageType, toUserID, fromUserID;
+		Boolean messageRead;
 		Integer messageID;
 		String subject, content;
 		Date date;
@@ -110,7 +112,7 @@ public class Message implements Comparable<Message>{
 			subject     = (String)  messageQuery.getObject("subject");
 			content     = (String)  messageQuery.getObject("content");
 			date        = (Date)    messageQuery.getObject("date");
-			messageRead	= (Integer) messageQuery.getObject("messageRead");
+			messageRead	= (Boolean) messageQuery.getObject("messageRead");
 			
 			// Construct a Message only if it passes possible filters
 			if (validToUserID != null && toUserID != validToUserID ) {
@@ -147,8 +149,8 @@ public class Message implements Comparable<Message>{
 	 * the message has been opened by the toUserID User
 	 */
 	public void setMessageRead(DBConnection connection) throws SQLException {
-		if (messageRead == 0) {
-			messageRead = 1;
+		if (messageRead == false) {
+			messageRead = true;
 			connection.updateMessage( this );
 		}
 	}
@@ -197,10 +199,10 @@ public class Message implements Comparable<Message>{
 	
 	/**
 	 * Getter that returns whether the Message has been read by the recipient 
-	 * (1) or not (0)
+	 * or not
 	 * @return whether the recipient User has read this Message
 	 */
-	public int getReadStatus() { return messageRead; }
+	public boolean getReadStatus() { return messageRead; }
 
 	/**
 	 * Compares another Message to this Message, the Message with the earlier

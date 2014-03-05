@@ -2,16 +2,26 @@ package quiz;
 
 import java.util.ArrayList;
 
-public interface Question {
+public abstract class Question {
 
-	String showQuestion();
+	String showQuestion() {
+		return null;
+	}
 
-	String showAnswerOptions();
+	String showAnswerOptions() {
+		return null;
+	}
 
-	ArrayList<String> getAnswerLocations();
+	ArrayList<String> getAnswerLocations() {
+		return null;
+	}
 
-	int checkAnswer(ArrayList<String> submittedAnswers);
+	int checkAnswer(ArrayList<String> submittedAnswers) {
+		return 0;
+	}
 
-	int possiblePoints();
+	int possiblePoints() {
+		return 0;
+	}
 
 }
