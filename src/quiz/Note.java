@@ -1,5 +1,7 @@
 package quiz;
 
+import java.sql.SQLException;
+
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -15,8 +17,24 @@ public class Note extends Message {
 		addContent(content);
 	}
 	
-	public void makeNote() {
-		return;
+	/**
+	 * Static method to generate a new Note Message from a request and add
+	 * it to the database via the DBConnection
+	 * @param request request expected to contain the parameters specified by the
+	 * Note.getCreationHTML() method
+	 * @param connection connection to database, has addMessage() method
+	 * @throws SQLException
+	 */
+	public static void makeNote(HttpServletRequest request, DBConnection connection) 
+	throws SQLException {
+		String toUserName  = request.getParameter("toUserName");
+		Integer toUserID   = connection.getUserID(toUserName);
+		Integer fromUserID = Integer.parseInt(request.getParameter("fromUserID"));
+		String subject     = request.getParameter("subject");
+		String content     = request.getParameter("content");
+		
+		Note newNote = new Note(toUserID, fromUserID, subject, content);
+		connection.addMessage(newNote);
 	}
 	
 	/**

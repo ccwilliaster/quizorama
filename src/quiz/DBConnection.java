@@ -6,6 +6,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * This class controls the connection from the quiz website to the database
@@ -121,16 +122,18 @@ public class DBConnection {
 
 	
 	public boolean addMessage (Message message) throws SQLException {
-		String set = "INSERT INTO " + messagesTable + " VALUES ( ?, ?, ?, ?, ?, ?, ?, ? )";
+		String set = "INSERT INTO " + messagesTable + 
+			"(messageType, toUserID, fromUserID, subject, content, date, messageRead)" +
+			" VALUES ( ?, ?, ?, ?, ?, ?, ? )";
 		PreparedStatement sql = conn.prepareStatement(set);
-		sql.setInt(1, message.getID());
-		sql.setInt(2, message.getType());
-		sql.setInt(3, message.getToUserID());
-		sql.setInt(4, message.getFromUserID());
-		sql.setString(5,message.getSubject());
-		sql.setString(6,message.getContent());
-		sql.setDate(7, (java.sql.Date) message.getDate());
-		sql.setInt(8,message.getReadStatus());
+		
+		sql.setInt(1, message.getType());
+		sql.setInt(2, message.getToUserID());
+		sql.setInt(3, message.getFromUserID());
+		sql.setString(4,message.getSubject());
+		sql.setString(5,message.getContent());
+		sql.setDate(6, new java.sql.Date( message.getDate().getTime() ) );
+		sql.setBoolean(7, message.getReadStatus());
 		return sql.execute();
 	} //addMessage
 	
@@ -147,8 +150,8 @@ public class DBConnection {
 		sql.setInt(4, message.getFromUserID());
 		sql.setString(5,message.getSubject());
 		sql.setString(6,message.getContent());
-		sql.setDate(7, (java.sql.Date) message.getDate());
-		sql.setInt(8,message.getReadStatus());
+		sql.setDate(7, new java.sql.Date( message.getDate().getTime() ));
+		sql.setBoolean(8, message.getReadStatus());
 		sql.setInt(9, message.getID());
 		return sql.execute();
 		// message.getMessageID() for which entry
@@ -186,6 +189,14 @@ public class DBConnection {
 		return rs.getInt(1);
 	} //getUserID
 
+	public String getUserName(int userID) throws SQLException {
+		String userNameGet = "SELECT userName FROM users WHERE userID = ?";
+		PreparedStatement sql = conn.prepareStatement(userNameGet);
+		sql.setInt(1, userID);
+		ResultSet rs = sql.executeQuery();
+		rs.first();
+		return rs.getString(1);
+	} // getUserName
 	
 	public ResultSet getUser(int userID) throws SQLException {
 		String passwordGet = "select * from " + userTable + " where userID = ?;";
@@ -204,7 +215,7 @@ public class DBConnection {
 	public int createUser(String userName, String password) throws SQLException {
 		ResultSet genKey = null;
 		String insert = "insert into " + userTable + " (userName, password) VALUES (?, ?);";
-		PreparedStatement sql = conn.prepareStatement(insert);
+		PreparedStatement sql = conn.prepareStatement(insert, Statement.RETURN_GENERATED_KEYS);
 		sql.setString(1, userName);
 		sql.setString(2, password);
 		int affectedRows = sql.executeUpdate();

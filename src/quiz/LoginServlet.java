@@ -53,9 +53,11 @@ public class LoginServlet extends HttpServlet {
 			try {
 				String passwordHash;
 				passwordHash = PasswordHash.createHash(password);
-				
+
 				userID = dbConnection.createUser(userName, passwordHash);
+		
 			} catch (SQLException e) {
+				e.printStackTrace();
 				goToFail(request, response);
 				return;
 			}
@@ -91,12 +93,12 @@ public class LoginServlet extends HttpServlet {
 		User user = new User(userID, userName, dbConnection);
 		HttpSession httpSession = request.getSession();
 		httpSession.setAttribute("user", user);
-		RequestDispatcher requestDispatcher = request.getRequestDispatcher("showUserMessages.jsp");
+		RequestDispatcher requestDispatcher = request.getRequestDispatcher("ReadMessagesServlet?type=inbox");
 		requestDispatcher.forward(request, response);
 	} //doPost
 	
 	static void goToFail(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		RequestDispatcher requestDispatcher = request.getRequestDispatcher("error.html");
+		RequestDispatcher requestDispatcher = request.getRequestDispatcher("error.jsp");
 		requestDispatcher.forward(request, response);
 		return;
 	} //goToFail

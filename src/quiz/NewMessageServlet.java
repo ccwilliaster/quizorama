@@ -1,6 +1,7 @@
 package quiz;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.InputMismatchException;
 
 import javax.servlet.ServletContext;
@@ -24,10 +25,13 @@ public class NewMessageServlet extends HttpServlet {
     public NewMessageServlet() { super(); }
 
 	/**
+	 * Re-directs to doPost
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) 
-	throws ServletException, IOException { /* not implemented */ }
+	throws ServletException, IOException {  
+		doPost(request, response);
+	}
 
 	/**
 	 * Directs
@@ -38,27 +42,27 @@ public class NewMessageServlet extends HttpServlet {
 		try { 
 			ServletContext context  = getServletContext();
 			HttpSession session     = request.getSession();
-			//DBConnection connection = context.getAttribute("DBConnection");
-			//User user               = (User) session.getAttribute("user");
-			Integer userID          =  0; //(Integer) user.getUserID;
+			DBConnection connection = (DBConnection) context.getAttribute("DBConnection");
+			User user               = (User) session.getAttribute("user");
+			int userID              = user.getUserID();
+			String userName         = user.getUserName();
 			String messageType      = request.getParameter("type");
 			String hasContent       = request.getParameter("hasContent");
 			
 			// Three possibilities:
 			if (messageType == null) { // get type from user
 				
-				System.out.println("dropdown");
-				String html = getTypeDropDown(true); //TODO: make add announcement option only for admins
+				String html = getTypeDropDown(true); 
 				request.setAttribute("html", html);
 				request.getRequestDispatcher("createMessage.jsp").forward(request, response);
 
 			} else if (hasContent == null) { // know type, get content from user
 				Integer messageIntType = Integer.parseInt(messageType);
-				forwardMessageContent(request, response, messageIntType, userID);
+				gotoGetMessageContent(request, response, messageIntType, userID, connection);
 				
 			} else { // create message with content, re-direct to userMessages.jsp
 				Integer messageIntType = Integer.parseInt(messageType);
-				forwardCreateMessage(request, response, userID, messageIntType); // TODO add connection arg
+				gotoCreateMessage(request, response, userID, messageIntType, connection);
 			}
 			
 		} catch (InputMismatchException badinput) { // direct to input form again
@@ -76,18 +80,17 @@ public class NewMessageServlet extends HttpServlet {
 	 * redirects to createMessage.jsp
 	 */
 	private void 
-	forwardMessageContent(HttpServletRequest request, HttpServletResponse response,
-					 Integer messageType, Integer userID) 
-	throws ServletException, IOException {
+	gotoGetMessageContent(HttpServletRequest request, HttpServletResponse response,
+					 Integer messageType, Integer userID, DBConnection connection) 
+	throws ServletException, IOException, SQLException {
 	    
 		String html = "";
-		System.out.println("making new message type:" + messageType);
 	
 		if (messageType == Message.TYPE_NOTE) {
 			html = Note.getCreationHTML(userID); // TODO: pass all user names/IDs
 			
 		} else if (messageType == Message.TYPE_FRIEND) {
-			html = FriendRequest.getCreationHTML(userID); // TODO: pass all user names/IDs
+			html = FriendRequest.getCreationHTML(userID, connection); // TODO: pass all user names/IDs
 			
 		} else if (messageType == Message.TYPE_CHALLENGE) {
 			html = Challenge.getCreationHTML(userID, null); // TODO: pass all user AND quiz names/IDs
@@ -108,38 +111,36 @@ public class NewMessageServlet extends HttpServlet {
 	 * Helper method to create correct type of Message, redirects to userMessages.jsp
 	 */
 	private void 
-	forwardCreateMessage(HttpServletRequest request, HttpServletResponse response,
-						 Integer userID, Integer messageType) // TODO add DBConnection connection parameter
-	throws ServletException, IOException {
-		System.out.println("creating message from " + userID + " of type " + messageType);
+	gotoCreateMessage(HttpServletRequest request, HttpServletResponse response,
+						 Integer userID, Integer messageType, DBConnection connection)
+	throws ServletException, IOException, SQLException {
 		
 		if (messageType == Message.TYPE_NOTE) {
-			//newMessage = makeNote(request, connection);
-			request.setAttribute("newMessage", 
+			Note.makeNote(request, connection);
+			request.setAttribute("messageUpdate", 
 								 "Your note was sent successfully");
 			
 		} else if (messageType == Message.TYPE_FRIEND) {
-			System.out.println(request.getParameter("content"));
-			//newMessage = new FriendRequest(request, connection);
-			request.setAttribute("newMessage", 
+			FriendRequest.makeFriendRequest(request, connection);
+			request.setAttribute("messageUpdate", 
 					             "Your friend request was sent successfully");
 			
 		} else if (messageType == Message.TYPE_ANNOUNCEMENT) {
 			//int numSent = makeAnnouncements(request, connection);
-			request.setAttribute("newMessage", 
+			request.setAttribute("messageUpdate", 
              					 "Your announcement was sent successfully");
 			
 		} else if (messageType == Message.TYPE_CHALLENGE) {
-			//newMessage = new Challenge(request, connection);
-			request.setAttribute("newMessage", 
+			Challenge.makeChallenge(request, connection);
+			request.setAttribute("messageUpdate", 
 			 					 "Your challenge was sent successfully");
 			
 		} else {
 			request.getRequestDispatcher("error.jsp").forward(request, response);
 			return;
 		}
-
-		request.getRequestDispatcher("userMessages.jsp").forward(request, response);
+		
+		request.getRequestDispatcher("/ReadMessagesServlet").forward(request, response);
 	}
 	
 	/**
