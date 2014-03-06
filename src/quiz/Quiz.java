@@ -13,6 +13,11 @@ import javax.servlet.http.HttpServletRequest;
  * overall score, overall time
  */
 public class Quiz {
+	
+	private static final int QUESTION_RESPONSE = 1;
+	private static final int FILL_BLANK = 2;
+	private static final int MULTIPLE_CHOICE = 3;
+	private static final int PICTURE_RESPONSE = 4;
 
 	/** Quiz attributes in the database */
 	private String quizName;
@@ -51,12 +56,38 @@ public class Quiz {
 		ResultSet questions = connection.getQuizQuestions(quizID);
 		while (questions.next()) {
 			int questionID = questions.getInt("questionID");
+			String questionText = questions.getString("question");
+			int questionType = questions.getInt("questionType");
+			int questionNum = questions.getInt("questionNum");
 			//ResultSet questionInfo = connection.getQuestionInfo(questionID); USE THIS TO TELL QUESTION WHAT TYPE IT IS
-			Question currQuestion = new QuestionResponse(questionID);
+			Question currQuestion = getQuestionObject(questionID, questionText, questionType, questionNum);
 			questionList.add(currQuestion);
 		}
 	}
 
+	//ali's added method
+	private Question getQuestionObject(int questionID, String questionText, int questionType, int questionNum) throws SQLException {
+		Question q = null;
+		switch (questionType) {
+			case QUESTION_RESPONSE:
+				q = new QuestionResponseQuestion(questionID, questionText, questionType, questionNum, this.quizID, this.connection);
+				break;
+			case FILL_BLANK:
+				q = new FillBlankQuestion(questionID, questionText, questionType, questionNum, this.quizID, this.connection);
+				break;
+			case MULTIPLE_CHOICE:
+				q = new MultipleChoiceQuestion(questionID, questionText, questionType, questionNum, this.quizID, this.connection);
+				break;
+			case PICTURE_RESPONSE:
+				q = new PictureResponseQuestion(questionID, questionText, questionType, questionNum, this.quizID, this.connection);
+				break;
+			default:
+				q = new QuestionResponseQuestion(questionID, questionText, questionType, questionNum, this.quizID, this.connection);
+		}
+		return q;
+	}
+
+	
 	/* Initialize instance variables */
 	public void startQuiz() {
 		score = 0;
@@ -134,7 +165,7 @@ public class Quiz {
 		for (int i = 0; i < locations.size(); i++) {
 			submittedAnswers.add(request.getParameter(locations.get(i)));
 		}
-		int qScore = currQuestion.checkAnswer(submittedAnswers);
+		int qScore = currQuestion.checkAnswers(submittedAnswers);
 		score += qScore;
 		possibleScore += currQuestion.possiblePoints();
 	}
