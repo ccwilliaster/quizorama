@@ -55,7 +55,7 @@ public class LoginServlet extends HttpServlet {
 				passwordHash = PasswordHash.createHash(password);
 
 				userID = dbConnection.createUser(userName, passwordHash);
-				System.out.println("created user");
+		
 			} catch (SQLException e) {
 				e.printStackTrace();
 				goToFail(request, response);
@@ -93,7 +93,7 @@ public class LoginServlet extends HttpServlet {
 		User user = new User(userID, userName, dbConnection);
 		HttpSession httpSession = request.getSession();
 		httpSession.setAttribute("user", user);
-		RequestDispatcher requestDispatcher = request.getRequestDispatcher("showUserMessages.jsp");
+		RequestDispatcher requestDispatcher = request.getRequestDispatcher("ReadMessagesServlet?type=inbox");
 		requestDispatcher.forward(request, response);
 	} //doPost
 	

@@ -30,7 +30,6 @@ public class SessionListener implements HttpSessionListener {
     	User user = new User();
     	HttpSession httpSession = httpSessionEvent.getSession();
     	httpSession.setAttribute("user", user);
-    	System.out.println("user added");
     }
 
 	/**

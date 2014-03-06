@@ -8,8 +8,10 @@
 	<title>Test Read Messages Servlet</title>
 </head>
 <body>
-	<form action="../ReadMessagesServlet" method="post">
-		<input class="btn btn-default" type="submit" value="TestReadMessages">
-	</form>
+	<a class="btn btn-default" href="../ReadMessagesServlet?navtab=inbox">Test Inbox</a>
+	<br><br>
+	<a class="btn btn-default" href="../ReadMessagesServlet?navtab=sent">Test Sent</a>
+	<br><br>
+	<a class="btn btn-default" href="../ReadMessagesServlet">Test null</a>
 </body>
 </html>

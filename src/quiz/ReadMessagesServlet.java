@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 /**
- * Servlet implementation class ReadMessagesServlet
+ * This Servlet fetches a user's message
  */
 @WebServlet("/ReadMessagesServlet")
 public class ReadMessagesServlet extends HttpServlet {
@@ -32,19 +32,14 @@ public class ReadMessagesServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) 
-	throws ServletException, IOException { /* not implemented */ }
-
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) 
-	throws ServletException, IOException {
+	throws ServletException, IOException { 
 		try { 
 			ServletContext context  = getServletContext();
 			HttpSession session     = request.getSession();
 			DBConnection connection = (DBConnection) context.getAttribute("DBConnection");
-			User user = (User) session.getAttribute("user");
-
+			String navtab           = request.getParameter("navtab"); // inbox or sent mail
+			User user               = (User) session.getAttribute("user");
+			
 			// Filter messages based on user type
 			Set<Integer> validTypes = new HashSet<Integer>() {{ 
 				add( Message.TYPE_NOTE );
@@ -59,26 +54,35 @@ public class ReadMessagesServlet extends HttpServlet {
 			// Fetch messages from DBConnection, then filter based on navtab
 			ResultSet allMessages = connection.getUserMessages( user.getUserID() );
 			ArrayList<Message> filtMessages;		
-			String navtab = request.getParameter("navtab"); // inbox or sent mail
-			
-			if (navtab == "inbox" || navtab == null) { // default inbox
+
+			if ( ("inbox").equals(navtab) || navtab == null) { // default inbox
 				request.setAttribute("navtab", "inbox");
 				filtMessages = Message.loadMessages(allMessages, validTypes, user.getUserID(), null);
 			
-			} else { // sent mail
+			} else if ( ("sent").equals(navtab) ){ // sent mail
 				request.setAttribute("navtab", "sent");
 				filtMessages = Message.loadMessages(allMessages, validTypes, null, user.getUserID());	
+			
+			} else {
+				throw new Exception();
 			}
 			Collections.sort( filtMessages ); // sort by date
+			request.setAttribute("messages", filtMessages);
 			request.getRequestDispatcher("userMessages.jsp").forward(request, response);
 			
 		} catch (Exception e) {
+			e.printStackTrace();
 			request.getRequestDispatcher("error.jsp").forward(request, response);
 		}
 	}
 
-	
-	
-	
-	
+	/**
+	 * Re-directs to doGet() for the purposes of receiving Redirects from other
+	 * Servlets, e.g. NewMessageServlet
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) 
+	throws ServletException, IOException {  
+		doGet(request, response);
+	}
 }

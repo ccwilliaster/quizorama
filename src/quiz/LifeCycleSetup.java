@@ -40,7 +40,6 @@ public class LifeCycleSetup implements ServletContextListener {
 		}
     			
 		servletContext.setAttribute("DBConnection", dbConnection);
-		System.out.println("DBConnection initialized");
     } //contextInitialized
 
 	/**
@@ -52,7 +51,6 @@ ServletContext servletContext = servletContextEvent.getServletContext();
     	DBConnection dbConnection= (DBConnection) servletContext.getAttribute("DBConnection");
     	try {
 			dbConnection.close();
-			System.out.println("DBConnection closed");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

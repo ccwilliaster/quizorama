@@ -23,7 +23,7 @@
 		for (Message message: messages) {
 			out.println("<div class=\"container\">");
 			out.println("<br>");
-			out.println(message.displayAsHTML());
+			out.println(message.displayAsHTML(dbConnection));
 			out.println("<br>");
 			out.println("</div>");
 		}	
