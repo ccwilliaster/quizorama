@@ -1,4 +1,4 @@
-package quiz;
+package project;
 
 import java.util.Date;
 import java.util.Random;
@@ -52,7 +52,7 @@ public class Quiz {
 		while (questions.next()) {
 			int questionID = questions.getInt("questionID");
 			//ResultSet questionInfo = connection.getQuestionInfo(questionID); USE THIS TO TELL QUESTION WHAT TYPE IT IS
-			Question currQuestion = new QuestionResponse(questionID);
+			Question currQuestion = new Question(questionID);
 			questionList.add(currQuestion);
 		}
 	}
@@ -139,12 +139,11 @@ public class Quiz {
 		possibleScore += currQuestion.possiblePoints();
 	}
 
-	/** Quiz history info 
-	 * @throws SQLException */
+	/** Quiz history info */
 	/* Returns an arrayList or the categories associated
 	 * 	with this quiz.
 	 */
-	public ArrayList<String> getCategories() throws SQLException {	
+	public ArrayList<String> getCategories() {	
 		ArrayList<String> result = new ArrayList<String>();
 		ResultSet categories = connection.getCategories(quizID);
 		while (categories.next()) {
@@ -155,7 +154,7 @@ public class Quiz {
 	/* Returns an arrayList of the tags associated with
 	 * 	this quiz.
 	 */
-	public ArrayList<String> getTags() throws SQLException {
+	public ArrayList<String> getTags() {
 		ArrayList<String> result = new ArrayList<String>();
 		ResultSet tags = connection.getTags(quizID);
 		while(tags.next()) {
@@ -178,7 +177,7 @@ public class Quiz {
 	}
 	/* Returns the number of reviews for this quiz.
 	 */
-	public int getNumReviews() throws SQLException {	
+	public int getNumReviews() {	
 		int numValues = 0;
 		ResultSet ratings = connection.getRatings(quizID);
 		while (ratings.next()) numValues++;
@@ -186,7 +185,7 @@ public class Quiz {
 	}
 	/* Returns the average score of the user for this quiz.
 	 */
-	public double getAverageScore() throws SQLException {	
+	public double getAverageScore() {	
 		int total = 0;
 		int numScores = 0;
 		ResultSet histories = connection.getHistories(quizID);
