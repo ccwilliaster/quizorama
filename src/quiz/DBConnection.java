@@ -260,6 +260,11 @@ public class DBConnection {
 		sql.setInt(1, quizID);
 		return sql.executeQuery();
 	} //getRatings
+
+	public ResultSet getAnswerInfo(int questionId) {
+		// TODO: Complete this
+		return null;
+	}
 	
 	
 }

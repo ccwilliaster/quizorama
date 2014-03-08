@@ -5,7 +5,7 @@
 <% 
 	// Get message to display
 	Message message = (Message) request.getAttribute("message");
-	// DBConnection connection = application.getAttribute("DBConnection");
+	DBConnection dbConnection = (DBConnection) application.getAttribute("DBConnection");
 	// message.setMessageRead(connection);	
 %>
 <html>
@@ -17,7 +17,7 @@
 <body>
 	<div class="container">
 	  <br>
-	    <%= message.displayAsHTML() %>
+	    <%= message.displayAsHTML(dbConnection) %>
 	  <br>
 	</div>
 </body>
