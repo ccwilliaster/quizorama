@@ -1,4 +1,4 @@
-package project;
+package quiz;
 
 import java.util.Date;
 import java.util.Random;
@@ -170,11 +170,12 @@ public class Quiz {
 		possibleScore += currQuestion.possiblePoints();
 	}
 
-	/** Quiz history info */
+	/** Quiz history info 
+	 * @throws SQLException */
 	/* Returns an arrayList or the categories associated
 	 * 	with this quiz.
 	 */
-	public ArrayList<String> getCategories() {	
+	public ArrayList<String> getCategories() throws SQLException {	
 		ArrayList<String> result = new ArrayList<String>();
 		ResultSet categories = connection.getCategories(quizID);
 		while (categories.next()) {
@@ -185,7 +186,7 @@ public class Quiz {
 	/* Returns an arrayList of the tags associated with
 	 * 	this quiz.
 	 */
-	public ArrayList<String> getTags() {
+	public ArrayList<String> getTags() throws SQLException {
 		ArrayList<String> result = new ArrayList<String>();
 		ResultSet tags = connection.getTags(quizID);
 		while(tags.next()) {
@@ -208,7 +209,7 @@ public class Quiz {
 	}
 	/* Returns the number of reviews for this quiz.
 	 */
-	public int getNumReviews() {	
+	public int getNumReviews() throws SQLException {	
 		int numValues = 0;
 		ResultSet ratings = connection.getRatings(quizID);
 		while (ratings.next()) numValues++;
@@ -216,7 +217,7 @@ public class Quiz {
 	}
 	/* Returns the average score of the user for this quiz.
 	 */
-	public double getAverageScore() {	
+	public double getAverageScore() throws SQLException {	
 		int total = 0;
 		int numScores = 0;
 		ResultSet histories = connection.getHistories(quizID);
