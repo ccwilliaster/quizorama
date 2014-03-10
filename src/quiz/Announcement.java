@@ -1,7 +1,6 @@
 package quiz;
 
 import java.util.InputMismatchException;
-
 import javax.servlet.http.HttpServletRequest;
 
 public class Announcement extends Message {

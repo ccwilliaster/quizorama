@@ -167,7 +167,8 @@ public class DBConnection {
 	}
 	
 	public boolean addQuizHistory(int quizID, int userID, int score) throws SQLException {
-		String set = "INSERT INTO " + quizHistoryTable + " (quizID, userID, dateTaken, score, completed?, timeStamp) VALUES ( ?, ?, ?, ?, ?, ? )";
+		String set = "INSERT INTO " + quizHistoryTable + 
+			" (quizID, userID, dateTaken, score, completed?, timeStamp) VALUES ( ?, ?, ?, ?, ?, ? )";
 		PreparedStatement sql = conn.prepareStatement(set);
 		java.util.Date utilDate = new java.util.Date();
 		Date date = new Date(utilDate.getTime());
@@ -253,6 +254,7 @@ public class DBConnection {
 		sql.setInt(1, quizID);
 		return sql.executeQuery();	
 	} //getCategories
+	
 	public ResultSet getRatings(int quizID) throws SQLException {
 		//returns a resultSet of all the ratings so that I can find the average rating value and the different ratingReviews.
 		String select = "SELECT * FROM " + userQuizRatingsTable + " WHERE quizID = ?";
@@ -266,5 +268,29 @@ public class DBConnection {
 		return null;
 	}
 	
+	public boolean addQuizRating(int quizID, int userID, int rating) 
+	throws SQLException {
+		String set = "INSERT INTO " + userQuizRatingsTable + 
+			         " (userID, quizID, ratingValue) VALUES ( ?, ?, ?)";
+		
+		PreparedStatement sql = conn.prepareStatement(set);
+		sql.setInt(1, userID);
+		sql.setInt(2, quizID);
+		sql.setInt(3, rating);
+
+		return sql.execute();
+	} //addQuizRating
 	
+	public boolean updateQuizRating(int ratingID, int rating) 
+	throws SQLException {
+		// Updates the ratingValue of the rating with ID ratingID
+		String update = "UPDATE " + userQuizRatingsTable + 
+		 			    " SET ratingValue = ? WHERE ratingID = ?";
+		
+		PreparedStatement sql = conn.prepareStatement(update);
+		sql.setInt(1, rating);
+		sql.setInt(2, ratingID);
+
+		return sql.execute();
+	} //updateQuizRating
 }
