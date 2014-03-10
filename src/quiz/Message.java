@@ -98,7 +98,7 @@ public class Message implements Comparable<Message>{
 		
 		Message currMessage;
 		int messageType, toUserID, fromUserID;
-		Boolean messageRead;
+		Boolean messageRead, toUserDeleted, fromUserDeleted;
 		Integer messageID;
 		String subject, content;
 		Date date;
@@ -106,24 +106,28 @@ public class Message implements Comparable<Message>{
 		// Potentially initialize a new message for each row in ResultSet
 			while ( messageQuery.next() ) {	
 			// Fetch variables by name, no magic numbers / column indices
-			messageID   = (Integer) messageQuery.getObject("messageID");
-			messageType = (Integer) messageQuery.getObject("messageType");
-			toUserID    = (Integer) messageQuery.getObject("toUserID");
-			fromUserID  = (Integer) messageQuery.getObject("fromUserID");
-			subject     = (String)  messageQuery.getObject("subject");
-			content     = (String)  messageQuery.getObject("content");
-			date        = (Date)    messageQuery.getObject("date");
-			messageRead	= (Boolean) messageQuery.getObject("messageRead");
+			messageID       = (Integer) messageQuery.getObject("messageID");
+			messageType     = (Integer) messageQuery.getObject("messageType");
+			toUserID        = (Integer) messageQuery.getObject("toUserID");
+			fromUserID      = (Integer) messageQuery.getObject("fromUserID");
+			subject         = (String)  messageQuery.getObject("subject");
+			content         = (String)  messageQuery.getObject("content");
+			date            = (Date)    messageQuery.getObject("date");
+			messageRead	    = (Boolean) messageQuery.getObject("messageRead");
+			toUserDeleted   = (Boolean) messageQuery.getObject("toUserDeleted");
+			fromUserDeleted = (Boolean) messageQuery.getObject("fromUserDeleted");
 			
 			// Construct a Message only if it passes possible filters
-			if (validToUserID != null && toUserID != validToUserID ) {
-				continue;
+			if ( (validToUserID != null && toUserID != validToUserID) ||
+				 (validToUserID != null && toUserDeleted) ) {
+				continue; // not TO this user, or TO user deleted
 			}  
-			if (validFromUserID != null && fromUserID != validFromUserID) {
-				continue;
+			if ( (validFromUserID != null && fromUserID != validFromUserID) ||
+				 (validFromUserID != null && fromUserDeleted ) ) {
+				continue; // not FROM this user, or FROM user deleted
 			}
 			if (validTypes != null && !validTypes.contains(messageType) ) {
-				continue;
+				continue; // not correct type
 			}
 			currMessage = new Message(messageID, messageType, toUserID, 
 									  fromUserID, subject, content, date, 
@@ -155,16 +159,16 @@ public class Message implements Comparable<Message>{
 		return dateFormat.format( date );
 	}
 	
-	/**
-	 * Updates the messageRead attribute of the Message to reflect that
-	 * the message has been opened by the toUserID User
-	 */
-	public void setMessageRead(DBConnection connection) throws SQLException {
-		if (messageRead == false) {
-			messageRead = true;
-			connection.updateMessage( this );
-		}
-	}
+//	/**
+//	 * Updates the messageRead attribute of the Message to reflect that
+//	 * the message has been opened by the toUserID User
+//	 */
+//	public void setMessageRead(DBConnection connection) throws SQLException {
+//		if (messageRead == false) {
+//			messageRead = true;
+//			connection.updateMessage( this );
+//		}
+//	}
 	
 	/**
 	 * Getter that returns the type of the Message
@@ -230,13 +234,12 @@ public class Message implements Comparable<Message>{
 	 * @return
 	 */
 	public String displayAsHTML(DBConnection conn) throws SQLException { 
-		// TODO: add reply, delete functionality
 		
 		StringBuilder html = new StringBuilder();
 		html.append( 
 		"<div class='row'><br>" +
 		  "<div class='col-md-8'>" +
-		    "<h6>Sent " + printShortDate() + "</h6>" +
+		    "<h6>Sent " + printDate() + "</h6>" +
 		    "<div class='panel panel-default'>" +
 			  "<div class='panel-body' >" +
 		    	"<dl class='dl-horizontal'>" +
@@ -246,25 +249,23 @@ public class Message implements Comparable<Message>{
 			      "<dt>Content</dt>   <dd>" + content + "</dd>" +  
 				"</dl> " +
 			  "</div>" +
-			  "<div class='panel-footer text-right'>" +
-			    "<div class='btn-group btn-group-sm'>"
+			  "<div class='panel-footer text-right'>" 
 		);
 		if (messageType == TYPE_NOTE) {
 			html.append(
-				  "<button type='button' class='btn btn-default' onclick='reply()'>" +
+				  "<form class='btn-group btn-group-sm' action='NewMessageServlet' method='POST'>" +
 				    "<input name='type' value=" + TYPE_NOTE + " type='hidden'>" +
-			        "<input name='toUserID' value=" + fromUserID + " type='hidden'>" +
+			        "<input name='toUserName' value=" + conn.getUserName(fromUserID) + " type='hidden'>" +
 			        "<input name='subject'  value='Re: " + subject + "' type='hidden'>" +
-				    "Reply" +
-				  "</button>"
+			        "<button class='btn btn-default' type='submit'>Reply</button>" +
+				  "</form>"
 			);
 		}
 		html.append(
-				  "<button type='button' class='btn btn-danger' onclick='delete()'>" +
-		            "<input name='messageID' value=" + messageID + " type='hidden'>" +
-			        "Delete" +
-			      "</button>" +
-			    "</div>" +
+				  "<form class='btn-group btn-group-sm' action='DeleteMessageServlet' method='POST'>" +
+				    "<input name='messageID' value=" + messageID + " type='hidden'>" +
+				    "<button class='btn btn-danger' type='submit'>Delete</button>" +
+				  "</form>" +
 			  "</div>" +
 		    "</div>" +
 		  "</div>" +

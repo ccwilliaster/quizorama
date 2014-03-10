@@ -39,16 +39,19 @@ public class NewMessageServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) 
 	throws ServletException, IOException {
+		Integer messageIntType  = null;
+		Integer userID          = null;
+		DBConnection connection = null;
+		
 		try { 
 			ServletContext context  = getServletContext();
 			HttpSession session     = request.getSession();
-			DBConnection connection = (DBConnection) context.getAttribute("DBConnection");
+			connection = (DBConnection) context.getAttribute("DBConnection");
 			User user               = (User) session.getAttribute("user");
-			int userID              = user.getUserID();
-			String userName         = user.getUserName();
+			userID                  = user.getUserID();
 			String messageType      = request.getParameter("type");
 			String hasContent       = request.getParameter("hasContent");
-			
+						
 			// Three possibilities:
 			if (messageType == null) { // get type from user
 				
@@ -57,18 +60,24 @@ public class NewMessageServlet extends HttpServlet {
 				request.getRequestDispatcher("createMessage.jsp").forward(request, response);
 
 			} else if (hasContent == null) { // know type, get content from user
-				Integer messageIntType = Integer.parseInt(messageType);
+				messageIntType = Integer.parseInt(messageType);
 				gotoGetMessageContent(request, response, messageIntType, userID, connection);
 				
 			} else { // create message with content, re-direct to userMessages.jsp
-				Integer messageIntType = Integer.parseInt(messageType);
+				messageIntType = Integer.parseInt(messageType);
 				gotoCreateMessage(request, response, userID, messageIntType, connection);
 			}
-			
+		
 		} catch (InputMismatchException badinput) { // direct to input form again
-			request.setAttribute("error", "<h1>Invalid input, please re-enter</h1>");
-			request.getRequestDispatcher("createMessage.jsp").forward(request, response);
+			try {
+				request.setAttribute("error", 
+									 "<h3 style='color:#d9534f'>Invalid input, please re-enter</h3>");
+				gotoGetMessageContent(request, response, messageIntType, userID, connection);
 			
+			} catch (Exception e) { 
+				e.printStackTrace();
+				request.getRequestDispatcher("error.jsp").forward(request, response);
+			}
 		} catch (Exception e) { 
 			e.printStackTrace();
 			request.getRequestDispatcher("error.jsp").forward(request, response);
@@ -87,13 +96,13 @@ public class NewMessageServlet extends HttpServlet {
 		String html = "";
 	
 		if (messageType == Message.TYPE_NOTE) {
-			html = Note.getCreationHTML(userID); // TODO: pass all user names/IDs
+			html = Note.getCreationHTML(userID, request); 
 			
 		} else if (messageType == Message.TYPE_FRIEND) {
-			html = FriendRequest.getCreationHTML(userID, connection); // TODO: pass all user names/IDs
+			html = FriendRequest.getCreationHTML(userID, connection); 
 			
 		} else if (messageType == Message.TYPE_CHALLENGE) {
-			html = Challenge.getCreationHTML(userID, null); // TODO: pass all user AND quiz names/IDs
+			html = Challenge.getCreationHTML(userID, null); 
 			
 		} else if (messageType == Message.TYPE_ANNOUNCEMENT) {
 			html = Announcement.getCreationHTML(userID);
@@ -109,11 +118,12 @@ public class NewMessageServlet extends HttpServlet {
 	
 	/**
 	 * Helper method to create correct type of Message, redirects to userMessages.jsp
+	 * Catches bad input by throwing InputMismatchException
 	 */
 	private void 
 	gotoCreateMessage(HttpServletRequest request, HttpServletResponse response,
 						 Integer userID, Integer messageType, DBConnection connection)
-	throws ServletException, IOException, SQLException {
+	throws ServletException, IOException, SQLException, InputMismatchException {
 		
 		if (messageType == Message.TYPE_NOTE) {
 			Note.makeNote(request, connection);
@@ -126,9 +136,9 @@ public class NewMessageServlet extends HttpServlet {
 					             "Your friend request was sent successfully");
 			
 		} else if (messageType == Message.TYPE_ANNOUNCEMENT) {
-			//int numSent = makeAnnouncements(request, connection);
+			int numSent = Announcement.makeAnnouncements(request, connection);
 			request.setAttribute("messageUpdate", 
-             					 "Your announcement was sent successfully");
+             					 "Announcement successfully sent to " + numSent + " users");
 			
 		} else if (messageType == Message.TYPE_CHALLENGE) {
 			Challenge.makeChallenge(request, connection);
