@@ -36,7 +36,7 @@ public class Quiz {
 	private Question currQuestion;
 	private Random rand = new Random();
 
-	Quiz(int quizID, DBConnection connection) throws SQLException {
+	public Quiz(int quizID, DBConnection connection) throws SQLException {
 		this.connection = connection;
 		this.quizID = quizID;
 		ResultSet quizInfo = connection.getQuizInformation(quizID);
@@ -176,6 +176,42 @@ public class Quiz {
 		}
 		return numValues == 0 ? 0 : total / (double)numValues;
 	}
+
+	/*
+	 * Returns the rating the User with the specified userID provided for this
+	 * Quiz. Returns null if the User has not rated
+	 */
+	public Integer getUserRating(int userID) throws SQLException{	
+		int currUserID;
+		Integer rating = null;
+		
+		ResultSet ratings = connection.getRatings(quizID);
+		while (ratings.next()) {
+			currUserID = ratings.getInt("userID");
+			if ( userID == currUserID ) { 
+				rating = ratings.getInt("ratingValue");
+			}
+		}
+		return rating;
+	}
+	/*
+	 * Returns the ratingID of the rating the User with the specified userID 
+	 * provided for this Quiz. Returns null if the User has not rated
+	 */
+	public Integer getUserRatingID(int userID) throws SQLException{	
+		int currUserID;
+		Integer ratingID = null;
+		
+		ResultSet ratings = connection.getRatings(quizID);
+		while (ratings.next()) {
+			currUserID = ratings.getInt("userID");
+			if ( userID == currUserID ) { 
+				ratingID = ratings.getInt("ratingID");
+			}
+		}
+		return ratingID;
+	}
+	
 	/* Returns the number of reviews for this quiz.
 	 */
 	public int getNumReviews() throws SQLException {	
@@ -196,7 +232,17 @@ public class Quiz {
 		}
 		return numScores == 0 ? 0 : total / numScores;
 	}
-	
+	/*
+	 * Returns the number of questions this quiz has
+	 */
+	public int getNumQuestions() throws SQLException {
+		int total = 0;
+		ResultSet questions = connection.getQuizQuestions(quizID);
+		while ( questions.next() ) {
+			total++;
+		}
+		return total;
+	}
 	/* Returns a string to display a summary before the quiz 
 	 * 	begins.
 	 */

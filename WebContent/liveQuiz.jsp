@@ -16,11 +16,13 @@
 		
 		<!-- display Quiz-generated HTML, submit results with 'Next' button -->		
 	<div class="container">
-	  <br>
-		<form action="QuizControllerServlet" method="post">
-		<%= request.getAttribute("html")  %>
-		<div><input class="btn btn-default" type="submit" value="Next"></div>
- 		</form>
+		<div class="jumbotron">
+	 		<br>
+			<form action="QuizControllerServlet" method="post">
+			<%= request.getAttribute("html")  %>
+			<div><input class="btn btn-default" type="submit" value="Next" /></div>
+	 		</form>
+ 		</div>
  	</div>
  		
 </body>
