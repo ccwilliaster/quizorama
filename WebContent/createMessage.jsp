@@ -18,6 +18,9 @@
 	} else {
 		messageType = "message";
 	}
+	
+	// See if there was any sort of error
+	String error = (String) request.getAttribute("error");
 %>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
@@ -29,6 +32,8 @@
 		<div class="container">
 			<div class="jumbotron">
 				<h2>New <%= messageType %></h2>
+				<% if (error != null) out.println(error); %>
+				
 				<form action="NewMessageServlet" method="post">
 					<%= request.getAttribute("html")  %>
 					<div class="row">

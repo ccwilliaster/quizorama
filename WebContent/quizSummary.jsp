@@ -126,10 +126,50 @@
 	}
 	
 	/*
+	 * 
+	 */
+	public String getQuizLinks(String userType, Integer quizID) {
+		StringBuilder html = new StringBuilder();
+		html.append(
+		  "<div class='col-md-3'>" +
+			"<form action='QuizControllerServlet'>" +
+		      "<input type='hidden' name='quizID' value=" + quizID + " />"
+		);
+		if ( userType.equals("guest") ) {
+			html.append(
+			  "<button class='disabled btn btn-primary'>Login to take quiz</button>" +
+			"</form>" +
+		  "</div>");
+		} else {
+			html.append(
+			  "<button class='btn btn-primary' type='submit'>Take Quiz</button>" +
+			"</form></div>" +
+		  "<div class='col-md-1 pull-left'>" +
+			"<form action='FlagQuizServlet' method='POST'>" +
+			  "<input type='hidden' name='quizID' value=" + quizID + " />" +
+			  "<button class='btn btn-danger' type='submit'>" + 
+			    "<span title='Flag quiz' class='glyphicon glyphicon-flag'></span>" +
+			  "</button>" +
+			"</form>" +
+		  "</div>");
+		} if ( userType.equals("admin") ) {
+			html.append(
+		  "<div class='col-md-1  pull-left'>" +
+			"<form action='DeleteQuizServlet' method='POST'>" +
+			  "<input type='hidden' name='quizID' value=" + quizID + " />" +
+			  "<button class='btn btn-danger' type='submit'>" + 
+			    "<span title='Delete quiz' class='glyphicon glyphicon-trash'></span>" +
+			  "</button>" +
+			"</form>" +
+		  "</div>");}
+		return html.toString();
+	}
+	
+	/*
 	 * Returns a dropdown menu for adding a rating, based on user information
 	 */ 
 	public String getRatingDropdown(String userType, int userID, int quizID, Integer userRating) {
-		//if ( userType.equals("guest") ) return ""; // guests cannot rate
+		if ( userType.equals("guest") ) return ""; // guests cannot rate
 		
 		StringBuilder html = new StringBuilder();
 		html.append(
@@ -191,17 +231,9 @@
 						<p>
 							<%= quizSummary %>
 							<br><span class="badge"><%= numQuestions %> questions</span>
-							<form action="QuizControllerServlet" >
-								<input type="hidden" name="quizID" value=<%= quizID %> />
-								<% 
-								if ( userType.equals("guest") ) {
-									out.println("<input class='disabled btn btn-primary' type='submit' value='Login to take quiz' />");
-								} else {
-									out.println("<input class='btn btn-primary' type='submit' value='Take quiz' />");
-								}
-								%>
-							</form>
-							
+							<div class="row">
+								<%= getQuizLinks(userType, quizID) %>
+							</div>
 						</p>	
 					</div>
 				</div>
@@ -209,8 +241,7 @@
 				<div class="col-md-5">
       				<dl class="dl-horizontal text-left">
       					<dt>average rating</dt>
-      					<dd class="text-center">
-
+      					<dd>
       						<div class="btn-group">
 	      						<button type="button" class="btn btn-primary">
 	      							<%= getAvgRating(numStars) %>

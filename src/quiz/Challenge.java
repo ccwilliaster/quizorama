@@ -1,6 +1,8 @@
 package quiz;
 
 import java.sql.SQLException;
+import java.util.InputMismatchException;
+
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -29,15 +31,20 @@ public class Challenge extends Message {
 	 * @throws SQLException
 	 */
 	public static void makeChallenge(HttpServletRequest request, DBConnection connection) 
-	throws SQLException {
+	throws SQLException, InputMismatchException {
 
 		String toUserName   = request.getParameter("toUserName");
+		String quizName     = request.getParameter("quizName");
+		if ( !(connection.isValidUserName(toUserName)) || 
+			 !(connection.isValidQuizName(quizName)) ) {
+			throw new InputMismatchException();
+		}
+		
 		Integer toUserID    = connection.getUserID( toUserName );
 		Integer fromUserID  = Integer.parseInt(request.getParameter("fromUserID"));
 		String fromUserName = connection.getUserName(fromUserID);
-		String quizName     = request.getParameter("quizName");
-		Integer quizID      = 0; // TODO need method for converting quizName to quizID 
-		
+		Integer quizID      = connection.getQuizID(quizName); 
+
 		Challenge newChallenge = 
 			new Challenge(toUserID, fromUserID, fromUserName, quizName, quizID);
 		connection.addMessage(newChallenge);
@@ -50,9 +57,6 @@ public class Challenge extends Message {
 	 */
 	private static String 
 	generateChallengeContent(int fromUserID, String fromUserName, int quizID, String quizName) {
-		// TODO: update to quizName
-		//       it would be nice to have getUserButton() and getQuizButton() methods
-		
 		String content = 
 			"<h4>Someone challenged you to a quiz!</h4> User <a class='btn " +
 			"btn-default btn-xs' href='userpage.jsp?userID=" + fromUserID + "'>" +

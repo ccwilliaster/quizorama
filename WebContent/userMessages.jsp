@@ -50,7 +50,8 @@
 				$('#messageTable').show();
 				$('#messageHTML').html( "" );
 	      	}); // Toggle messageTable on, messageHTML off
-	});
+		});
+		
 	</script>
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 	<title><%= title %></title>
@@ -61,7 +62,7 @@
 		<% 
 		out.println("<h2>" + title + "</h2>");
 		if ( !(msgUpdate == null) ) { // if message update happened, notify user
-			out.println("<h5><span style='color:gray;'>" + msgUpdate + "</span></h5>");
+			out.println("<h5><span style='color:#d9534f;'>" + msgUpdate + "</span></h5>");
 		} 
 		out.println("</h2>");
 		%>
