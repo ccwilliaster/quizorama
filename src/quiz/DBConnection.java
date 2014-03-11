@@ -265,6 +265,28 @@ public class DBConnection {
 		// TODO: Complete this
 		return null;
 	}
+
+	public void addQuiz(Quiz quiz) throws SQLException {
+		ResultSet genKey = null;
+		String insert = "insert into " + quizTable + " (quizName, quizCreatorUserID, `singlePage?`, `randomOrder?`, `immediateCorrection?`, `practiceMode?`) VALUES (?, ?, ?, ?, ?, ?);";
+		PreparedStatement sql = conn.prepareStatement(insert, Statement.RETURN_GENERATED_KEYS);
+		sql.setString(1, quiz.getQuizName());
+		sql.setInt(2, quiz.getquizCreatoruserID());
+		sql.setBoolean(3, quiz.getSinglePage());
+		sql.setBoolean(4, quiz.getRandomOrder());
+		sql.setBoolean(5, quiz.getImmediateCorrection());
+		sql.setBoolean(6, quiz.getPractiveMode());
+		int affectedRows = sql.executeUpdate();
+		if (affectedRows == 0) {
+			throw new SQLException("Adding quiz failed, no rows affected.");
+	    }
+		
+		genKey = sql.getGeneratedKeys();
+		if (!genKey.first())
+			throw new SQLException("Adding quiz failed, no gen key obtained.");
+		
+		quiz.setQuizID(genKey.getInt(1));
+	}
 	
 	
 }
