@@ -1,7 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
- <%@ page import="quiz.Message"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<%@ taglib  prefix="tag" tagdir="/WEB-INF/tags" %> 
+<%@ page import="quiz.Message, quiz.User"%>
+<!DOCTYPE html>
 <html>
 <%
 	// Figure out the message type
@@ -21,6 +22,15 @@
 	
 	// See if there was any sort of error
 	String error = (String) request.getAttribute("error");
+	
+	// Get user info for navbar
+	String userName = null;
+	Integer userID  = null;
+	User user = (User) session.getAttribute("user");
+	if (user != null) {
+		userName = user.getUserName();
+		userID   = user.getUserID();
+	}
 %>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
@@ -28,10 +38,10 @@
 	<title>New <%= messageType %></title>
 </head>
 <body>
-	
+	<tag:navbar session="<%= session %>" activeTab="messages" />
 		<div class="container">
 			<div class="jumbotron">
-				<h2>New <%= messageType %></h2>
+				<h2 style="color:#5bc0de">New <%= messageType %></h2>
 				<% if (error != null) out.println(error); %>
 				
 				<form action="NewMessageServlet" method="post">

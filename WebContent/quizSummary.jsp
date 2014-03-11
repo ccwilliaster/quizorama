@@ -1,21 +1,22 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
+<%@ taglib  prefix="tag" tagdir="/WEB-INF/tags" %>
 <%@ page import="quiz.*, java.util.*, java.text.DecimalFormat" %> 
 <!DOCTYPE html>
 
 <%
 	DecimalFormat percent = new DecimalFormat("##0.#");
 	DBConnection connection;
-	Integer quizID = null;
+	Integer quizID     = null;
 	Integer userRating = null;
-	String userType, userName;
+	Integer userID     = null;
+	String userType, userName, flagNote;
 	ArrayList<String> categories;
 	ArrayList<String> tags;
 
 	//Get DBConnection, user, and relevant quiz info
 	connection         = (DBConnection) application.getAttribute("DBConnection");
 	User user          = (User) session.getAttribute("user");
-	int userID         = user.getUserID();
 	
 	if (request.getParameterMap().containsKey("quizID")) { // error handling
 		 quizID     = Integer.parseInt( request.getParameter("quizID") );
@@ -37,16 +38,19 @@
 	tags               = new ArrayList<String>() {{ 
 		add("tag1"); add("tag2"); add("tag3"); add("tag4"); add("tag5");
 	}}; //quiz.getTags();
-	
+	flagNote = (String) request.getAttribute("flagNote"); // if user just flagged quiz
+		
 	// Figure out some user properties which toggle displays 
-	if (userID == -1) { // guest
+	if (user == null) { // guest
+		userID   = -1;
 		userType = "guest";
 		userName = "Guest";
 	} else {
+		userID     = user.getUserID();
 		userName   = user.getUserName();
 		userRating = 2; //quiz.getUserRating(userID); // null if no rating
 		
-		if ( true /* user.isAdmin() */ ) { userType = "admin"; }
+		if ( false /* user.isAdmin() */ ) { userType = "admin"; }
 		else { userType = "standard"; }
 	}
 
@@ -126,39 +130,46 @@
 	}
 	
 	/*
-	 * 
+	 * Generates links pertaining to the quiz: Take quiz, flag quiz, or delete
+	 * quiz, depending on userType. Also displays a flagNote
 	 */
-	public String getQuizLinks(String userType, Integer quizID) {
+	public String getQuizLinks(String userType, Integer quizID, String flagNote) {
 		StringBuilder html = new StringBuilder();
-		html.append(
-		  "<div class='col-md-3'>" +
-			"<form action='QuizControllerServlet'>" +
-		      "<input type='hidden' name='quizID' value=" + quizID + " />"
-		);
 		if ( userType.equals("guest") ) {
 			html.append(
+			"<div class='col-md-3'>" +
+			"<form action='QuizControllerServlet'>" +
+		      "<input type='hidden' name='quizID' value=" + quizID + " />" +
 			  "<button class='disabled btn btn-primary'>Login to take quiz</button>" +
 			"</form>" +
 		  "</div>");
-		} else {
+		}  else {
 			html.append(
+			"<div class='col-md-2'>" +
+			"<form action='QuizControllerServlet'>" +
+		      "<input type='hidden' name='quizID' value=" + quizID + " />" +
 			  "<button class='btn btn-primary' type='submit'>Take Quiz</button>" +
-			"</form></div>" +
-		  "<div class='col-md-1 pull-left'>" +
+			"</form></div>");
+		} if ( userType.equals("standard") ) {
+			html.append(
+		  "<div class='col-md-2 pull-left'>" +
 			"<form action='FlagQuizServlet' method='POST'>" +
 			  "<input type='hidden' name='quizID' value=" + quizID + " />" +
 			  "<button class='btn btn-danger' type='submit'>" + 
-			    "<span title='Flag quiz' class='glyphicon glyphicon-flag'></span>" +
+			    "<span class='glyphicon glyphicon-flag'></span>Flag" +
 			  "</button>" +
-			"</form>" +
-		  "</div>");
-		} if ( userType.equals("admin") ) {
+			"</form>");
+			if (flagNote != null) { 
+				html.append("<span style='color:#d9534f'>" + flagNote + "</span>"); 
+			}	
+		  html.append("</div>");
+		} else if ( userType.equals("admin") ) {
 			html.append(
-		  "<div class='col-md-1  pull-left'>" +
+		  "<div class='col-md-2  pull-left'>" +
 			"<form action='DeleteQuizServlet' method='POST'>" +
 			  "<input type='hidden' name='quizID' value=" + quizID + " />" +
-			  "<button class='btn btn-danger' type='submit'>" + 
-			    "<span title='Delete quiz' class='glyphicon glyphicon-trash'></span>" +
+			  "<button class='btn btn-danger' 'type='submit'>" + 
+			    "<span title='Delete quiz' class='glyphicon glyphicon-trash'></span>Delete" +
 			  "</button>" +
 			"</form>" +
 		  "</div>");}
@@ -217,6 +228,7 @@
 	<title><%= quizName %> summary</title>
 </head>
 <body>
+	<tag:navbar session="<%= session %>" activeTab="quizzes" />
 	<div class="container">
 		<div class="jumbotron">
 			<div class="row">
@@ -232,7 +244,7 @@
 							<%= quizSummary %>
 							<br><span class="badge"><%= numQuestions %> questions</span>
 							<div class="row">
-								<%= getQuizLinks(userType, quizID) %>
+								<%= getQuizLinks(userType, quizID, flagNote) %>
 							</div>
 						</p>	
 					</div>
