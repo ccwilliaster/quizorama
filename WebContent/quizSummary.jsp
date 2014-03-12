@@ -50,7 +50,7 @@
 		userName   = user.getUserName();
 		userRating = 2; //quiz.getUserRating(userID); // null if no rating
 		
-		if ( false /* user.isAdmin() */ ) { userType = "admin"; }
+		if ( true /* user.isAdmin() */ ) { userType = "admin"; }
 		else { userType = "standard"; }
 	}
 
@@ -133,7 +133,7 @@
 	 * Generates links pertaining to the quiz: Take quiz, flag quiz, or delete
 	 * quiz, depending on userType. Also displays a flagNote
 	 */
-	public String getQuizLinks(String userType, Integer quizID, String flagNote) {
+	public String getQuizLinks(String userType, Integer quizID, String quizName, String flagNote) {
 		StringBuilder html = new StringBuilder();
 		if ( userType.equals("guest") ) {
 			html.append(
@@ -145,31 +145,38 @@
 		  "</div>");
 		}  else {
 			html.append(
-			"<div class='col-md-2'>" +
+			"<div class='col-md-3'>" +
 			"<form action='QuizControllerServlet'>" +
 		      "<input type='hidden' name='quizID' value=" + quizID + " />" +
 			  "<button class='btn btn-primary' type='submit'>Take Quiz</button>" +
 			"</form></div>");
 		} if ( userType.equals("standard") ) {
 			html.append(
-		  "<div class='col-md-2 pull-left'>" +
+		  "<div class='col-md-5 pull-left'>" +
 			"<form action='FlagQuizServlet' method='POST'>" +
 			  "<input type='hidden' name='quizID' value=" + quizID + " />" +
-			  "<button class='btn btn-danger' type='submit'>" + 
-			    "<span class='glyphicon glyphicon-flag'></span>Flag" +
-			  "</button>" +
-			"</form>");
+			  "<input type='hidden' name='quizName' value='" + quizName + "' />");
+			
 			if (flagNote != null) { 
-				html.append("<span style='color:#d9534f'>" + flagNote + "</span>"); 
-			}	
-		  html.append("</div>");
+				html.append(
+						  "<button class='disabled btn btn-danger' type='submit'>" + 
+						    "<span class='glyphicon glyphicon-flag'></span> " + 
+						    "<em>" + flagNote + "</em></button>" +
+						"</form></div>");
+			} else { 
+				html.append(
+				  "<button class='btn btn-danger' type='submit'>" + 
+				    "<span class='glyphicon glyphicon-flag'></span> Flag" +
+				  "</button>" +
+				"</form></div>");
+			}
 		} else if ( userType.equals("admin") ) {
 			html.append(
-		  "<div class='col-md-2  pull-left'>" +
+		  "<div class='col-md-3  pull-left'>" +
 			"<form action='DeleteQuizServlet' method='POST'>" +
 			  "<input type='hidden' name='quizID' value=" + quizID + " />" +
 			  "<button class='btn btn-danger' 'type='submit'>" + 
-			    "<span title='Delete quiz' class='glyphicon glyphicon-trash'></span>Delete" +
+			    "<span title='Delete quiz' class='glyphicon glyphicon-trash'></span> Delete" +
 			  "</button>" +
 			"</form>" +
 		  "</div>");}
@@ -235,8 +242,7 @@
 				<div class="col-md-7">
 					<h1><%= quizName %>
 						<a class="btn btn-default btn-sm" <% out.println("href=userpage.jsp?userID=" + creatorID ); %> >
-						by <%= creatorName %></a>
-						
+						by <%= creatorName %></a>			
 					</h1>
 					<br>
 					<div class="row">
@@ -244,7 +250,7 @@
 							<%= quizSummary %>
 							<br><span class="badge"><%= numQuestions %> questions</span>
 							<div class="row">
-								<%= getQuizLinks(userType, quizID, flagNote) %>
+								<%= getQuizLinks(userType, quizID, quizName, flagNote) %>
 							</div>
 						</p>	
 					</div>

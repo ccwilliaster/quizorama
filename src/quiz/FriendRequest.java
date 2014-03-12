@@ -67,14 +67,16 @@ public class FriendRequest extends Message {
 	 * whose user ID is fromUserID. 
 	 */
 	private static String getAcceptButton(Integer fromUserID) {
-		return "<form action='FriendAcceptServlet' method='post'>" +
-		         "<input name='fromUserID' value=" + fromUserID + " type='hidden'>" +
-			     "<input class='btn btn-default' type='submit' value='Accept'><br>" +
+		return "<form action='FriendRequestServlet' method='POST'>" +
+		         "<input name='nonActingUserID' value=" + fromUserID + " type='hidden' />" +
+		         "<input name='origin' value='messageLink' type='hidden' />" +
+			     "<input class='btn btn-default' type='submit' value='Accept' /><br>" +
 			   "</form>";
 	}
 	
 	/**
 	 * Displays the necessary HTML form information to create a new FriendRequest
+	 * userID is embeded in the form to reflect that this user initialized the request
 	 * @return
 	 */
 	public static String getCreationHTML(Integer userID, DBConnection connection) 
@@ -107,7 +109,6 @@ public class FriendRequest extends Message {
 			  "</div>" +
 			"</div>" 
 		);
-		// TODO: add select2.css/.js script for populating usernames in place of form
 		
 		return html.toString(); 
 	}

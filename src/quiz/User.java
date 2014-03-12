@@ -12,6 +12,8 @@ import java.sql.SQLException;
  *
  */
 public class User {
+	public final static int TYPE_ADMIN = 0;
+	public final static int TYPE_USER = 1;
 	private int userID;
 	private String userName;
 	DBConnection dbConnection;

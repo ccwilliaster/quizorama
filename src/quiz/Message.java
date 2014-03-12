@@ -104,7 +104,7 @@ public class Message implements Comparable<Message>{
 		Date date;
 		
 		// Potentially initialize a new message for each row in ResultSet
-			while ( messageQuery.next() ) {	
+		while ( messageQuery.next() ) {	
 			// Fetch variables by name, no magic numbers / column indices
 			messageID       = (Integer) messageQuery.getObject("messageID");
 			messageType     = (Integer) messageQuery.getObject("messageType");
@@ -243,8 +243,8 @@ public class Message implements Comparable<Message>{
 		    "<div class='panel panel-default'>" +
 			  "<div class='panel-body' >" +
 		    	"<dl class='dl-horizontal'>" +
-				  "<dt>Sent from</dt> <dd>" + conn.getUserName(toUserID)   + "</dd>" +
-			      "<dt>Sent to</dt>   <dd>" + conn.getUserName(fromUserID) + "</dd>" +
+				  "<dt>Sent from</dt> <dd>" + conn.getUserName(fromUserID)   + "</dd>" +
+			      "<dt>Sent to</dt>   <dd>" + conn.getUserName(toUserID) + "</dd>" +
 			      "<dt>Subject</dt>   <dd>" + subject + "</dd>" +
 			      "<dt>Content</dt>   <dd>" + content + "</dd>" +  
 				"</dl> " +
@@ -275,12 +275,12 @@ public class Message implements Comparable<Message>{
 	}
 	
 	/**
-	 * Helper method which wraps the input String in an HTML em tag if this
-	 * Message has not been read, else simply returns the input String
-	 * @param text text to be wrapped in <em></em>, or not
+	 * Helper method which wraps the input String in an HTML strong tag if this
+	 * Message has not been read and makeBold is true
+	 * @param text text to be wrapped in <strong></strong>, or not
 	 */
-	private String emph(String text) {
-		if (!messageRead) { return "<em>" + text + "</em>"; }
+	private String strong(String text, boolean makeBold) {
+		if (!messageRead && makeBold) { return "<strong>" + text + "</strong>"; }
 		return text;
 	}
 	
@@ -291,22 +291,26 @@ public class Message implements Comparable<Message>{
 	 * read are emphasized
 	 * @return
 	 */
-	public String displayAsTableRow(DBConnection conn, int idx) throws SQLException {
+	public String displayAsTableRow(DBConnection conn, int idx, int requestingUserID) 
+	throws SQLException {
 		// Determine how long the subject / content preview will be
 		String contentNoHTML = content.replaceAll("\\<[^>]*>", "");
 		int lenSubject = Math.min(subject.length(), NCHAR_PREV);
 		int lenContent = Math.min(contentNoHTML.length(), NCHAR_PREV - lenSubject);
 		
+		boolean userIsReceiver = requestingUserID == toUserID;
+		
 		StringBuilder html = new StringBuilder();
 		html.append(
 		"<tr class=\"clickableRow\" id=" + idx + " >" +
-		  "<input type='hidden' id=" + idx + 
-		  " value=\"" + this.displayAsHTML(conn) + "\" />" +
-		  "<td>" + emph( conn.getUserName(fromUserID) ) + "</td>" +
-		  "<td>" + emph( conn.getUserName(toUserID) ) + "</td>" +
-		  "<td>" + emph( subject.substring(0, lenSubject) ) + 
+		  "<input type='hidden' id=" + idx + " value=\"" + this.displayAsHTML(conn) + "\" />" +
+		  "<input type='hidden' id=\"messageID" + idx + "\" value=\"" + messageID + "\" />" + 
+		  "<input type='hidden' id=\"fromUserID" + idx + "\" value=\"" + fromUserID + "\" />" +
+		  "<td>" + strong( conn.getUserName(fromUserID), userIsReceiver ) + "</td>" +
+		  "<td>" + strong( conn.getUserName(toUserID),   userIsReceiver ) + "</td>" +
+		  "<td>" + strong( subject.substring(0, lenSubject), userIsReceiver ) + 
 		         " - " + contentNoHTML.substring(0, lenContent) + "... </td>" +
-		  "<td>" + emph( printShortDate() ) + "</td>" +
+		  "<td>" + strong( printShortDate(), userIsReceiver ) + "</td>" +
 		"</tr>"
 		);
 		return html.toString();

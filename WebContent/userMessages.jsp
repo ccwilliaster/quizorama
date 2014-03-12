@@ -42,12 +42,21 @@
 			}); // display hand on row mousevoer
 			
 			$(".clickableRow").click(function() { 
-				var idx     = $(this).attr("id");
-				var msgHTML = $(this).find('#' + idx).val();
+				var idx        = $(this).attr("id");
+				var msgHTML    = $(this).find('#' + idx).val();
+				var msgID      = $(this).find('#messageID' + idx).val();
+				var fromUserID = $(this).find('#fromUserID' + idx).val();
 				
 				$('#messageTable').hide();
 				$('#messageHTML').html( msgHTML );
 				$('#backButton').show();
+				
+				// Update DB to reflect that message was read
+				// fromUserID is necessary so that a message is read only if the
+				// current user is the rec
+				$.get("UpdateReadMessageServlet?messageID=" + msgID + 
+					  "&fromUserID=" + fromUserID, function(responseIgnored) {});
+				
 	      	}); // Toggle messageTable off, messageHTML on
 			
 			$("#backButton").click(function() {
@@ -121,15 +130,15 @@
 				<div id="backButton"><a class="btn btn-primary">Back</a></div>
 				<table class="table table-hover" id="messageTable">
 					<thead><tr>
-						<th width="15%">From</th>
-						<th width="15%">To</th>
-						<th width="50%">Preview</th>
-						<th width="20%">Date</th>
+						<th width="15%" style="color:#428bca">From</th>
+						<th width="15%" style="color:#428bca">To</th>
+						<th width="50%" style="color:#428bca">Preview</th>
+						<th width="20%" style="color:#428bca">Date</th>
 					</tr></thead>
 					<tbody>
 					<%
 					for (int idx=0; idx < messages.size(); idx++) { 
-						out.println( messages.get(idx).displayAsTableRow(connection, idx) );
+						out.println( messages.get(idx).displayAsTableRow(connection, idx, userID) );
 					}
 					%>
 					</tbody>	

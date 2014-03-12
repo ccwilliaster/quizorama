@@ -41,7 +41,7 @@
 	<tag:navbar session="<%= session %>" activeTab="messages" />
 		<div class="container">
 			<div class="jumbotron">
-				<h2 style="color:#5bc0de">New <%= messageType %></h2>
+				<h2 style="color:#428bca">New <%= messageType %></h2>
 				<% if (error != null) out.println(error); %>
 				
 				<form action="NewMessageServlet" method="post">
