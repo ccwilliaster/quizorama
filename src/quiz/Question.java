@@ -4,6 +4,11 @@ import java.sql.*;
 import java.util.*;
 
 public abstract class Question {
+	public static final int QTYPE_QR = 0;
+	public static final int QTYPE_FB = 1;
+	public static final int QTYPE_MC = 2;
+	public static final int QTYPE_PR = 3;
+	
 	final int questionId;
 	String questionText;
 	final int questionType;

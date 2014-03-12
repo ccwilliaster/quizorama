@@ -17,7 +17,7 @@ Please fill what comes before the blank, the blank and what comes after. You wil
 	Blank: <input name="blank"><br>
 	After blank: <input name="post"><br>
 	Other responses allowed? <input name="otherResponsesCheck" type="checkbox">
-	Comma delimited list of other responses: <input name="otherResponses">
+	Pipe (|) delimited list of other responses: <input name="otherResponses">
 	<input class="btn btn-default" type="submit" value="Create Question">
 </form>
 </body>

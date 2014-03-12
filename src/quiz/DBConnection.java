@@ -261,9 +261,12 @@ public class DBConnection {
 		return sql.executeQuery();
 	} //getRatings
 
-	public ResultSet getAnswerInfo(int questionId) {
-		// TODO: Complete this
-		return null;
+	public ResultSet getAnswerInfo(int questionId) throws SQLException {
+
+		String select = "SELECT * FROM " + questionAnswerTable + " WHERE questionID = ?";
+		PreparedStatement sql = conn.prepareStatement(select);
+		sql.setInt(1, questionId);
+		return sql.executeQuery();
 	}
 
 	public void addQuiz(Quiz quiz) throws SQLException {
@@ -286,6 +289,12 @@ public class DBConnection {
 			throw new SQLException("Adding quiz failed, no gen key obtained.");
 		
 		quiz.setQuizID(genKey.getInt(1)); //Add the quizID to this new quiz that we have
+	}
+
+	public int addQuestion(String questionText, int qtypeQr,
+			int nextQuestionNum, int quizID) {
+		//TODO: Return the questionID generated
+		return 0;
 	}
 	
 	

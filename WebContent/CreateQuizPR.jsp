@@ -16,7 +16,7 @@ Please fill in both the picture link and answer to create a question. You will n
 	Image Link: <input name="question"><br>
 	Best Response: <input name="response"><br>
 	Other responses allowed? <input name="otherResponsesCheck" type="checkbox">
-	Comma delimited list of other acceptable responses: <input name="otherResponses">
+	Pipe (|) delimited list of other acceptable responses: <input name="otherResponses">
 	<input class="btn btn-default" type="submit" value="Create Question">
 </form>
 </body>

@@ -335,6 +335,14 @@ public class Quiz {
 	public void setQuizCreation(Date quizCreation) {
 		this.quizCreation = quizCreation;
 	}
+
+	public int getNextQuestionNum() {
+		return questionList.size() + 1;
+	}
+
+	public void addQuestion(Question question) {
+		questionList.add(question);
+	}
 	
 
 }

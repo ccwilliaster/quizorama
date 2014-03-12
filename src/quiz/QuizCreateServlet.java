@@ -97,22 +97,50 @@ public class QuizCreateServlet extends HttpServlet {
 
 		} //else if
 		else if(request.getParameter("origin").equals("CreateQuizQR.jsp")) {
-			//Create a question and then add it to the list of questions that exists in the quiz
-			DBConnection dbConnection = (DBConnection) this.getServletContext().getAttribute("DBConnection");
-			
-			Question question = new QuestionResponseQuestion();
-			//Getting the quiz
-			Quiz quiz = (Quiz) request.getSession().getAttribute("Quiz");
-			quiz.addQuestion(Question question);
+			String questionText = request.getParameter("question");
+
+			try {
+				createQuestion(request, questionText);
+			} catch (SQLException e) {
+				RequestDispatcher requestDispatcher = request.getRequestDispatcher("CreateQuiz.jsp");
+				requestDispatcher.forward(request, response);
+			}
 		} //else if
 		else if(request.getParameter("origin").equals("CreateQuizFB.jsp")) {
-			
+			String questionPreText = request.getParameter("pre");
+			String questionPostText = request.getParameter("post");
+			String questionText = questionPreText + " _________ " + questionPostText;
+
+			try {
+				createQuestion(request, questionText);
+			} catch (SQLException e) {
+				RequestDispatcher requestDispatcher = request.getRequestDispatcher("CreateQuiz.jsp");
+				requestDispatcher.forward(request, response);
+			}			
 		} //else if
 		else if(request.getParameter("origin").equals("CreateQuizMC.jsp")) {
-			
+			String questionText = request.getParameter("question");
+			questionText.concat("|" + request.getParameter("mc1"));
+			questionText.concat("|" + request.getParameter("mc2"));
+			questionText.concat("|" + request.getParameter("mc3"));
+			questionText.concat("|" + request.getParameter("mc4"));
+
+			try {
+				createQuestion(request, questionText);
+			} catch (SQLException e) {
+				RequestDispatcher requestDispatcher = request.getRequestDispatcher("CreateQuiz.jsp");
+				requestDispatcher.forward(request, response);
+			}
 		} //else if
 		else if(request.getParameter("origin").equals("CreateQuizPR.jsp")) {
-			
+			String questionText = request.getParameter("question");
+
+			try {
+				createQuestion(request, questionText);
+			} catch (SQLException e) {
+				RequestDispatcher requestDispatcher = request.getRequestDispatcher("CreateQuiz.jsp");
+				requestDispatcher.forward(request, response);
+			}
 		} //else if
 		
 		
@@ -120,6 +148,18 @@ public class QuizCreateServlet extends HttpServlet {
 			RequestDispatcher requestDispatcher = request.getRequestDispatcher("CreateQuiz.jsp");
 			requestDispatcher.forward(request, response);
 		} //else
+	}
+
+	private void createQuestion(HttpServletRequest request, String questionText) throws SQLException {
+		//Create a question and then add it to the list of questions that exists in the quiz
+		DBConnection dbConnection = (DBConnection) this.getServletContext().getAttribute("DBConnection");
+
+		//Getting the quiz
+		Quiz quiz = (Quiz) request.getSession().getAttribute("Quiz");
+		int questionID = dbConnection.addQuestion(questionText, Question.QTYPE_QR, quiz.getNextQuestionNum(), quiz.getQuizID());
+
+		Question question = new QuestionResponseQuestion(questionID, questionText, Question.QTYPE_QR, quiz.getNextQuestionNum(), quiz.getQuizID(), dbConnection);
+		quiz.addQuestion(question);		
 	}
 
 	private void askForNextQuestion(HttpServletResponse response) throws IOException {
