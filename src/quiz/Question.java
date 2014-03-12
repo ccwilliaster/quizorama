@@ -32,6 +32,41 @@ public abstract class Question {
 		return answers.getAnswersHtml();
 	}
 	
+	/**
+	 * @return the questionId
+	 */
+	public int getQuestionId() {
+		return questionId;
+	}
+
+	/**
+	 * @return the questionText
+	 */
+	public String getQuestionText() {
+		return questionText;
+	}
+
+	/**
+	 * @return the questionType
+	 */
+	public int getQuestionType() {
+		return questionType;
+	}
+
+	/**
+	 * @return the questionNum
+	 */
+	public int getQuestionNum() {
+		return questionNum;
+	}
+
+	/**
+	 * @return the quizId
+	 */
+	public int getQuizId() {
+		return quizId;
+	}
+
 	public int checkAnswers(ArrayList<String> guesses) {
 		return answers.checkAnswers(guesses);
 	}

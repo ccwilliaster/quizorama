@@ -285,7 +285,7 @@ public class DBConnection {
 		if (!genKey.first())
 			throw new SQLException("Adding quiz failed, no gen key obtained.");
 		
-		quiz.setQuizID(genKey.getInt(1));
+		quiz.setQuizID(genKey.getInt(1)); //Add the quizID to this new quiz that we have
 	}
 	
 	
