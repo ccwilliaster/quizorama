@@ -15,7 +15,7 @@ Please fill in both the picture link and answer to create a question. You will n
 	<input name="origin" type="hidden" value="<%= request.getRequestURI().substring(request.getRequestURI().lastIndexOf("/")+1) %>" >
 	Image Link: <input name="question"><br>
 	Best Response: <input name="response"><br>
-	Other responses allowed? <input name="otherResponsesCheck" type="checkbox"><br>
+	Other responses allowed? <input name="otherResponsesCheck" type="checkbox" value="yes"><br>
 	Pipe (|) delimited list of other acceptable responses: <input name="otherResponses"><br>
 	<input class="btn btn-default" type="submit" value="Create Question"><br>
 </form>

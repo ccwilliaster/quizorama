@@ -14,6 +14,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+//TODO: Remove all of the print stack traces
+
 /**
  * Servlet implementation class QuizCreateServlet
  */
@@ -117,7 +119,13 @@ public class QuizCreateServlet extends HttpServlet {
 			if (request.getParameter("otherResponsesCheck") != null && request.getParameter("otherResponsesCheck").equals("yes")) {
 				answerText.concat("|" + request.getParameter("otherResponses"));
 			}
-			createAnswer(request, answerText, question);
+			try {
+				createAnswer(request, answerText, question);
+			} catch (SQLException e) {
+				e.printStackTrace();
+				RequestDispatcher requestDispatcher = request.getRequestDispatcher("CreateQuiz.jsp");
+				requestDispatcher.forward(request, response);
+			}
 
 			//Last thing:
 			askForNextQuestion(response);
@@ -127,15 +135,27 @@ public class QuizCreateServlet extends HttpServlet {
 			String questionPostText = request.getParameter("post");
 			String questionText = questionPreText + " _________ " + questionPostText;
 
+			Question question = null;
 			try {
-				createQuestion(request, questionText);
+				question = createQuestion(request, questionText);
 			} catch (SQLException e) {
 				e.printStackTrace();
 				RequestDispatcher requestDispatcher = request.getRequestDispatcher("CreateQuiz.jsp");
 				requestDispatcher.forward(request, response);
 			}
 			
+			String answerText = request.getParameter("blank");
+			if (request.getParameter("otherResponsesCheck") != null && request.getParameter("otherResponsesCheck").equals("yes")) {
+				answerText.concat("|" + request.getParameter("otherResponses"));
+			}
 			
+			try {
+				createAnswer(request, answerText, question);
+			} catch (SQLException e) {
+				e.printStackTrace();
+				RequestDispatcher requestDispatcher = request.getRequestDispatcher("CreateQuiz.jsp");
+				requestDispatcher.forward(request, response);
+			}
 			
 			//Last thing:
 			askForNextQuestion(response);
@@ -147,14 +167,24 @@ public class QuizCreateServlet extends HttpServlet {
 			questionText.concat("|" + request.getParameter("mc3"));
 			questionText.concat("|" + request.getParameter("mc4"));
 
+			Question question = null;
 			try {
-				createQuestion(request, questionText);
+				question = createQuestion(request, questionText);
 			} catch (SQLException e) {
 				e.printStackTrace();
 				RequestDispatcher requestDispatcher = request.getRequestDispatcher("CreateQuiz.jsp");
 				requestDispatcher.forward(request, response);
 			}
+
+			String answerText = request.getParameter("answer");
 			
+			try {
+				createAnswer(request, answerText, question);
+			} catch (SQLException e) {
+				e.printStackTrace();
+				RequestDispatcher requestDispatcher = request.getRequestDispatcher("CreateQuiz.jsp");
+				requestDispatcher.forward(request, response);
+			}
 			
 			//Last thing:
 			askForNextQuestion(response);
@@ -162,16 +192,28 @@ public class QuizCreateServlet extends HttpServlet {
 		else if(request.getParameter("origin").equals("CreateQuizPR.jsp")) {
 			String questionText = request.getParameter("question");
 
+			Question question = null;
 			try {
-				createQuestion(request, questionText);
+				question = createQuestion(request, questionText);
 			} catch (SQLException e) {
 				e.printStackTrace();
 				RequestDispatcher requestDispatcher = request.getRequestDispatcher("CreateQuiz.jsp");
 				requestDispatcher.forward(request, response);
 			}
 			
+			String answerText = request.getParameter("response");
+			if (request.getParameter("otherResponsesCheck") != null && request.getParameter("otherResponsesCheck").equals("yes")) {
+				answerText.concat("|" + request.getParameter("otherResponses"));
+			}
 			
-			
+			try {
+				createAnswer(request, answerText, question);
+			} catch (SQLException e) {
+				e.printStackTrace();
+				RequestDispatcher requestDispatcher = request.getRequestDispatcher("CreateQuiz.jsp");
+				requestDispatcher.forward(request, response);
+			}
+
 			//Last thing:
 			askForNextQuestion(response);
 		} //else if
@@ -183,19 +225,20 @@ public class QuizCreateServlet extends HttpServlet {
 		} //else
 	}
 
-	private void createAnswer(HttpServletRequest request, String answerText,
-			Question question) {
+	private void createAnswer(HttpServletRequest request, String answerText, Question question) throws SQLException {
 		
 		DBConnection dbConnection = (DBConnection) this.getServletContext().getAttribute("DBConnection");
 
 		//Getting the quiz
 		Quiz quiz = (Quiz) request.getSession().getAttribute("Quiz");
-		List<Integer> answerIDs = new ArrayList<Integer>();
 		
+		String[] multiAnswers = answerText.split("|");
+		for (String thisAnswer : multiAnswers) {
+			dbConnection.addAnswer(thisAnswer, question.getQuestionId(), quiz.getQuizID());
+		} //for
 		
-		int answerID = dbConnection.addAnswer(thisAnswerText, Question.QTYPE_QR, quiz.getNextQuestionNum(), quiz.getQuizID());
-		
-		// TODO: Populate this		
+		//Populate all of the answers that we just put into the db to the question
+		question.addAnswers(dbConnection); 
 	}
 
 	private Question createQuestion(HttpServletRequest request, String questionText) throws SQLException {

@@ -291,17 +291,42 @@ public class DBConnection {
 		quiz.setQuizID(genKey.getInt(1)); //Add the quizID to this new quiz that we have
 	}
 
-	public int addQuestion(String questionText, int qtypeQr,
-			int nextQuestionNum, int quizID) {
-		//TODO: Return the questionID generated
-		return 0;
+	public int addQuestion(String questionText, int qType,
+			int nextQuestionNum, int quizID) throws SQLException {
+		ResultSet genKey = null;
+		String insert = "insert into " + quizQuestionTable + " (quizID, questionTypeID, question, questionNumber) VALUES (?, ?, ?, ?);";
+		PreparedStatement sql = conn.prepareStatement(insert, Statement.RETURN_GENERATED_KEYS);
+		sql.setInt(1, quizID);
+		sql.setString(3, questionText);
+		sql.setInt(2, qType);
+		sql.setInt(4, nextQuestionNum);
+		int affectedRows = sql.executeUpdate();
+		if (affectedRows == 0) {
+			throw new SQLException("Adding quiz failed, no rows affected.");
+	    }
+		
+		genKey = sql.getGeneratedKeys();
+		if (!genKey.first())
+			throw new SQLException("Adding quiz failed, no gen key obtained.");
+		return genKey.getInt(1);
 	}
 	
-	public int addAnswer(String answerText, int quizID,
-			int questionID) {
+	public int addAnswer(String answerText, int quizID, int questionID) throws SQLException {
+		ResultSet genKey = null;
+		String insert = "insert into " + quizQuestionTable + " (questionID, quizID, answer) VALUES (?, ?, ?);";
+		PreparedStatement sql = conn.prepareStatement(insert, Statement.RETURN_GENERATED_KEYS);
+		sql.setInt(1, questionID);
+		sql.setInt(2, quizID);
+		sql.setString(3, answerText);
+		int affectedRows = sql.executeUpdate();
+		if (affectedRows == 0) {
+			throw new SQLException("Adding quiz failed, no rows affected.");
+	    }
 		
-		//TODO: Return the questionID generated
-		return 0;
+		genKey = sql.getGeneratedKeys();
+		if (!genKey.first())
+			throw new SQLException("Adding quiz failed, no gen key obtained.");
+		return genKey.getInt(1);
 	}
 
 	
