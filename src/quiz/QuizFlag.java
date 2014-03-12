@@ -8,7 +8,7 @@ public class QuizFlag extends Message {
 	         String fromUserName, String quizName, int quizID) {
 		
 		super(TYPE_QUIZ_FLAG, toUserID, fromUserID);
-		addSubject("Quiz " + quizID + " flagged by " + fromUserName);
+		addSubject("Quiz " + quizName + " flagged by " + fromUserName);
 		addContent( generateFlagContent(quizID, quizName, fromUserID, fromUserName) );
 	}
 	
@@ -31,7 +31,7 @@ public class QuizFlag extends Message {
 	 * Static method to generate a new QuizFlag Message and add
 	 * it to the database via the DBConnection
 	 */
-	public void makeQuizFlag(int quizID, String quizName, int fromUserID, 
+	public static void makeQuizFlag(int quizID, String quizName, int fromUserID, 
 			int toUserID, String fromUserName, DBConnection connection) throws
 			SQLException {
 		

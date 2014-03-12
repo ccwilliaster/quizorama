@@ -33,6 +33,7 @@ public class DBConnection {
 	private final String quizCategoriesTable = "quizCategories";
 	private final String categoriesTable = "categories";
 	private final String userQuizRatingsTable = "userQuizRatings";
+	private final String friendshipTable = "friendships";
 	private Connection conn;
 		
 	public DBConnection() throws ClassNotFoundException, SQLException {
@@ -190,25 +191,19 @@ public class DBConnection {
 		return sql.execute();
 	} // deleteMessage
 	
-	public boolean updateMessage (Message message) throws SQLException {
-		String set = "UPDATE " + messagesTable + " SET messageID = ?"
-				+ ", messageType = ?, toUserID = ?, fromUserID = ?"
-				+ ", subject = ?, content = ?, date = ?, messageRead = ?"
-				+ " WHERE messageID = ?";
+	/**
+	 * Updates DB to reflect that this message has been read
+	 */
+	public boolean readMessage (Integer messageID) throws SQLException {
+		String set = "UPDATE " + messagesTable + " SET messageRead = ?"
+				  + " WHERE messageID = ?";
 
 		PreparedStatement sql = conn.prepareStatement(set);
-		sql.setInt(1, message.getID());
-		sql.setInt(2, message.getType());
-		sql.setInt(3, message.getToUserID());
-		sql.setInt(4, message.getFromUserID());
-		sql.setString(5,message.getSubject());
-		sql.setString(6,message.getContent());
-		sql.setDate(7, new java.sql.Date( message.getDate().getTime() ));
-		sql.setBoolean(8, message.getReadStatus());
-		sql.setInt(9, message.getID());
+		sql.setBoolean(1, true);
+		sql.setInt(2, messageID);
+		
 		return sql.execute();
-		// message.getMessageID() for which entry
-	} //updateMessage
+	} //readMessage
 
 	public boolean setUserName(int userID, String userName) throws SQLException {
 		String set = "UPDATE " + userTable + " SET userName = ? "
@@ -235,7 +230,7 @@ public class DBConnection {
 	} //addQuizHistory
 
 	public boolean isValidUserName(String userName) throws SQLException {
-		String userNameGet = "SELECT COUNT(*) FROM users WHERE userName = ?";
+		String userNameGet = "SELECT COUNT(*) FROM " + userTable + " WHERE userName = ?";
 		PreparedStatement sql = conn.prepareStatement(userNameGet);
 		sql.setString(1, userName);
 		ResultSet rs = sql.executeQuery();
@@ -244,7 +239,7 @@ public class DBConnection {
 	} // returns whether the specified userName is valid
 	
 	public boolean isValidQuizName(String quizName) throws SQLException {
-		String quizNameGet = "SELECT COUNT(*) FROM quizzes WHERE quizName = ?";
+		String quizNameGet = "SELECT COUNT(*) FROM " + quizTable + " WHERE quizName = ?";
 		PreparedStatement sql = conn.prepareStatement(quizNameGet);
 		sql.setString(1, quizName);
 		ResultSet rs = sql.executeQuery();
@@ -262,12 +257,21 @@ public class DBConnection {
 	} //getUserID
 
 	public int getQuizID(String quizName) throws SQLException {
-		String userIDGet = "SELECT quizID FROM quizzes WHERE quizName = ?";
+		String userIDGet = "SELECT quizID FROM " + quizTable + " WHERE quizName = ?";
 		PreparedStatement sql = conn.prepareStatement(userIDGet);
 		sql.setString(1, quizName);
 		ResultSet rs = sql.executeQuery();
 		rs.first();
 		return rs.getInt(1);
+	} // returns the corresponding quizID for the specified quizName
+	
+	public String getQuizName(int quizID) throws SQLException {
+		String userIDGet = "SELECT quizID FROM " + quizTable + " WHERE quizID = ?";
+		PreparedStatement sql = conn.prepareStatement(userIDGet);
+		sql.setInt(1, quizID);
+		ResultSet rs = sql.executeQuery();
+		rs.first();
+		return rs.getString(1);
 	} // returns the corresponding quizID for the specified quizName
 	
 	public String getUserName(int userID) throws SQLException {
@@ -278,6 +282,65 @@ public class DBConnection {
 		rs.first();
 		return rs.getString(1);
 	} // getUserName
+	
+	/**
+	 * Returns a result set of all userIDs which are of the type User.TYPE_ADMIN
+	 */
+	public ResultSet getAdminUserIDs() throws SQLException {
+		String adminGet     = "SELECT userID FROM types INNER JOIN userTypes" +
+		 					  " using (typeID) WHERE typeID = ?";
+		
+		PreparedStatement sql = conn.prepareStatement(adminGet);
+		sql.setInt(1, User.TYPE_ADMIN);
+		return sql.executeQuery();
+	}
+	/**
+	 * Creates a friend relationship in the database
+	 */
+	public boolean makeFriendship(int userID1, int userID2) throws SQLException {
+		String addOneFriend = 
+			"INSERT INTO " + friendshipTable + " (userID, frienduserID) VALUES (?, ?)";
+		
+		// Add two rows for each friendship
+		PreparedStatement sqlFriendOne = conn.prepareStatement(addOneFriend);
+		PreparedStatement sqlFriendTwo = conn.prepareStatement(addOneFriend);
+		sqlFriendOne.setInt(1, userID1);
+		sqlFriendOne.setInt(2, userID2);
+		sqlFriendTwo.setInt(1, userID2);
+		sqlFriendTwo.setInt(2, userID1);
+		return sqlFriendOne.execute() & sqlFriendTwo.execute();
+	}
+	/**
+	 * Removes a friend relationship in the database
+	 */
+	public boolean removeFriendship(int userID1, int userID2) throws SQLException {
+		String removeOneFriend = "DELETE FROM " + friendshipTable + " WHERE userID = ?";
+		
+		// Remove two rows for each friendship
+		PreparedStatement sqlFriendOne = conn.prepareStatement(removeOneFriend);
+		PreparedStatement sqlFriendTwo = conn.prepareStatement(removeOneFriend);
+		sqlFriendOne.setInt(1, userID1);
+		sqlFriendTwo.setInt(1, userID2);
+		return sqlFriendOne.execute() & sqlFriendTwo.execute();
+	}
+	/**
+	 * Returns whether two user's are friends or not
+	 * @throws SQLException 
+	 */
+	public boolean usersAreFriends(int userID1, int userID2) throws SQLException {
+		String friendGet = "SELECT COUNT(*) FROM " + friendshipTable + " WHERE userID = ?";
+		
+		// Two entries per friendship
+		PreparedStatement friend1 = conn.prepareStatement(friendGet);
+		PreparedStatement friend2 = conn.prepareStatement(friendGet);
+		friend1.setInt(1, userID1);
+		friend2.setInt(1, userID2);
+		ResultSet rs1 = friend1.executeQuery();
+		ResultSet rs2 = friend2.executeQuery();
+		rs1.first();
+		rs2.first();
+		return ( rs1.getInt(1) + rs2.getInt(1) ) > 1;
+	}
 	
 	public ResultSet getUser(int userID) throws SQLException {
 		String passwordGet = "select * from " + userTable + " where userID = ?;";

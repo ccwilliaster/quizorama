@@ -26,7 +26,7 @@
 	<tag:navbar session="<%= session %>" activeTab="home" />
 	<div class="container">
 		<div class="jumbotron">
-			<h1 style="color:@brand-info">Welcome to quizorama!</h1>
+			<h1 style="color:#428bca">Welcome to quizorama!</h1>
 			<% if (error != null) {
 				out.println("<h4 style='color:#d9534f'>" + error + "</h4>"); 
 			} %>

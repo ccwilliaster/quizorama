@@ -24,20 +24,15 @@
 		request.getRequestDispatcher("error.jsp").forward(request, response); 
 	}
 	
-	//Quiz quiz          = new Quiz(quizID, connection);
-	String quizName    = "Test Quiz"; //quiz.getquizName();
-	String quizSummary = "This quiz is so great! I really don't know how else to " +
-						 "describe it. So maybe I'll just keep saying how great it " +
-						 "is even though it doesn't really exist"; //quiz.getQuizSummary();
-	Integer creatorID  = 3; //quiz.getquizCreatoruserID(); 
-	String creatorName = "quiz creator"; //connection.getUserName(creatorID);
-	double numStars    = 4; //Math.floor( quiz.getRating() ); // no half stars
-	Integer numQuestions = 10; //quiz.getNumQuestions();
-	double avgScore    = 9; //quiz.getAverageScore();
-	categories         = new ArrayList<String>() {{ add("cat1"); add("cat2"); }}; //quiz.getCategories();
-	tags               = new ArrayList<String>() {{ 
-		add("tag1"); add("tag2"); add("tag3"); add("tag4"); add("tag5");
-	}}; //quiz.getTags();
+	Quiz quiz          = new Quiz(quizID, connection);
+	String quizName    = quiz.getquizName();
+	String quizSummary = quiz.getQuizSummary();
+	Integer creatorID  = quiz.getquizCreatoruserID(); 
+	String creatorName = connection.getUserName(creatorID);
+	double numStars    = Math.floor( quiz.getRating() ); // no half stars
+	Integer numQuestions = quiz.getNumQuestions();
+	double avgScore    = quiz.getAverageScore();
+	categories         = quiz.getTags();
 	flagNote = (String) request.getAttribute("flagNote"); // if user just flagged quiz
 		
 	// Figure out some user properties which toggle displays 
@@ -48,17 +43,14 @@
 	} else {
 		userID     = user.getUserID();
 		userName   = user.getUserName();
-		userRating = 2; //quiz.getUserRating(userID); // null if no rating
+		userRating = quiz.getUserRating(userID); // null if no rating
 		
-		if ( false /* user.isAdmin() */ ) { userType = "admin"; }
+		if ( user.isAdmin() ) { userType = "admin"; }
 		else { userType = "standard"; }
 	}
 
 	// TODO: pull from quizHistory
-	ArrayList<String> topScores    = new ArrayList<String>() {{ 
-		add("<td>95%</td><td><a class='btn btn-default btn-xs' href='userpage.jsp?userID=3'>chris</a></td>"); 
-		add("<td>90%</td><td><a class='btn btn-default btn-xs' href='userpage.jsp?userID=4'>chris2</a></td>");
-	}}; 
+	ArrayList<String> topScores    = new ArrayList<String>(); 
 	ArrayList<String> recentScores = new ArrayList<String>();
 	ArrayList<String> userScores   = new ArrayList<String>();
 %>
@@ -133,7 +125,7 @@
 	 * Generates links pertaining to the quiz: Take quiz, flag quiz, or delete
 	 * quiz, depending on userType. Also displays a flagNote
 	 */
-	public String getQuizLinks(String userType, Integer quizID, String flagNote) {
+	public String getQuizLinks(String userType, Integer quizID, String quizName, String flagNote) {
 		StringBuilder html = new StringBuilder();
 		if ( userType.equals("guest") ) {
 			html.append(
@@ -145,31 +137,38 @@
 		  "</div>");
 		}  else {
 			html.append(
-			"<div class='col-md-2'>" +
+			"<div class='col-md-3'>" +
 			"<form action='QuizControllerServlet'>" +
 		      "<input type='hidden' name='quizID' value=" + quizID + " />" +
 			  "<button class='btn btn-primary' type='submit'>Take Quiz</button>" +
 			"</form></div>");
 		} if ( userType.equals("standard") ) {
 			html.append(
-		  "<div class='col-md-2 pull-left'>" +
+		  "<div class='col-md-5 pull-left'>" +
 			"<form action='FlagQuizServlet' method='POST'>" +
 			  "<input type='hidden' name='quizID' value=" + quizID + " />" +
-			  "<button class='btn btn-danger' type='submit'>" + 
-			    "<span class='glyphicon glyphicon-flag'></span>Flag" +
-			  "</button>" +
-			"</form>");
+			  "<input type='hidden' name='quizName' value='" + quizName + "' />");
+			
 			if (flagNote != null) { 
-				html.append("<span style='color:#d9534f'>" + flagNote + "</span>"); 
-			}	
-		  html.append("</div>");
+				html.append(
+						  "<button class='disabled btn btn-danger' type='submit'>" + 
+						    "<span class='glyphicon glyphicon-flag'></span> " + 
+						    "<em>" + flagNote + "</em></button>" +
+						"</form></div>");
+			} else { 
+				html.append(
+				  "<button class='btn btn-danger' type='submit'>" + 
+				    "<span class='glyphicon glyphicon-flag'></span> Flag" +
+				  "</button>" +
+				"</form></div>");
+			}
 		} else if ( userType.equals("admin") ) {
 			html.append(
-		  "<div class='col-md-2  pull-left'>" +
+		  "<div class='col-md-3  pull-left'>" +
 			"<form action='DeleteQuizServlet' method='POST'>" +
 			  "<input type='hidden' name='quizID' value=" + quizID + " />" +
 			  "<button class='btn btn-danger' 'type='submit'>" + 
-			    "<span title='Delete quiz' class='glyphicon glyphicon-trash'></span>Delete" +
+			    "<span title='Delete quiz' class='glyphicon glyphicon-trash'></span> Delete" +
 			  "</button>" +
 			"</form>" +
 		  "</div>");}
@@ -235,8 +234,7 @@
 				<div class="col-md-7">
 					<h1><%= quizName %>
 						<a class="btn btn-default btn-sm" <% out.println("href=userpage.jsp?userID=" + creatorID ); %> >
-						by <%= creatorName %></a>
-						
+						by <%= creatorName %></a>			
 					</h1>
 					<br>
 					<div class="row">
@@ -244,7 +242,7 @@
 							<%= quizSummary %>
 							<br><span class="badge"><%= numQuestions %> questions</span>
 							<div class="row">
-								<%= getQuizLinks(userType, quizID, flagNote) %>
+								<%= getQuizLinks(userType, quizID, quizName, flagNote) %>
 							</div>
 						</p>	
 					</div>
