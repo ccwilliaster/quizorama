@@ -12,7 +12,7 @@ public class QuizTest {
 	public void quiz1Test() throws ClassNotFoundException, SQLException {
 		DBConnection db = new DBConnection();
 		Quiz q = new Quiz(1, db);
-		assertEquals("Test1", q.getquizName());
+		assertEquals("Test1", q.getQuizName());
 	}
 	
 }

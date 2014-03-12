@@ -96,7 +96,7 @@ public class LoginServlet extends HttpServlet {
 		User user = new User(userID, userName, dbConnection);
 		HttpSession httpSession = request.getSession();
 		httpSession.setAttribute("user", user);
-		RequestDispatcher requestDispatcher = request.getRequestDispatcher("ReadMessagesServlet?type=inbox");
+		RequestDispatcher requestDispatcher = request.getRequestDispatcher("CreateQuiz.jsp");
 		requestDispatcher.forward(request, response);
 	} //doPost
 	

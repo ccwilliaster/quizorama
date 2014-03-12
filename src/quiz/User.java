@@ -12,19 +12,30 @@ import java.sql.SQLException;
  *
  */
 public class User {
+	public final static int TYPE_ADMIN = 0;
+	public final static int TYPE_USER = 1;
 	private int userID;
 	private String userName;
+	private int userType;
 	DBConnection dbConnection;
 	
 	public User() {
 		userID = -1;
 		userName = "";
+		userType = 1;
 		dbConnection = null;
 	} //Constructor
 	
 	public User(int userID, String userName, DBConnection dbConnection) {
 		this.userID = userID;
 		this.userName = userName;
+		this.dbConnection = dbConnection;
+	} //Constructor
+
+	public User(int userID, String userName, int userType, DBConnection dbConnection) {
+		this.userID = userID;
+		this.userName = userName;
+		this.userType = userType;
 		this.dbConnection = dbConnection;
 	} //Constructor
 	
@@ -39,6 +50,18 @@ public class User {
 	public void setUserID(int userID) {
 		this.userID = userID;
 	} //setUserName
+
+	public boolean isAdmin() {
+		return userType == TYPE_ADMIN;
+	} //isAdmin
+	
+	public int getUserType() {
+		return userType;
+	} //getUserType
+	
+	public void setUserType(int userType) {
+		this.userType = userType;
+	}
 
 	public void setUserName(String userName) throws SQLException {
 		this.userName = userName;
