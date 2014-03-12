@@ -28,7 +28,9 @@ public class QuizControllerServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) 
-	throws ServletException, IOException { /* not implemented */ }
+	throws ServletException, IOException {
+		doPost(request, response);
+	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
@@ -43,33 +45,60 @@ public class QuizControllerServlet extends HttpServlet {
 			Quiz currQuiz           = (Quiz) session.getAttribute("quiz");
 				
 			if (currQuiz == null) { // first time servlet is being called
-				Integer quizID = Integer.parseInt(request.getParameter("quizID"));
+				Integer quizID = Integer.parseInt(request.getParameter("id"));
 				currQuiz = new Quiz(quizID, connection);
 				session.setAttribute("quiz", currQuiz);
 				currQuiz.startQuiz();
 				
 			} else { // Submit the results from previous liveQuiz.jsp
-				currQuiz.sendAnswers( request );
+				if (currQuiz.getSinglePage()) {
+					currQuiz.sendAllAnswers(request);
+				} else {
+					currQuiz.sendAnswers( request );
+				}
 			}
 			
-			if ( currQuiz.hasMoreHTML() ) { // more HMTL to be displayed
+			if (currQuiz.getSinglePage()) {
 				
-				String html = currQuiz.getNextHTML();
-				request.setAttribute("html", html);
-				RequestDispatcher dispatch = 
-					request.getRequestDispatcher("liveQuiz.jsp");
-				dispatch.forward(request, response);
-				
-			} else { // direct to results summary
-				
-				session.setAttribute("quiz", null);     // remove for next servlet call
-				request.setAttribute("quiz", currQuiz); // add for summary display
-				
-				RequestDispatcher dispatch = 
-					request.getRequestDispatcher("quizResults.jsp");
-				dispatch.forward(request, response);	
-			}
+				if ( currQuiz.hasMoreHTML() ) { // more HMTL to be displayed
+					String html = "<p>Single page quiz:</p>";
+					while (currQuiz.hasMoreHTML()) {
+						html += currQuiz.getNextHTML();
+					}
+					request.setAttribute("html", html);
+					RequestDispatcher dispatch = 
+						request.getRequestDispatcher("liveQuiz.jsp");
+					dispatch.forward(request, response);
+					
+				} else { // direct to results summary
+					
+					session.setAttribute("quiz", null);     // remove for next servlet call
+					request.setAttribute("quiz", currQuiz); // add for summary display
+					
+					RequestDispatcher dispatch = 
+						request.getRequestDispatcher("quizResults.jsp");
+					dispatch.forward(request, response);	
+				}
+			} else {
 			
+				if ( currQuiz.hasMoreHTML() ) { // more HMTL to be displayed
+					
+					String html = currQuiz.getNextHTML();
+					request.setAttribute("html", html);
+					RequestDispatcher dispatch = 
+						request.getRequestDispatcher("liveQuiz.jsp");
+					dispatch.forward(request, response);
+					
+				} else { // direct to results summary
+					
+					session.setAttribute("quiz", null);     // remove for next servlet call
+					request.setAttribute("quiz", currQuiz); // add for summary display
+					
+					RequestDispatcher dispatch = 
+						request.getRequestDispatcher("quizResults.jsp");
+					dispatch.forward(request, response);	
+				}
+			}
 		} catch (Exception e) {
 			request.getRequestDispatcher("error.jsp").forward(request, response);
 		}

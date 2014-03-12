@@ -22,14 +22,16 @@ public class Quiz {
 	/** Quiz attributes in the database */
 	private String quizName;
 	private Date quizCreation;
-	private int quizCreatoruserID;
+	private int quizCreatorUserID;
 	private boolean singlePage;
 	private boolean randomOrder;
 	private boolean immediateCorrection;
+	private boolean practiceMode;
 
 	/** Necessary internal variables */
 	private DBConnection connection;
 	private ArrayList<Question> questionList;
+	private ArrayList<Question> allQuestions;
 	
 	//MAY NOT NEED THIS, JUST IN CASE WE NEED QUESTION ORDER AFTER QUIZ IS OVER
 	private ArrayList<Question> questionOrder;
@@ -40,19 +42,71 @@ public class Quiz {
 	private boolean question;
 	private Question currQuestion;
 	private Random rand = new Random();
+	private int tempScore = 0;
 
 	public Quiz(int quizID, DBConnection connection) throws SQLException {
 		this.connection = connection;
 		this.quizID = quizID;
 		ResultSet quizInfo = connection.getQuizInformation(quizID);
+		quizInfo.first();
 		quizName = quizInfo.getString("quizName");
 		quizCreation = quizInfo.getDate("quizCreation"); //NEED TO TEST THIS java.sql.date to java.util.date conversion
-		quizCreatoruserID = quizInfo.getInt("quizCreatoruserID");
+		quizCreatorUserID = quizInfo.getInt("quizCreatoruserID");
 		singlePage = quizInfo.getBoolean("singlePage?");
 		randomOrder = quizInfo.getBoolean("randomOrder?");
 		immediateCorrection = quizInfo.getBoolean("immediateCorrection?");
+		if (singlePage) {
+			immediateCorrection = false;
+		}
+		questionList = new ArrayList<Question>();
+		allQuestions = new ArrayList<Question>();
 	
 		//CAN ALSO MAKE QUESTIONS 'ON THE FLY'
+		ResultSet questions = connection.getQuizQuestions(quizID);
+		questions.beforeFirst();
+		while (questions.next()) {
+			int questionID = questions.getInt("questionID");
+			String questionText = questions.getString("question");
+			int questionType = questions.getInt("questionTypeID");
+			int questionNum = questions.getInt("questionNumber");
+			//ResultSet questionInfo = connection.getQuestionInfo(questionID); USE THIS TO TELL QUESTION WHAT TYPE IT IS
+			Question currQuestion = getQuestionObject(questionID, questionText, questionType, questionNum);
+			questionList.add(currQuestion);
+			allQuestions.add(currQuestion);
+		}
+	}
+	
+	/**
+	 * This constructor takes in all of the fields necessary to create a quiz and then 
+	 * updates the database with all of this information.
+	 * @param quizName Name of the quiz
+	 * @param quizCreatorID The userId of the user that created the quiz
+	 * @param singlePage Whether the quiz is shown on a single page
+	 * @param randomOrder Whether the quiz is shown in random order
+	 * @param immediateCorrection Whether the quiz is corrected immediately
+	 * @param practiceMode Whether the quiz can be taken in practice mode
+	 * @param connection A pointer to the DBConnection object
+	 * @throws SQLException
+	 */
+	Quiz(String quizName, int quizCreatorUserID, boolean singlePage, boolean randomOrder, boolean immediateCorrection, boolean practiceMode, DBConnection connection) throws SQLException {
+		this.connection = connection;
+		this.quizName = quizName;
+		this.quizCreation = null;
+		this.quizCreatorUserID = quizCreatorUserID;
+		this.singlePage = singlePage;
+		this.randomOrder = randomOrder;
+		this.immediateCorrection = immediateCorrection;
+		this.practiceMode = practiceMode;
+		this.quizID = -1;
+		questionList = new ArrayList<Question>();
+		
+		connection.addQuiz(this); //This should also set the quizID field
+				
+		//CAN ALSO MAKE QUESTIONS 'ON THE FLY'
+		populateQuestions(); //This will not add anything to the list if nothing exists.
+	}
+
+	private void populateQuestions() throws SQLException {
 		ResultSet questions = connection.getQuizQuestions(quizID);
 		while (questions.next()) {
 			int questionID = questions.getInt("questionID");
@@ -63,7 +117,7 @@ public class Quiz {
 			Question currQuestion = getQuestionObject(questionID, questionText, questionType, questionNum);
 			questionList.add(currQuestion);
 		}
-	}
+	} //populateQuestions
 
 	//ali's added method
 	private Question getQuestionObject(int questionID, String questionText, int questionType, int questionNum) throws SQLException {
@@ -121,7 +175,7 @@ public class Quiz {
 	public boolean hasMoreHTML() {
 		return !(question && questionList.size() == 0);
 	}
-
+	
 	/* Returns a string that could be one of two things:
 	 * 	1. a question to display with some type of user input
 	 * 	2. the answer to the previous question (if quiz is set up 
@@ -135,7 +189,17 @@ public class Quiz {
 				currQuestion = getNextQuestion();
 				return currQuestion.showQuestion();
 			} else {
-				return currQuestion.showAnswerOptions();
+				String html = "";
+				int points = score - tempScore;
+				if (points > 1) {
+					html += "<p>That is correct! You got " + points + " points.</p>";
+				} else if (points == 1) {
+					html += "<p>That is correct! You got " + points + " point.</p>";
+				} else {
+					html += "<p>That is incorrect.</p>";
+				}
+				html += currQuestion.showAnswerOptions(); 
+				return html;
 			}
 		} else {
 			currQuestion = getNextQuestion();
@@ -151,23 +215,40 @@ public class Quiz {
 	private Question getNextQuestion() {
 		int index = randomOrder ? rand.nextInt(questionList.size()) : 0;
 		Question result = questionList.get(index);
-		questionOrder.add(result); //MAY NOT NEED THIS
+		//questionOrder.add(result); //MAY NOT NEED THIS
 		questionList.remove(index);
 		return result;
 	}
 
+	//Ali added
+	public void sendAllAnswers(HttpServletRequest request) {
+		for (Question q : allQuestions) {
+			ArrayList<String> locations = q.getAnswerLocations();
+			ArrayList<String> submittedAnswers = new ArrayList<String>();
+			for (int i = 0; i < locations.size(); i++) {
+				submittedAnswers.add(request.getParameter(locations.get(i)));
+			}
+			int qScore = q.checkAnswers(submittedAnswers);
+			score += qScore;
+			possibleScore += q.possiblePoints();
+		}
+	}
+	
 	/* Takes in an HTTP request that has the answers submitted in
 	 * 	the form.
 	 */
 	public void sendAnswers(HttpServletRequest request) {
-		ArrayList<String> locations = currQuestion.getAnswerLocations();
-		ArrayList<String> submittedAnswers = new ArrayList<String>();
-		for (int i = 0; i < locations.size(); i++) {
-			submittedAnswers.add(request.getParameter(locations.get(i)));
+		if (!immediateCorrection || !question) {
+			ArrayList<String> locations = currQuestion.getAnswerLocations();
+			ArrayList<String> submittedAnswers = new ArrayList<String>();
+			for (int i = 0; i < locations.size(); i++) {
+				submittedAnswers.add(request.getParameter(locations.get(i)));
+			}
+			int qScore = currQuestion.checkAnswers(submittedAnswers);
+			tempScore = score;
+			score += qScore;
+			possibleScore += currQuestion.possiblePoints();
 		}
-		int qScore = currQuestion.checkAnswers(submittedAnswers);
-		score += qScore;
-		possibleScore += currQuestion.possiblePoints();
 	}
 
 	/** Quiz history info 
@@ -242,7 +323,6 @@ public class Quiz {
 		}
 		return ratingID;
 	}
-	
 	/* Returns the number of reviews for this quiz.
 	 */
 	public int getNumReviews() throws SQLException {	
@@ -296,28 +376,78 @@ public class Quiz {
 
 	/** Getters for the fields for a quiz in the DB */
 	/* Returns the quizName */
-	public String getquizName() {
+	public String getQuizName() {
 		return quizName;
 	}
 	/* Returns the quizCreatoruserID*/
 	public int getquizCreatoruserID() {
-		return quizCreatoruserID;
+		return quizCreatorUserID;
 	}
 	/* Returns the singlePage */
-	public boolean getsinglePage() {
+	public boolean getSinglePage() {
 		return singlePage;
 	}
 	/* Returns the randomOrder */
-	public boolean getrandomOrder() {
+	public boolean getRandomOrder() {
 		return randomOrder;
 	}
 	/* Returns immediateCorrection */
-	public boolean getimmediateCorrection() {
+	public boolean getImmediateCorrection() {
 		return immediateCorrection;
 	}
+	
+	/* Returns immediateCorrection */
+	public boolean getPractiveMode() {
+		return practiceMode;
+	}
+	
 	/* Returns the quizCreation */
-	public Date getquizCreation() {
+	public Date getQuizCreation() {
 		return quizCreation;
+	}
+	
+
+	/**
+	 * @return the quizID
+	 */
+	public int getQuizID() {
+		return quizID;
+	}
+	
+	/**
+	 * @param quizID the quizID to set
+	 */
+	public void setQuizID(int quizID) {
+		this.quizID = quizID;
+	}
+
+
+	/**
+	 * @param quizCreation the quizCreation to set
+	 */
+	public void setQuizCreation(Date quizCreation) {
+		this.quizCreation = quizCreation;
+	}
+
+	public int getNextQuestionNum() {
+		return questionList.size() + 1;
+	}
+
+	public void addQuestion(Question question) {
+		questionList.add(question);
+	}
+
+	//added by Ali
+	public ArrayList<Question> getQuestionList() {
+		return questionList;
+	}
+	
+	public int getScore() {
+		return score;
+	}
+	
+	public int getPossibleScore() {
+		return possibleScore;
 	}
 
 }

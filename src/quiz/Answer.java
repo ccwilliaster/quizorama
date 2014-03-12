@@ -5,22 +5,24 @@ import java.util.*;
 
 public abstract class Answer {
 	protected List<String> answers;
-	private final int questionId;
-	private int numAnswers;
+	protected final int questionId;
+	protected int numAnswers;
 	private int[] answerIds;
+	protected ArrayList<String> locations;
+	//private final int answerNums[];
 	
 	public Answer(int questionId, DBConnection db) throws NumberFormatException, SQLException {
-		answers = new ArrayList<String>();
 		this.questionId = questionId;
+		answers = new ArrayList<String>();
 		ResultSet rs = db.getAnswerInfo(questionId);
 		rs.last();
 		numAnswers = rs.getRow();
 		answerIds = new int[numAnswers];
-		
+		locations = new ArrayList<String>();
 		rs.first();
 		
 		for (int i = 0; i < numAnswers; i++) {
-			answerIds[i] = Integer.parseInt(rs.getString("answerId"));
+			answerIds[i] = rs.getInt("answerId");
 			answers.add(rs.getString("answer"));
 			rs.next();
 		}
@@ -32,7 +34,9 @@ public abstract class Answer {
 	
 	public abstract int possiblePoints();
 
-	public abstract ArrayList<String> getAnswerLocations();
+	public ArrayList<String> getAnswerLocations() {
+		return locations;
+	}
 	
 	public String showAnswer() {
 		if (answers == null) return null;
@@ -40,6 +44,24 @@ public abstract class Answer {
 		return html;
 	}
 	
+	public String showAnswerOptions() {
+		String html = "";
+		if (answers.size() > 1) {
+			html += "<p>Correct answers are: ";
+		} else if (answers.size() == 1) {
+			html += "<p>Correct answer is: ";
+		}
+		boolean first = true;
+		for (String answer : answers) {
+			if (!first) {
+				html += ", ";
+			}
+			html += answer;
+			first = false;
+		}
+		html += "</p>";
+		return html;
+	}
 	
 	
 }

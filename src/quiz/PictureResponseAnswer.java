@@ -24,7 +24,9 @@ public class PictureResponseAnswer extends Answer {
 
 	@Override
 	public String getAnswersHtml() {
-		String html = "<input type='text' name='answer'/>";
+		String location = "answer-" + questionId;
+		locations.add(location);
+		String html = "<input type='text' name='" + location + "'/>";
 		return html;
 	}
 
@@ -33,11 +35,5 @@ public class PictureResponseAnswer extends Answer {
 		return 1;
 	}
 
-	@Override
-	public ArrayList<String> getAnswerLocations() {
-		ArrayList<String> locations = new ArrayList<String>();
-		locations.add("answer");
-		return locations;
-	}
 
 }
