@@ -40,13 +40,14 @@ public class LifeCycleSetup implements ServletContextListener {
 		}
     			
 		servletContext.setAttribute("DBConnection", dbConnection);
+		System.out.println("DBConnection made");
     } //contextInitialized
 
 	/**
      * @see ServletContextListener#contextDestroyed(ServletContextEvent)
      */
     public void contextDestroyed(ServletContextEvent servletContextEvent) {
-ServletContext servletContext = servletContextEvent.getServletContext();
+    	ServletContext servletContext = servletContextEvent.getServletContext();
     	
     	DBConnection dbConnection= (DBConnection) servletContext.getAttribute("DBConnection");
     	try {
@@ -54,6 +55,7 @@ ServletContext servletContext = servletContextEvent.getServletContext();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		System.out.println("DBConnection destroyed");
     } //contextDestroyed
 	
 }

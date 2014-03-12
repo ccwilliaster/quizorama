@@ -84,6 +84,16 @@ public class DBConnection {
 		return sql.executeQuery();
 	} //getUserMessages
 
+	/**
+	 * Returns the messageTable entry for a specified messageID
+	 */
+	public ResultSet getMessage(int messageID) throws SQLException {
+		String select = "SELECT * FROM " + messagesTable + " WHERE messageID = ?";
+		PreparedStatement sql = conn.prepareStatement(select);
+		sql.setInt(1, messageID);
+		return sql.executeQuery();
+	}
+	
 	public boolean setPassword(int userID, String password) throws SQLException {
 		String passwordSet = "UPDATE " + userTable + " SET password = ? "
 				+ "WHERE userID = ?";
@@ -123,8 +133,9 @@ public class DBConnection {
 	
 	public boolean addMessage (Message message) throws SQLException {
 		String set = "INSERT INTO " + messagesTable + 
-			"(messageType, toUserID, fromUserID, subject, content, date, messageRead)" +
-			" VALUES ( ?, ?, ?, ?, ?, ?, ? )";
+			"(messageType, toUserID, fromUserID, subject, content, date," + 
+			" messageRead, toUserDeleted, fromUserDeleted)" +
+			" VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ? )";
 		PreparedStatement sql = conn.prepareStatement(set);
 		
 		sql.setInt(1, message.getType());
@@ -132,17 +143,59 @@ public class DBConnection {
 		sql.setInt(3, message.getFromUserID());
 		sql.setString(4,message.getSubject());
 		sql.setString(5,message.getContent());
-		sql.setDate(6, new java.sql.Date( message.getDate().getTime() ) );
+		sql.setTimestamp(6, new java.sql.Timestamp( message.getDate().getTime() ) );
 		sql.setBoolean(7, message.getReadStatus());
+		sql.setBoolean(8, false);
+		sql.setBoolean(9, false);
 		return sql.execute();
 	} //addMessage
+	
+	/**
+	 * Updates message to reflect that the message receiver deleted the message
+	 */
+	public boolean toUserDeleteMessage(Integer messageID) throws SQLException { 
+		String update = "UPDATE " + messagesTable + " SET toUserDeleted = ? " + 
+						"WHERE messageID = ?";
+		
+		PreparedStatement sql = conn.prepareStatement(update);
+		sql.setBoolean(1, true);
+		sql.setInt(2, messageID);
+		
+		return sql.execute();
+	} //toUserDeleteMessage
+	
+	/**
+	 * Updates message to reflect that the message sender deleted the message
+	 */
+	public boolean fromUserDeleteMessage(Integer messageID) throws SQLException { 
+		String update = "UPDATE " + messagesTable + " SET fromUserDeleted = ? " + 
+						"WHERE messageID = ?";
+		
+		PreparedStatement sql = conn.prepareStatement(update);
+		sql.setBoolean(1, true);
+		sql.setInt(2, messageID);
+		
+		return sql.execute();
+	} //toUserDeleteMessage
+	
+	/**
+	 * Deletes the entry for this messageID in messagesTable
+	 */
+	public boolean deleteMessage(Integer messageID) throws SQLException { 
+		String delete = "DELETE FROM " + messagesTable + " WHERE messageID = ?";
+		
+		PreparedStatement sql = conn.prepareStatement(delete);
+		sql.setInt(1, messageID);
+
+		return sql.execute();
+	} // deleteMessage
 	
 	public boolean updateMessage (Message message) throws SQLException {
 		String set = "UPDATE " + messagesTable + " SET messageID = ?"
 				+ ", messageType = ?, toUserID = ?, fromUserID = ?"
 				+ ", subject = ?, content = ?, date = ?, messageRead = ?"
 				+ " WHERE messageID = ?";
-				
+
 		PreparedStatement sql = conn.prepareStatement(set);
 		sql.setInt(1, message.getID());
 		sql.setInt(2, message.getType());
@@ -167,7 +220,8 @@ public class DBConnection {
 	}
 	
 	public boolean addQuizHistory(int quizID, int userID, int score) throws SQLException {
-		String set = "INSERT INTO " + quizHistoryTable + " (quizID, userID, dateTaken, score, completed?, timeStamp) VALUES ( ?, ?, ?, ?, ?, ? )";
+		String set = "INSERT INTO " + quizHistoryTable + 
+			" (quizID, userID, dateTaken, score, completed?, timeStamp) VALUES ( ?, ?, ?, ?, ?, ? )";
 		PreparedStatement sql = conn.prepareStatement(set);
 		java.util.Date utilDate = new java.util.Date();
 		Date date = new Date(utilDate.getTime());
@@ -180,6 +234,24 @@ public class DBConnection {
 		return sql.execute();
 	} //addQuizHistory
 
+	public boolean isValidUserName(String userName) throws SQLException {
+		String userNameGet = "SELECT COUNT(*) FROM users WHERE userName = ?";
+		PreparedStatement sql = conn.prepareStatement(userNameGet);
+		sql.setString(1, userName);
+		ResultSet rs = sql.executeQuery();
+		rs.first();
+		return rs.getInt(1) > 0;
+	} // returns whether the specified userName is valid
+	
+	public boolean isValidQuizName(String quizName) throws SQLException {
+		String quizNameGet = "SELECT COUNT(*) FROM quizzes WHERE quizName = ?";
+		PreparedStatement sql = conn.prepareStatement(quizNameGet);
+		sql.setString(1, quizName);
+		ResultSet rs = sql.executeQuery();
+		rs.first();
+		return rs.getInt(1) > 0;
+	} // returns whether the specified quizName is valid
+	
 	public int getUserID(String userName) throws SQLException {
 		String userIDGet = "SELECT userID FROM users WHERE userName = ?";
 		PreparedStatement sql = conn.prepareStatement(userIDGet);
@@ -189,6 +261,15 @@ public class DBConnection {
 		return rs.getInt(1);
 	} //getUserID
 
+	public int getQuizID(String quizName) throws SQLException {
+		String userIDGet = "SELECT quizID FROM quizzes WHERE quizName = ?";
+		PreparedStatement sql = conn.prepareStatement(userIDGet);
+		sql.setString(1, quizName);
+		ResultSet rs = sql.executeQuery();
+		rs.first();
+		return rs.getInt(1);
+	} // returns the corresponding quizID for the specified quizName
+	
 	public String getUserName(int userID) throws SQLException {
 		String userNameGet = "SELECT userName FROM users WHERE userID = ?";
 		PreparedStatement sql = conn.prepareStatement(userNameGet);
@@ -253,6 +334,7 @@ public class DBConnection {
 		sql.setInt(1, quizID);
 		return sql.executeQuery();	
 	} //getCategories
+	
 	public ResultSet getRatings(int quizID) throws SQLException {
 		//returns a resultSet of all the ratings so that I can find the average rating value and the different ratingReviews.
 		String select = "SELECT * FROM " + userQuizRatingsTable + " WHERE quizID = ?";
@@ -266,5 +348,29 @@ public class DBConnection {
 		return null;
 	}
 	
+	public boolean addQuizRating(int quizID, int userID, int rating) 
+	throws SQLException {
+		String set = "INSERT INTO " + userQuizRatingsTable + 
+			         " (userID, quizID, ratingValue) VALUES ( ?, ?, ?)";
+		
+		PreparedStatement sql = conn.prepareStatement(set);
+		sql.setInt(1, userID);
+		sql.setInt(2, quizID);
+		sql.setInt(3, rating);
+
+		return sql.execute();
+	} //addQuizRating
 	
+	public boolean updateQuizRating(int ratingID, int rating) 
+	throws SQLException {
+		// Updates the ratingValue of the rating with ID ratingID
+		String update = "UPDATE " + userQuizRatingsTable + 
+		 			    " SET ratingValue = ? WHERE ratingID = ?";
+		
+		PreparedStatement sql = conn.prepareStatement(update);
+		sql.setInt(1, rating);
+		sql.setInt(2, ratingID);
+
+		return sql.execute();
+	} //updateQuizRating
 }

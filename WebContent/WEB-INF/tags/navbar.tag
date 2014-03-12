@@ -1,0 +1,97 @@
+<%@ tag language="java" description="Site-wide navbar" pageEncoding="ISO-8859-1"%>
+<%@ attribute name="session" type="javax.servlet.http.HttpSession" 
+	rtexprvalue="true" required="true" %>
+<%@ attribute name="activeTab" rtexprvalue="true" required="true" %>
+<%@ tag import="quiz.User" %>
+<% 
+	// Get type of user from session
+	String userName = "Guest";
+	Integer userID  = -1;
+	User user       = null;
+	
+	if (session != null) {
+		user = (User) session.getAttribute("user");
+	}
+	if (user != null) {
+		userName = user.getUserName();
+		userID   = user.getUserID();
+	}
+%>
+<%! 
+	// Helper functions
+	// Generates a navbar link, which is active or not
+	public String getAnchor(String text, String href, boolean active) {
+		StringBuilder html = new StringBuilder();
+		if (active) { html.append("<li class='active'>"); }
+		else        { html.append("<li>"); }
+		
+		html.append("<a href='" + href + "'>" + text + "</a></li>");
+		return html.toString();
+	}
+
+	//Returns status label describing the current user's login status
+	public String getLoginStatus(String userName, int userID) {
+		String html = 
+			"<p class='navbar-text navbar-right'>Logged in as " + userName +  
+			" <a href='LogoutServlet' class='navbar-btn btn-danger btn-sm'>Log out</a></p>";
+		return html;
+	}
+	
+	// Returns buttons for logging in or creating an account
+	public String getGuestButtons() {
+		String html = 
+			"<div class='navbar-right'>" +
+			  "<a class='btn navbar-btn btn-primary btn-sm' href='homepage.jsp'>Log in</a>" +
+			  "<a class='btn navbar-btn btn-default btn-sm' href='createAccount.jsp'>Sign up</a>" +
+			"</div>";
+			
+		return html;
+	}
+%>
+
+<div class="container">
+	<div class="navbar navbar-default" role="navigation">
+		<div class="container-fluid">
+			<!-- This is used to toggle navbar display only when screen size is very small -->
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#quizoramaNav">
+					<span class="sr-only">Toggle button</span>
+					<span class="icon-bar" role="presentation"></span>
+					<span class="icon-bar" role="presentation"></span>
+					<span class="icon-bar" role="presentation"></span>
+				</button>
+				<a href="#" class="navbar-brand" style="color:#428bca;font-weight:bold">quizorama</a>
+			</div>
+			
+			<!-- Actual navbar contents -->
+			<div class="collapse navbar-collapse" id="quizoramaNav">
+				<ul class="nav navbar-nav">
+				<% // Must figure out which tab is active
+					if ("home".equals( activeTab )) {
+						out.println( getAnchor("Home", "homepage.jsp", true) );
+					} else {
+						out.println( getAnchor("Home", "homepage.jsp", false) );
+					} if ("quizzes".equals( activeTab )) {
+						out.println( getAnchor("Quizzes", "quizsearch.jsp", true) );
+					} else {
+						out.println( getAnchor("Quizzes", "quizsearch.jsp", false) );
+					} if ("users".equals( activeTab )) {
+						out.println( getAnchor("Users", "usersearch.jsp", true) );
+					} else {
+						out.println( getAnchor("Users", "usersearch.jsp", false) );
+					} if ("messages".equals( activeTab )) {
+						out.println( getAnchor("Messages", "ReadMessagesServlet?navtab=inbox", true) + "</ul>");
+					} else {
+						out.println( getAnchor("Messages", "ReadMessagesServlet?navtab=inbox", false) + "</ul>");
+					} if (userID == -1 || userName == "") {
+						out.println( getGuestButtons() );
+					} else {
+						out.println( getLoginStatus(userName, userID) );
+					}
+				%>
+			</div>
+		</div>
+	</div>
+
+</div>
+

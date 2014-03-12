@@ -57,7 +57,7 @@ public class LoginServlet extends HttpServlet {
 				userID = dbConnection.createUser(userName, passwordHash);
 		
 			} catch (SQLException e) {
-				e.printStackTrace();
+				request.setAttribute("error", "Cannot create account with provided information");
 				goToFail(request, response);
 				return;
 			}
@@ -65,17 +65,20 @@ public class LoginServlet extends HttpServlet {
 			catch (InvalidKeySpecException ignore) { } //catch
 		} //if
 		else if (origin.equals("Login")) {
-			//Check to see if the password is correct. If it is, then log on, if not, then kick user back to login screen
+			//Check to see if the password is correct. 
+			//If it is, then log on, if not, then kick user back to login screen
 			try {
 				String dbPassword = dbConnection.getPassword(userName);
 				if (PasswordHash.validatePassword(password, dbPassword)) {
 					userID = dbConnection.getUserID(userName);
 				}
 				else {
+					request.setAttribute("error", "Invalid password, please try again.");
 					goToFail(request, response);
 					return;
 				}
 			} catch (SQLException e) {
+				request.setAttribute("error", "An error occured, please try again.");
 				goToFail(request, response);
 				return;
 			}
@@ -98,7 +101,7 @@ public class LoginServlet extends HttpServlet {
 	} //doPost
 	
 	static void goToFail(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		RequestDispatcher requestDispatcher = request.getRequestDispatcher("error.jsp");
+		RequestDispatcher requestDispatcher = request.getRequestDispatcher("homepage.jsp");
 		requestDispatcher.forward(request, response);
 		return;
 	} //goToFail

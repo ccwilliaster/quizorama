@@ -1,6 +1,8 @@
 package quiz;
 
 import java.sql.SQLException;
+import java.util.InputMismatchException;
+
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -26,8 +28,13 @@ public class FriendRequest extends Message {
 	 * @throws SQLException
 	 */
 	public static void makeFriendRequest(HttpServletRequest request, DBConnection connection) 
-	throws SQLException {
+	throws SQLException, InputMismatchException {
+		
 		String toUserName   = request.getParameter("toUserName");
+		if ( !(connection.isValidUserName(toUserName)) ) {
+			throw new InputMismatchException();
+		}
+		
 		Integer toUserID    = connection.getUserID( toUserName );
 		Integer fromUserID  = Integer.parseInt(request.getParameter("fromUserID"));
 		String fromUserName = connection.getUserName( fromUserID ); 
