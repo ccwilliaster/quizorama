@@ -24,20 +24,15 @@
 		request.getRequestDispatcher("error.jsp").forward(request, response); 
 	}
 	
-	//Quiz quiz          = new Quiz(quizID, connection);
-	String quizName    = "Test Quiz"; //quiz.getquizName();
-	String quizSummary = "This quiz is so great! I really don't know how else to " +
-						 "describe it. So maybe I'll just keep saying how great it " +
-						 "is even though it doesn't really exist"; //quiz.getQuizSummary();
-	Integer creatorID  = 3; //quiz.getquizCreatoruserID(); 
-	String creatorName = "quiz creator"; //connection.getUserName(creatorID);
-	double numStars    = 4; //Math.floor( quiz.getRating() ); // no half stars
-	Integer numQuestions = 10; //quiz.getNumQuestions();
-	double avgScore    = 9; //quiz.getAverageScore();
-	categories         = new ArrayList<String>() {{ add("cat1"); add("cat2"); }}; //quiz.getCategories();
-	tags               = new ArrayList<String>() {{ 
-		add("tag1"); add("tag2"); add("tag3"); add("tag4"); add("tag5");
-	}}; //quiz.getTags();
+	Quiz quiz          = new Quiz(quizID, connection);
+	String quizName    = quiz.getquizName();
+	String quizSummary = quiz.getQuizSummary();
+	Integer creatorID  = quiz.getquizCreatoruserID(); 
+	String creatorName = connection.getUserName(creatorID);
+	double numStars    = Math.floor( quiz.getRating() ); // no half stars
+	Integer numQuestions = quiz.getNumQuestions();
+	double avgScore    = quiz.getAverageScore();
+	categories         = quiz.getTags();
 	flagNote = (String) request.getAttribute("flagNote"); // if user just flagged quiz
 		
 	// Figure out some user properties which toggle displays 
@@ -48,17 +43,14 @@
 	} else {
 		userID     = user.getUserID();
 		userName   = user.getUserName();
-		userRating = 2; //quiz.getUserRating(userID); // null if no rating
+		userRating = quiz.getUserRating(userID); // null if no rating
 		
-		if ( true /* user.isAdmin() */ ) { userType = "admin"; }
+		if ( user.isAdmin() ) { userType = "admin"; }
 		else { userType = "standard"; }
 	}
 
 	// TODO: pull from quizHistory
-	ArrayList<String> topScores    = new ArrayList<String>() {{ 
-		add("<td>95%</td><td><a class='btn btn-default btn-xs' href='userpage.jsp?userID=3'>chris</a></td>"); 
-		add("<td>90%</td><td><a class='btn btn-default btn-xs' href='userpage.jsp?userID=4'>chris2</a></td>");
-	}}; 
+	ArrayList<String> topScores    = new ArrayList<String>(); 
 	ArrayList<String> recentScores = new ArrayList<String>();
 	ArrayList<String> userScores   = new ArrayList<String>();
 %>
