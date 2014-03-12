@@ -388,6 +388,7 @@ public class DBConnection {
 		sql.setInt(1, quizID);
 		return sql.executeQuery();
 	} //getTags
+	
 	public ResultSet getCategories(int quizID) throws SQLException {
 		//returns the category name
 		String select = "SELECT a.quizID, a.quizName, c.categoryName FROM " + quizTable + " a LEFT JOIN "
@@ -406,11 +407,87 @@ public class DBConnection {
 		return sql.executeQuery();
 	} //getRatings
 
-	public ResultSet getAnswerInfo(int questionId) {
-		// TODO: Complete this
-		return null;
-	}
+	public ResultSet getAnswerInfo(int questionId) throws SQLException {
+		String select = "SELECT * FROM " + questionAnswerTable + " WHERE questionID = ?";
+		PreparedStatement sql = conn.prepareStatement(select);
+		sql.setInt(1, questionId);
+		return sql.executeQuery();
+	} //getAnswerInfo
+
+	public void addQuiz(Quiz quiz) throws SQLException {
+		ResultSet genKey = null;
+		String insert = "insert into " + quizTable + " (quizName, quizCreatorUserID, `singlePage?`, `randomOrder?`, `immediateCorrection?`, `practiceMode?`) VALUES (?, ?, ?, ?, ?, ?);";
+		PreparedStatement sql = conn.prepareStatement(insert, Statement.RETURN_GENERATED_KEYS);
+		sql.setString(1, quiz.getQuizName());
+		sql.setInt(2, quiz.getquizCreatoruserID());
+		sql.setBoolean(3, quiz.getSinglePage());
+		sql.setBoolean(4, quiz.getRandomOrder());
+		sql.setBoolean(5, quiz.getImmediateCorrection());
+		sql.setBoolean(6, quiz.getPractiveMode());
+		int affectedRows = sql.executeUpdate();
+		if (affectedRows == 0) {
+			throw new SQLException("Adding quiz failed, no rows affected.");
+	    }
+		
+		genKey = sql.getGeneratedKeys();
+		if (!genKey.first())
+			throw new SQLException("Adding quiz failed, no gen key obtained.");
+		
+		quiz.setQuizID(genKey.getInt(1)); //Add the quizID to this new quiz that we have
+	} //addQuiz
+
+	public int addQuestion(String questionText, int qType,
+			int nextQuestionNum, int quizID) throws SQLException {
+		ResultSet genKey = null;
+		String insert = "insert into " + quizQuestionTable + " (quizID, questionTypeID, question, questionNumber) VALUES (?, ?, ?, ?);";
+		PreparedStatement sql = conn.prepareStatement(insert, Statement.RETURN_GENERATED_KEYS);
+		sql.setInt(1, quizID);
+		sql.setString(3, questionText);
+		sql.setInt(2, qType);
+		sql.setInt(4, nextQuestionNum);
+		int affectedRows = sql.executeUpdate();
+		if (affectedRows == 0) {
+			throw new SQLException("Adding quiz failed, no rows affected.");
+	    }
+		
+		genKey = sql.getGeneratedKeys();
+		if (!genKey.first())
+			throw new SQLException("Adding quiz failed, no gen key obtained.");
+		return genKey.getInt(1);
+	} //addQuestion
 	
+	public int addAnswer(String answerText, int quizID, int questionID) throws SQLException {
+		ResultSet genKey = null;
+		String insert = "insert into " + quizQuestionTable + " (questionID, quizID, answer) VALUES (?, ?, ?);";
+		PreparedStatement sql = conn.prepareStatement(insert, Statement.RETURN_GENERATED_KEYS);
+		sql.setInt(1, questionID);
+		sql.setInt(2, quizID);
+		sql.setString(3, answerText);
+		int affectedRows = sql.executeUpdate();
+		if (affectedRows == 0) {
+			throw new SQLException("Adding quiz failed, no rows affected.");
+	    }
+		
+		genKey = sql.getGeneratedKeys();
+		if (!genKey.first())
+			throw new SQLException("Adding quiz failed, no gen key obtained.");
+		return genKey.getInt(1);
+	} //addAnswer
+	
+	public ResultSet getRatingsByUserID(int userID) throws SQLException {
+        String select = "SELECT * FROM " + userQuizRatingsTable + " WHERE userID = ?";
+        PreparedStatement sql = conn.prepareStatement(select);
+        sql.setInt(1, userID);
+        return sql.executeQuery();
+    } //getRatingsByUserID
+
+	public ResultSet getHistoriesByUserID(int userID) throws SQLException {
+        String select = "SELECT * FROM " + quizHistoryTable + " WHERE userID = ?";
+        PreparedStatement sql = conn.prepareStatement(select);
+        sql.setInt(1, userID);
+        return sql.executeQuery();        
+    } //getHistoriesByUserID	
+
 	public boolean addQuizRating(int quizID, int userID, int rating) 
 	throws SQLException {
 		String set = "INSERT INTO " + userQuizRatingsTable + 

@@ -4,6 +4,11 @@ import java.sql.*;
 import java.util.*;
 
 public abstract class Question {
+	public static final int QTYPE_QR = 0;
+	public static final int QTYPE_FB = 1;
+	public static final int QTYPE_MC = 2;
+	public static final int QTYPE_PR = 3;
+	
 	final int questionId;
 	String questionText;
 	final int questionType;
@@ -23,6 +28,11 @@ public abstract class Question {
 	
 	public abstract void addAnswers(int questionId, DBConnection db) throws NumberFormatException, SQLException;
 	
+	public void addAnswers( DBConnection db) throws NumberFormatException, SQLException {
+		addAnswers(questionId, db);
+	} //addAnswers
+	
+	
 	public String showQuestion() {
 		String html = "<p>" + questionText + "</p>";
 		return html;
@@ -32,6 +42,41 @@ public abstract class Question {
 		return answers.getAnswersHtml();
 	}
 	
+	/**
+	 * @return the questionId
+	 */
+	public int getQuestionId() {
+		return questionId;
+	}
+
+	/**
+	 * @return the questionText
+	 */
+	public String getQuestionText() {
+		return questionText;
+	}
+
+	/**
+	 * @return the questionType
+	 */
+	public int getQuestionType() {
+		return questionType;
+	}
+
+	/**
+	 * @return the questionNum
+	 */
+	public int getQuestionNum() {
+		return questionNum;
+	}
+
+	/**
+	 * @return the quizId
+	 */
+	public int getQuizId() {
+		return quizId;
+	}
+
 	public int checkAnswers(ArrayList<String> guesses) {
 		return answers.checkAnswers(guesses);
 	}
