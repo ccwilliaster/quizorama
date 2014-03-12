@@ -244,6 +244,7 @@ public class DBConnection {
 		sql.setInt(1, quizID);
 		return sql.executeQuery();
 	} //getTags
+	
 	public ResultSet getCategories(int quizID) throws SQLException {
 		//returns the category name
 		String select = "SELECT a.quizID, a.quizName, c.categoryName FROM " + quizTable + " a LEFT JOIN "
@@ -253,6 +254,7 @@ public class DBConnection {
 		sql.setInt(1, quizID);
 		return sql.executeQuery();	
 	} //getCategories
+	
 	public ResultSet getRatings(int quizID) throws SQLException {
 		//returns a resultSet of all the ratings so that I can find the average rating value and the different ratingReviews.
 		String select = "SELECT * FROM " + userQuizRatingsTable + " WHERE quizID = ?";
@@ -262,12 +264,11 @@ public class DBConnection {
 	} //getRatings
 
 	public ResultSet getAnswerInfo(int questionId) throws SQLException {
-
 		String select = "SELECT * FROM " + questionAnswerTable + " WHERE questionID = ?";
 		PreparedStatement sql = conn.prepareStatement(select);
 		sql.setInt(1, questionId);
 		return sql.executeQuery();
-	}
+	} //getAnswerInfo
 
 	public void addQuiz(Quiz quiz) throws SQLException {
 		ResultSet genKey = null;
@@ -289,7 +290,7 @@ public class DBConnection {
 			throw new SQLException("Adding quiz failed, no gen key obtained.");
 		
 		quiz.setQuizID(genKey.getInt(1)); //Add the quizID to this new quiz that we have
-	}
+	} //addQuiz
 
 	public int addQuestion(String questionText, int qType,
 			int nextQuestionNum, int quizID) throws SQLException {
@@ -309,7 +310,7 @@ public class DBConnection {
 		if (!genKey.first())
 			throw new SQLException("Adding quiz failed, no gen key obtained.");
 		return genKey.getInt(1);
-	}
+	} //addQuestion
 	
 	public int addAnswer(String answerText, int quizID, int questionID) throws SQLException {
 		ResultSet genKey = null;
@@ -327,8 +328,20 @@ public class DBConnection {
 		if (!genKey.first())
 			throw new SQLException("Adding quiz failed, no gen key obtained.");
 		return genKey.getInt(1);
-	}
-
+	} //addAnswer
 	
+	public ResultSet getRatingsByUserID(int userID) throws SQLException {
+        String select = "SELECT * FROM " + userQuizRatingsTable + " WHERE userID = ?";
+        PreparedStatement sql = conn.prepareStatement(select);
+        sql.setInt(1, userID);
+        return sql.executeQuery();
+    } //getRatingsByUserID
+
+	public ResultSet getHistoriesByUserID(int userID) throws SQLException {
+        String select = "SELECT * FROM " + quizHistoryTable + " WHERE userID = ?";
+        PreparedStatement sql = conn.prepareStatement(select);
+        sql.setInt(1, userID);
+        return sql.executeQuery();        
+    } //getHistoriesByUserID	
 	
 }
