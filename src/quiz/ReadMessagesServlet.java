@@ -70,6 +70,10 @@ public class ReadMessagesServlet extends HttpServlet {
 			request.setAttribute("messages", filtMessages);
 			request.getRequestDispatcher("userMessages.jsp").forward(request, response);
 			
+		} catch (NullPointerException nullUser) {
+			// Let .jsp handle
+			request.getRequestDispatcher("userMessages.jsp").forward(request, response);
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			request.getRequestDispatcher("error.jsp").forward(request, response);

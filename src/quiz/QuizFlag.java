@@ -1,11 +1,15 @@
 package quiz;
 
+import java.sql.SQLException;
+
 public class QuizFlag extends Message {
 
-	public QuizFlag(Integer toUserID, Integer fromUserID, int quizID) {
+	public QuizFlag(int toUserID, int fromUserID, 
+	         String fromUserName, String quizName, int quizID) {
+		
 		super(TYPE_QUIZ_FLAG, toUserID, fromUserID);
-		addSubject("Quiz " + quizID + " flagged");
-		generateFlagContent(quizID);
+		addSubject("Quiz " + quizID + " flagged by " + fromUserName);
+		addContent( generateFlagContent(quizID, quizName, fromUserID, fromUserName) );
 	}
 	
 	/**
@@ -13,15 +17,25 @@ public class QuizFlag extends Message {
 	 * flagged the Quiz, and the Quiz flagged.
 	 * @param quizID
 	 */
-	private void generateFlagContent(int quizID) {
+	private String generateFlagContent(int quizID, String quizName, int fromUserID, 
+			String fromUserName) {
+		 
+		return  "User <a class='btn btn-default btn-xs' href='userpage.jsp?userID=" + 
+				fromUserID + "'>" + fromUserName + "</a> flagged the quiz " +
+			 	"<a class='btn btn-default btn-xs' href='quizSummary.jsp?quizID=" + 
+			 	quizID + "'>" + quizName + "</a> as inappropriate. Take action by " +
+			 	"following the link";
+	}
+	
+	/**
+	 * Static method to generate a new QuizFlag Message and add
+	 * it to the database via the DBConnection
+	 */
+	public void makeQuizFlag(int quizID, String quizName, int fromUserID, 
+			int toUserID, String fromUserName, DBConnection connection) throws
+			SQLException {
 		
-		StringBuilder content = new StringBuilder();
-		
-		content.append("<a href=\"userpage.jsp?userID=" + fromUserID + ">");
-		content.append(fromUserID + "</a> flagged the quiz "); 
-		content.append("<a href=\"quiz.jsp?quizID=" + quizID + ">" + quizID );
-		content.append("</a> as inappropriate. Take action by following the link");
-		
-		addContent( content.toString() );
+		QuizFlag qf = new QuizFlag(toUserID, fromUserID, fromUserName, quizName, quizID);
+		connection.addMessage(qf);
 	}
 }

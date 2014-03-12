@@ -1,6 +1,7 @@
 package quiz;
 
 import java.sql.SQLException;
+import java.util.InputMismatchException;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -26,8 +27,12 @@ public class Note extends Message {
 	 * @throws SQLException
 	 */
 	public static void makeNote(HttpServletRequest request, DBConnection connection) 
-	throws SQLException {
+	throws SQLException, InputMismatchException {
+		
 		String toUserName  = request.getParameter("toUserName");
+		if ( !(connection.isValidUserName(toUserName)) ) {
+			throw new InputMismatchException();
+		}
 		Integer toUserID   = connection.getUserID(toUserName);
 		Integer fromUserID = Integer.parseInt(request.getParameter("fromUserID"));
 		String subject     = request.getParameter("subject");
@@ -39,22 +44,27 @@ public class Note extends Message {
 	
 	/**
 	 * Displays the necessary HTML form information to create a new Note
-	 * @return
+	 * If the request has subject and/or userName values they are embeded in 
+	 * the HTML
 	 */
-	public static String getCreationHTML(Integer userID) { 
+	public static String getCreationHTML(Integer userID, HttpServletRequest request) {
+		// Check if this is a reply
+		String subject    = request.getParameter("subject");
+		String toUserName = request.getParameter("toUserName");
 		StringBuilder html = new StringBuilder();
 		
 		html.append("<input name=\"fromUserID\" type=\"hidden\" value=" + userID + " />");
 		html.append("<input name=\"type\" type=\"hidden\" value=" + Message.TYPE_NOTE + " />");
 		html.append("<input name=\"hasContent\" type=\"hidden\" value=\"true\" />");
-		
 		html.append( 
 			"<div class=\"row\"><br>" +
 			  "<div class=\"form-group\">" +
 			    "<label for=\"1\" class=\"col-sm-2 control-label\">To user</label>" +
 			    "<div class=\"col-sm-7\">" +
-			      "<input id=\"1\" type=\"text\" class=\"form-control\"" +
-			              "name=\"toUserName\" placeholder=\"Username\">" +
+			      "<input id=\"1\" type=\"text\" class=\"form-control\" name=\"toUserName\""); 
+		if (toUserName != null) { html.append("value=" + toUserName + " >"); } 
+		else                    { html.append("placeholder=\"Username\" >"); }
+		html.append(
 			    "</div>" +
 			  "</div>" +
 			"</div>" +
@@ -62,8 +72,10 @@ public class Note extends Message {
 			  "<div class=\"form-group\">" +
 			    "<label for=\"2\" class=\"col-sm-2 control-label\">Subject</label>" +
 			    "<div class=\"col-sm-7\">" +
-			      "<input type=\"text\" id=\"2\" class=\"form-control\" " + 
-			              "name=\"subject\" placeholder=\"Subject\">" +
+			      "<input type=\"text\" id=\"2\" class=\"form-control\" name=\"subject\" ");
+		if (subject != null) { html.append("value='" + subject + "' >"); } 
+		else                 { html.append("placeholder=\"Subject\">"); }
+		html.append(
 			    "</div>" +
 			  "</div>" +
 			"</div>" +
