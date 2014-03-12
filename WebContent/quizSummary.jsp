@@ -32,7 +32,8 @@
 	double numStars    = Math.floor( quiz.getRating() ); // no half stars
 	Integer numQuestions = quiz.getNumQuestions();
 	double avgScore    = quiz.getAverageScore();
-	categories         = quiz.getTags();
+	categories         = quiz.getCategories();
+	tags 			   = quiz.getTags();
 	flagNote = (String) request.getAttribute("flagNote"); // if user just flagged quiz
 		
 	// Figure out some user properties which toggle displays 
