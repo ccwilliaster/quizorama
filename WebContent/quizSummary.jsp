@@ -25,7 +25,7 @@
 	}
 	
 	Quiz quiz          = new Quiz(quizID, connection);
-	String quizName    = quiz.getquizName();
+	String quizName    = quiz.getQuizName();
 	String quizSummary = quiz.getQuizSummary();
 	Integer creatorID  = quiz.getquizCreatoruserID(); 
 	String creatorName = connection.getUserName(creatorID);
