@@ -297,5 +297,13 @@ public class DBConnection {
 		return 0;
 	}
 	
+	public int addAnswer(String answerText, int quizID,
+			int questionID) {
+		
+		//TODO: Return the questionID generated
+		return 0;
+	}
+
+	
 	
 }

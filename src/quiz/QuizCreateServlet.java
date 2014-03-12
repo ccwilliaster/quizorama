@@ -3,6 +3,8 @@ package quiz;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -57,9 +59,12 @@ public class QuizCreateServlet extends HttpServlet {
 			try {
 				quiz = createNewQuiz(request);
 			} catch (SQLException e) {
+				e.printStackTrace();
 				RequestDispatcher requestDispatcher = request.getRequestDispatcher("error.jsp");
 				requestDispatcher.forward(request, response);
 			} //catch
+			
+			
 			
 			//Stash the quiz in the session object
 			request.getSession().setAttribute("Quiz", quiz);
@@ -99,12 +104,23 @@ public class QuizCreateServlet extends HttpServlet {
 		else if(request.getParameter("origin").equals("CreateQuizQR.jsp")) {
 			String questionText = request.getParameter("question");
 
+			Question question = null;
 			try {
-				createQuestion(request, questionText);
+				question = createQuestion(request, questionText);
 			} catch (SQLException e) {
+				e.printStackTrace();
 				RequestDispatcher requestDispatcher = request.getRequestDispatcher("CreateQuiz.jsp");
 				requestDispatcher.forward(request, response);
 			}
+			
+			String answerText = request.getParameter("response");
+			if (request.getParameter("otherResponsesCheck") != null && request.getParameter("otherResponsesCheck").equals("yes")) {
+				answerText.concat("|" + request.getParameter("otherResponses"));
+			}
+			createAnswer(request, answerText, question);
+
+			//Last thing:
+			askForNextQuestion(response);
 		} //else if
 		else if(request.getParameter("origin").equals("CreateQuizFB.jsp")) {
 			String questionPreText = request.getParameter("pre");
@@ -114,9 +130,15 @@ public class QuizCreateServlet extends HttpServlet {
 			try {
 				createQuestion(request, questionText);
 			} catch (SQLException e) {
+				e.printStackTrace();
 				RequestDispatcher requestDispatcher = request.getRequestDispatcher("CreateQuiz.jsp");
 				requestDispatcher.forward(request, response);
-			}			
+			}
+			
+			
+			
+			//Last thing:
+			askForNextQuestion(response);
 		} //else if
 		else if(request.getParameter("origin").equals("CreateQuizMC.jsp")) {
 			String questionText = request.getParameter("question");
@@ -128,9 +150,14 @@ public class QuizCreateServlet extends HttpServlet {
 			try {
 				createQuestion(request, questionText);
 			} catch (SQLException e) {
+				e.printStackTrace();
 				RequestDispatcher requestDispatcher = request.getRequestDispatcher("CreateQuiz.jsp");
 				requestDispatcher.forward(request, response);
 			}
+			
+			
+			//Last thing:
+			askForNextQuestion(response);
 		} //else if
 		else if(request.getParameter("origin").equals("CreateQuizPR.jsp")) {
 			String questionText = request.getParameter("question");
@@ -138,9 +165,15 @@ public class QuizCreateServlet extends HttpServlet {
 			try {
 				createQuestion(request, questionText);
 			} catch (SQLException e) {
+				e.printStackTrace();
 				RequestDispatcher requestDispatcher = request.getRequestDispatcher("CreateQuiz.jsp");
 				requestDispatcher.forward(request, response);
 			}
+			
+			
+			
+			//Last thing:
+			askForNextQuestion(response);
 		} //else if
 		
 		
@@ -150,7 +183,22 @@ public class QuizCreateServlet extends HttpServlet {
 		} //else
 	}
 
-	private void createQuestion(HttpServletRequest request, String questionText) throws SQLException {
+	private void createAnswer(HttpServletRequest request, String answerText,
+			Question question) {
+		
+		DBConnection dbConnection = (DBConnection) this.getServletContext().getAttribute("DBConnection");
+
+		//Getting the quiz
+		Quiz quiz = (Quiz) request.getSession().getAttribute("Quiz");
+		List<Integer> answerIDs = new ArrayList<Integer>();
+		
+		
+		int answerID = dbConnection.addAnswer(thisAnswerText, Question.QTYPE_QR, quiz.getNextQuestionNum(), quiz.getQuizID());
+		
+		// TODO: Populate this		
+	}
+
+	private Question createQuestion(HttpServletRequest request, String questionText) throws SQLException {
 		//Create a question and then add it to the list of questions that exists in the quiz
 		DBConnection dbConnection = (DBConnection) this.getServletContext().getAttribute("DBConnection");
 
@@ -159,7 +207,8 @@ public class QuizCreateServlet extends HttpServlet {
 		int questionID = dbConnection.addQuestion(questionText, Question.QTYPE_QR, quiz.getNextQuestionNum(), quiz.getQuizID());
 
 		Question question = new QuestionResponseQuestion(questionID, questionText, Question.QTYPE_QR, quiz.getNextQuestionNum(), quiz.getQuizID(), dbConnection);
-		quiz.addQuestion(question);		
+		quiz.addQuestion(question);
+		return question;
 	}
 
 	private void askForNextQuestion(HttpServletResponse response) throws IOException {
@@ -186,7 +235,7 @@ public class QuizCreateServlet extends HttpServlet {
 	}
 
 	private Quiz createNewQuiz(HttpServletRequest request) throws SQLException {
-		
+		System.out.println("In the new quiz creation.");
 		String quizName = (String) request.getParameter("quizName");
 		ServletContext servletContext = this.getServletContext();
 		DBConnection dbConnection = (DBConnection) servletContext.getAttribute("DBConnection");

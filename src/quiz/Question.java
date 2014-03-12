@@ -28,6 +28,11 @@ public abstract class Question {
 	
 	public abstract void addAnswers(int questionId, DBConnection db) throws NumberFormatException, SQLException;
 	
+	public void addAnswers( DBConnection db) throws NumberFormatException, SQLException {
+		addAnswers(questionId, db);
+	} //addAnswers
+	
+	
 	public String showQuestion() {
 		String html = "<p>" + questionText + "</p>";
 		return html;

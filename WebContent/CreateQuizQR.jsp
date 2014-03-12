@@ -15,9 +15,9 @@ Please fill in both the question and answer to create a question. You will not b
 	<input name="origin" type="hidden" value="<%= request.getRequestURI().substring(request.getRequestURI().lastIndexOf("/")+1) %>" >
 	Question: <input name="question"><br>
 	Response: <input name="response"><br>
-	Other responses allowed? <input name="otherResponsesCheck" type="checkbox">
-	Pipe (|) delimited list of other responses: <input name="otherResponses">
-	<input class="btn btn-default" type="submit" value="Create Question">
+	Other responses allowed? <input name="otherResponsesCheck" type="checkbox" value="yes"><br>
+	Pipe (|) delimited list of other responses: <input name="otherResponses"><br>
+	<input class="btn btn-default" type="submit" value="Create Question"><br>
 </form>
 </body>
 </html>

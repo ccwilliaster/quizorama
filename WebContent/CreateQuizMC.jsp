@@ -19,7 +19,7 @@ Please fill in both the question and answer to create a question. You will not b
 	Multiple Choice #3: <input name="mc3"><br>
 	Multiple Choice #4: <input name="mc4"><br>
 	Answer Field (Should match the choice exactly): <input name="answer"><br>
-	<input class="btn btn-default" type="submit" value="Create Question">
+	<input class="btn btn-default" type="submit" value="Create Question"><br>
 </form>
 </body>
 </html>
