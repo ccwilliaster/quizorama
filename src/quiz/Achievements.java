@@ -70,7 +70,7 @@ public class Achievements {
 	/* This method returns a list of achievement IDs that the user has gained.
 	 */
 	public static ArrayList<Integer> getAchievements(int userID, DBConnection connection) throws SQLException {
-		ResultSet rs = connection.getuserAchievements(userID);
+		ResultSet rs = connection.getUserAchievements(userID);
 		ArrayList<Integer> result = new ArrayList<Integer>();
 		while(rs.next()) {
 			int achievementID = rs.getInt("achievementID");

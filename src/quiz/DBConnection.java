@@ -36,7 +36,6 @@ public class DBConnection {
 	private final String userQuizRatingsTable = "userQuizRatings";
 	private final String friendshipTable = "friendships";
 	private final String userAchievementsTable = "userAchievements";
-	private final String achievementsTable = "achievements";
 	private Connection conn;
 		
 	public DBConnection() throws ClassNotFoundException, SQLException {
@@ -627,21 +626,22 @@ public class DBConnection {
 			}
 		}
 		return result;
-	}
-	public ResultSet getuserAchievements(int userID) throws SQLException {
+	} //getFriends
+	
+	public ResultSet getUserAchievements(int userID) throws SQLException {
 		String select = "SELECT * FROM " + userAchievementsTable + " WHERE userID = ?";
 		PreparedStatement sql = conn.prepareStatement(select);
 		sql.setInt(1, userID);
 		ResultSet rs = sql.executeQuery();
 		return rs;
-	}
-	//Adrian could you take a look here?
+	} //getUserAchievements
+	
 	public boolean setAchievement(int userID, int achievementID, String description) throws SQLException{
 		ResultSet genKey = null;
-		String insert = "insert into " + achievementsTable + " (achievementName, achievementDescription) VALUES (?, ?);";
+		String insert = "insert into " + userAchievementsTable + " (userID, achievementID) VALUES (?, ?);";
 		PreparedStatement sql = conn.prepareStatement(insert, Statement.RETURN_GENERATED_KEYS);
-		sql.setString(1, Achievements.achievementNames[achievementID]);
-		sql.setString(2, description);
+		sql.setInt(1, userID);
+		sql.setInt(1, achievementID);
 		int affectedRows = sql.executeUpdate();
 		if (affectedRows == 0) {
 			throw new SQLException("Creating achievement failed, no rows affected.");

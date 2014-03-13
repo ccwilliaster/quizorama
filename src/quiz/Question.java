@@ -3,7 +3,7 @@ package quiz;
 import java.sql.*;
 import java.util.*;
 
-public abstract class Question implements Comparable {
+public abstract class Question implements Comparable<Question> {
 	public static final int QTYPE_QR = 0;
 	public static final int QTYPE_FB = 1;
 	public static final int QTYPE_MC = 2;
@@ -90,8 +90,7 @@ public abstract class Question implements Comparable {
 	}
 	
 	@Override
-	public int compareTo(Object o) {
-		Question other = (Question)o;
+	public int compareTo(Question other) {
 		return questionNum - other.questionNum;
 	}
 	
