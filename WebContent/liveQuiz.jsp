@@ -9,7 +9,7 @@
 <title> 
 <% 
 	Quiz quiz = (Quiz) session.getAttribute("quiz"); 
-	out.println( quiz.getquizName() );
+	out.println( quiz.getQuizName() );
 %> </title>
 </head>
 <body>

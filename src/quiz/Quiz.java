@@ -32,6 +32,7 @@ public class Quiz {
 	/** Necessary internal variables */
 	private DBConnection connection;
 	private ArrayList<Question> questionList;
+	private boolean inPracticeMode; //Used for when the quiz is indeed in practice mode
 	
 	//MAY NOT NEED THIS, JUST IN CASE WE NEED QUESTION ORDER AFTER QUIZ IS OVER
 	private ArrayList<Question> questionOrder;
@@ -389,6 +390,20 @@ public class Quiz {
 	public void addQuestion(Question question) {
 		questionList.add(question);
 	}
-	
+
+	/**
+	 * @return the inPracticeMode
+	 */
+	public boolean isInPracticeMode() {
+		return inPracticeMode;
+	}
+
+	/**
+	 * @param inPracticeMode the inPracticeMode to set
+	 */
+	public void setInPracticeMode(boolean inPracticeMode) {
+		this.inPracticeMode = inPracticeMode;
+	}
+
 
 }
