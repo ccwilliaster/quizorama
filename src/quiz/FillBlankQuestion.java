@@ -9,9 +9,11 @@ public class FillBlankQuestion extends Question {
 	}
 
 	@Override
-	public void addAnswers(int questionId, DBConnection db)
+	public void addAnswers(DBConnection db)
 			throws NumberFormatException, SQLException {
 		answers = new FillBlankAnswer(questionId, db);
 	}
 
+
+	
 }

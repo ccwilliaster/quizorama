@@ -14,11 +14,10 @@ Please fill in both the question and answer to create a question. You will not b
 <form action="QuizCreateServlet" method="post">
 	<input name="origin" type="hidden" value="<%= request.getRequestURI().substring(request.getRequestURI().lastIndexOf("/")+1) %>" >
 	Question: <input name="question"><br>
-	Multiple Choice #1: <input name="mc1"><br>
-	Multiple Choice #2: <input name="mc2"><br>
-	Multiple Choice #3: <input name="mc3"><br>
-	Multiple Choice #4: <input name="mc4"><br>
-	Answer Field (Should match the choice exactly): <input name="answer"><br>
+	Correct Answer: <input name="mc_correct"><br>
+	Incorrect Choice #1: <input name="mc1"><br>
+	Incorrect Choice #2: <input name="mc2"><br>
+	Incorrect Choice #3: <input name="mc3"><br>
 	<input class="btn btn-default" type="submit" value="Create Question"><br>
 </form>
 </body>

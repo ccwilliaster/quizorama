@@ -9,7 +9,7 @@ public class QuestionResponseQuestion extends Question {
 	}
 
 	@Override
-	public void addAnswers(int questionId, DBConnection db) throws NumberFormatException, SQLException {
+	public void addAnswers(DBConnection db) throws NumberFormatException, SQLException {
 		answers = new QuestionResponseAnswer(questionId, db);		
 	}
 

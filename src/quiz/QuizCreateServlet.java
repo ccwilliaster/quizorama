@@ -162,11 +162,6 @@ public class QuizCreateServlet extends HttpServlet {
 		} //else if
 		else if(request.getParameter("origin").equals("CreateQuizMC.jsp")) {
 			String questionText = request.getParameter("question");
-			questionText.concat("|" + request.getParameter("mc1"));
-			questionText.concat("|" + request.getParameter("mc2"));
-			questionText.concat("|" + request.getParameter("mc3"));
-			questionText.concat("|" + request.getParameter("mc4"));
-
 			Question question = null;
 			try {
 				question = createQuestion(request, questionText);
@@ -176,7 +171,10 @@ public class QuizCreateServlet extends HttpServlet {
 				requestDispatcher.forward(request, response);
 			}
 
-			String answerText = request.getParameter("answer");
+			String answerText = request.getParameter("mc_correct");
+			answerText.concat("|!" + request.getParameter("mc1"));
+			answerText.concat("|!" + request.getParameter("mc2"));
+			answerText.concat("|!" + request.getParameter("mc3"));
 			
 			try {
 				createAnswer(request, answerText, question);

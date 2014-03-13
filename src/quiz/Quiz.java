@@ -32,6 +32,8 @@ public class Quiz {
 	/** Necessary internal variables */
 	private DBConnection connection;
 	private ArrayList<Question> questionList;
+	private boolean inPracticeMode; //Used for when the quiz is indeed in practice mode
+	private ArrayList<Question> allQuestions;
 	
 	//MAY NOT NEED THIS, JUST IN CASE WE NEED QUESTION ORDER AFTER QUIZ IS OVER
 	private ArrayList<Question> questionOrder;
@@ -41,17 +43,24 @@ public class Quiz {
 	private boolean question;
 	private Question currQuestion;
 	private Random rand = new Random();
+	private int tempScore = 0;
 
 	public Quiz(int quizID, DBConnection connection) throws SQLException {
 		this.connection = connection;
 		this.quizID = quizID;
 		ResultSet quizInfo = connection.getQuizInformation(quizID);
+		quizInfo.first();
 		quizName = quizInfo.getString("quizName");
 		quizCreation = quizInfo.getDate("quizCreation"); //NEED TO TEST THIS java.sql.date to java.util.date conversion
 		quizCreatorUserID = quizInfo.getInt("quizCreatoruserID");
 		singlePage = quizInfo.getBoolean("singlePage?");
 		randomOrder = quizInfo.getBoolean("randomOrder?");
 		immediateCorrection = quizInfo.getBoolean("immediateCorrection?");
+		if (singlePage) {
+			immediateCorrection = false;
+		}
+		questionList = new ArrayList<Question>();
+		allQuestions = new ArrayList<Question>();
 	
 		//CAN ALSO MAKE QUESTIONS 'ON THE FLY'
 		populateQuestions();
@@ -89,17 +98,19 @@ public class Quiz {
 	
 	private void populateQuestions() throws SQLException {
 		ResultSet questions = connection.getQuizQuestions(quizID);
+		questions.beforeFirst();
 		while (questions.next()) {
 			int questionID = questions.getInt("questionID");
 			String questionText = questions.getString("question");
-			int questionType = questions.getInt("questionType");
-			int questionNum = questions.getInt("questionNum");
+			int questionType = questions.getInt("questionTypeID");
+			int questionNum = questions.getInt("questionNumber");
 			//ResultSet questionInfo = connection.getQuestionInfo(questionID); USE THIS TO TELL QUESTION WHAT TYPE IT IS
 			Question currQuestion = getQuestionObject(questionID, questionText, questionType, questionNum);
 			questionList.add(currQuestion);
+			allQuestions.add(currQuestion);
 		}
-	} //populateQuestions
-	
+	}
+
 	//ali's added method
 	private Question getQuestionObject(int questionID, String questionText, int questionType, int questionNum) throws SQLException {
 		Question q = null;
@@ -156,7 +167,7 @@ public class Quiz {
 	public boolean hasMoreHTML() {
 		return !(question && questionList.size() == 0);
 	}
-
+	
 	/* Returns a string that could be one of two things:
 	 * 	1. a question to display with some type of user input
 	 * 	2. the answer to the previous question (if quiz is set up 
@@ -170,7 +181,17 @@ public class Quiz {
 				currQuestion = getNextQuestion();
 				return currQuestion.showQuestion();
 			} else {
-				return currQuestion.showAnswerOptions();
+				String html = "";
+				int points = score - tempScore;
+				if (points > 1) {
+					html += "<p>That is correct! You got " + points + " points.</p>";
+				} else if (points == 1) {
+					html += "<p>That is correct! You got " + points + " point.</p>";
+				} else {
+					html += "<p>That is incorrect.</p>";
+				}
+				html += currQuestion.showAnswerOptions(); 
+				return html;
 			}
 		} else {
 			currQuestion = getNextQuestion();
@@ -186,23 +207,40 @@ public class Quiz {
 	private Question getNextQuestion() {
 		int index = randomOrder ? rand.nextInt(questionList.size()) : 0;
 		Question result = questionList.get(index);
-		questionOrder.add(result); //MAY NOT NEED THIS
+		//questionOrder.add(result); //MAY NOT NEED THIS
 		questionList.remove(index);
 		return result;
 	}
 
+	//Ali added
+	public void sendAllAnswers(HttpServletRequest request) {
+		for (Question q : allQuestions) {
+			ArrayList<String> locations = q.getAnswerLocations();
+			ArrayList<String> submittedAnswers = new ArrayList<String>();
+			for (int i = 0; i < locations.size(); i++) {
+				submittedAnswers.add(request.getParameter(locations.get(i)));
+			}
+			int qScore = q.checkAnswers(submittedAnswers);
+			score += qScore;
+			possibleScore += q.possiblePoints();
+		}
+	}
+	
 	/* Takes in an HTTP request that has the answers submitted in
 	 * 	the form.
 	 */
 	public void sendAnswers(HttpServletRequest request) {
-		ArrayList<String> locations = currQuestion.getAnswerLocations();
-		ArrayList<String> submittedAnswers = new ArrayList<String>();
-		for (int i = 0; i < locations.size(); i++) {
-			submittedAnswers.add(request.getParameter(locations.get(i)));
+		if (!immediateCorrection || !question) {
+			ArrayList<String> locations = currQuestion.getAnswerLocations();
+			ArrayList<String> submittedAnswers = new ArrayList<String>();
+			for (int i = 0; i < locations.size(); i++) {
+				submittedAnswers.add(request.getParameter(locations.get(i)));
+			}
+			int qScore = currQuestion.checkAnswers(submittedAnswers);
+			tempScore = score;
+			score += qScore;
+			possibleScore += currQuestion.possiblePoints();
 		}
-		int qScore = currQuestion.checkAnswers(submittedAnswers);
-		score += qScore;
-		possibleScore += currQuestion.possiblePoints();
 	}
 
 	/** Quiz history info 
@@ -277,7 +315,6 @@ public class Quiz {
 		}
 		return ratingID;
 	}
-	
 	/* Returns the number of reviews for this quiz.
 	 */
 	public int getNumReviews() throws SQLException {	
@@ -360,6 +397,7 @@ public class Quiz {
 	public Date getQuizCreation() {
 		return quizCreation;
 	}
+	
 
 	/**
 	 * @return the quizID
@@ -367,13 +405,14 @@ public class Quiz {
 	public int getQuizID() {
 		return quizID;
 	}
-
+	
 	/**
 	 * @param quizID the quizID to set
 	 */
 	public void setQuizID(int quizID) {
 		this.quizID = quizID;
 	}
+
 
 	/**
 	 * @param quizCreation the quizCreation to set
@@ -389,6 +428,33 @@ public class Quiz {
 	public void addQuestion(Question question) {
 		questionList.add(question);
 	}
+
+	//added by Ali
+	public ArrayList<Question> getQuestionList() {
+		return questionList;
+	}
 	
+	public int getScore() {
+		return score;
+	}
+	
+	public int getPossibleScore() {
+		return possibleScore;
+	}
+
+	/**
+	 * @return the inPracticeMode
+	 */
+	public boolean isInPracticeMode() {
+		return inPracticeMode;
+	}
+
+	/**
+	 * @param inPracticeMode the inPracticeMode to set
+	 */
+	public void setInPracticeMode(boolean inPracticeMode) {
+		this.inPracticeMode = inPracticeMode;
+	}
+
 
 }

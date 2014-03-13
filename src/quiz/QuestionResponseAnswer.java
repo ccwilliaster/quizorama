@@ -24,20 +24,15 @@ public class QuestionResponseAnswer extends Answer {
 
 	@Override
 	public String getAnswersHtml() {
-		return "<input type='text' name='answer'/>";
+		String location = "answer-" + questionId;
+		locations.add(location);
+		String html = "<input type='text' name='" + location + "'/>";
+		return html;
 	}
 
 	@Override
 	public int possiblePoints() {
 		return 1;
 	}
-
-	@Override
-	public ArrayList<String> getAnswerLocations() {
-		ArrayList<String> locations = new ArrayList<String>();
-		locations.add("answer");
-		return locations;
-	}
-
 
 }

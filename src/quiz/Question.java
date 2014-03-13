@@ -3,7 +3,7 @@ package quiz;
 import java.sql.*;
 import java.util.*;
 
-public abstract class Question {
+public abstract class Question implements Comparable {
 	public static final int QTYPE_QR = 0;
 	public static final int QTYPE_FB = 1;
 	public static final int QTYPE_MC = 2;
@@ -23,25 +23,21 @@ public abstract class Question {
 		this.questionNum = questionNum;
 		this.quizId = quizId;
 
-		addAnswers(questionId, db);
+		addAnswers(db);
 	}
 	
-	public abstract void addAnswers(int questionId, DBConnection db) throws NumberFormatException, SQLException;
-	
-	public void addAnswers( DBConnection db) throws NumberFormatException, SQLException {
-		addAnswers(questionId, db);
-	} //addAnswers
-	
+	public abstract void addAnswers(DBConnection db) throws NumberFormatException, SQLException;	
 	
 	public String showQuestion() {
 		String html = "<p>" + questionText + "</p>";
+		html += answers.getAnswersHtml();
 		return html;
 	}
 	
 	public String showAnswerOptions() {
-		return answers.getAnswersHtml();
+		return answers.showAnswerOptions();
 	}
-	
+
 	/**
 	 * @return the questionId
 	 */
@@ -92,5 +88,11 @@ public abstract class Question {
 	public String showAnswer() {
 		return answers.showAnswer();
 	}
-
+	
+	@Override
+	public int compareTo(Object o) {
+		Question other = (Question)o;
+		return questionNum - other.questionNum;
+	}
+	
 }
