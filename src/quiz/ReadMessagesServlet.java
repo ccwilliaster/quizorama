@@ -46,7 +46,7 @@ public class ReadMessagesServlet extends HttpServlet {
 				add( Message.TYPE_FRIEND );
 				add( Message.TYPE_CHALLENGE );
 			}};
-			if (true /* user.isAdmin() */) {
+			if ( user.isAdmin() ) {
 				validTypes.add( Message.TYPE_ANNOUNCEMENT );
 				validTypes.add( Message.TYPE_QUIZ_FLAG );
 			}

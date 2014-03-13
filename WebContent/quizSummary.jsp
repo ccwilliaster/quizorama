@@ -10,13 +10,11 @@
 	Integer quizID     = null;
 	Integer userRating = null;
 	Integer userID     = null;
-	String userType, userName, flagNote;
-	ArrayList<String> categories;
-	ArrayList<String> tags;
-
+	String userType, userName;
+	
 	//Get DBConnection, user, and relevant quiz info
-	connection         = (DBConnection) application.getAttribute("DBConnection");
-	User user          = (User) session.getAttribute("user");
+	connection = (DBConnection) application.getAttribute("DBConnection");
+	User user  = (User) session.getAttribute("user");
 	
 	if (request.getParameterMap().containsKey("quizID")) { // error handling
 		 quizID     = Integer.parseInt( request.getParameter("quizID") );
@@ -24,20 +22,21 @@
 		request.getRequestDispatcher("error.jsp").forward(request, response); 
 	}
 	
-	Quiz quiz          = new Quiz(quizID, connection);
-	String quizName    = quiz.getQuizName();
-	String quizSummary = quiz.getQuizSummary();
-	Integer creatorID  = quiz.getquizCreatoruserID(); 
-	String creatorName = connection.getUserName(creatorID);
-	double numStars    = Math.floor( quiz.getRating() ); // no half stars
-	Integer numQuestions = quiz.getNumQuestions();
-	double avgScore    = quiz.getAverageScore();
-	categories         = quiz.getCategories();
-	tags 			   = quiz.getTags();
-	flagNote = (String) request.getAttribute("flagNote"); // if user just flagged quiz
+	Quiz quiz                    = new Quiz(quizID, connection);
+	String quizName              = quiz.getQuizName();
+	String quizSummary           = "TODO"; //quiz.getQuizSummary();
+	Integer creatorID            = quiz.getquizCreatoruserID(); 
+	String creatorName           = connection.getUserName(creatorID);
+	double numStars              = Math.floor( quiz.getRating() ); // no half stars
+	Integer numQuestions         = quiz.getNumQuestions();
+	double avgScore              = quiz.getAverageScore();
+	boolean supportsPracticeMode = true; //quiz.getPractiveMode();
+	ArrayList<String> categories = quiz.getCategories();
+	ArrayList<String> tags       = quiz.getTags();
+	String flagNote = (String) request.getAttribute("flagNote"); // if user just flagged quiz
 		
 	// Figure out some user properties which toggle displays 
-	if (user == null) { // guest
+	if (user == null || user.getUserID() == -1) { // guest
 		userID   = -1;
 		userType = "guest";
 		userName = "Guest";
@@ -93,16 +92,21 @@
 	}
 	
 	/*
-	 *Prints labels with the specified bootstrap label class, e.g., label-primary
-	 * and of the specified height, e.g., h4
+	 * Prints labels with the specified bootstrap label class, e.g., label-primary
+	 * Type should specify the type of label (categories or tags)
 	 */
-	public String printLabels(ArrayList<String> labels, String labelClass) {
+	public String printLabels(ArrayList<String> labels, String labelClass, String type) {
 		StringBuilder html = new StringBuilder();
-		String label;
-		for (int i=0; i < labels.size(); i++) {
-			label = labels.get(i);
-			html.append( "<span class='label " + labelClass + "'>" + label + "</span>");
-			if ((i+1) % 5 == 0) { html.append("<br>"); }
+
+		if ( labels.size() > 0 && labels.get(0) != null) {
+			String label;
+			for (int i=0; i < labels.size(); i++) {
+				label = labels.get(i);
+				html.append( "<span class='label " + labelClass + "'>" + label + "</span>");
+				if ((i+1) % 5 == 0) { html.append("<br>"); }
+			}
+		} else {
+			html.append("<h5 style='color:#d9534f'><em>No " + type + "</em></h5>");
 		}
 		return html.toString();
 	}
@@ -124,51 +128,62 @@
 	
 	/*
 	 * Generates links pertaining to the quiz: Take quiz, flag quiz, or delete
-	 * quiz, depending on userType. Also displays a flagNote
+	 * quiz, depending on userType. Also displays a flagNote and an option for 
+	 * taking the quiz in practice mode if supported
 	 */
-	public String getQuizLinks(String userType, Integer quizID, String quizName, String flagNote) {
+	public String getQuizLinks(String userType, Integer quizID, String quizName, 
+			boolean supportsPracticeMode, String flagNote) {
 		StringBuilder html = new StringBuilder();
 		if ( userType.equals("guest") ) {
 			html.append(
 			"<div class='col-md-3'>" +
 			"<form action='QuizControllerServlet'>" +
 		      "<input type='hidden' name='quizID' value=" + quizID + " />" +
-			  "<button class='disabled btn btn-primary'>Login to take quiz</button>" +
+		      "<button class='disabled btn btn-primary btn-sm'>Login to take quiz</button>" +
 			"</form>" +
 		  "</div>");
-		}  else {
-			html.append(
+		}  else {		
+			if ( supportsPracticeMode ) { html.append(
+			"<div class='col-md-4'>" +
+			  "<div class='input-group'>" +
+			    "<form action='QuizControllerServlet'>" +
+		          "<input type='hidden' name='quizID' value=" + quizID + " />" +
+			      "<button class='btn btn-primary btn-sm' type='submit'>Take Quiz</button>" +
+			      "<button class='btn btn-success btn-sm' name='practice'" + 
+			       "title='Practice quiz' type='submit'>Practice</button>" +
+			    "</form></div></div>");
+			} else { html.append(
 			"<div class='col-md-3'>" +
-			"<form action='QuizControllerServlet'>" +
-		      "<input type='hidden' name='quizID' value=" + quizID + " />" +
-			  "<button class='btn btn-primary' type='submit'>Take Quiz</button>" +
-			"</form></div>");
+				"<form action='QuizControllerServlet'>" +
+			      "<input type='hidden' name='quizID' value=" + quizID + " />" +
+				  "<button class='btn btn-primary' type='submit'>Take Quiz</button>" +
+				"</form></div>");
+			}	
 		} if ( userType.equals("standard") ) {
 			html.append(
-		  "<div class='col-md-5 pull-left'>" +
+		  "<div class='col-md-1 pull-left'>" +
 			"<form action='FlagQuizServlet' method='POST'>" +
 			  "<input type='hidden' name='quizID' value=" + quizID + " />" +
-			  "<input type='hidden' name='quizName' value='" + quizName + "' />");
-			
+			  "<input type='hidden' name='quizName' value='" + quizName + "' />");		
 			if (flagNote != null) { 
 				html.append(
-						  "<button class='disabled btn btn-danger' type='submit'>" + 
-						    "<span class='glyphicon glyphicon-flag'></span> " + 
-						    "<em>" + flagNote + "</em></button>" +
-						"</form></div>");
+				  "<button class='disabled btn btn-danger btn-sm' type='submit'>" + 
+				    "<span class='glyphicon glyphicon-flag'></span> " + 
+				    "<em>" + flagNote + "</em></button>" +
+				"</form></div>");
 			} else { 
 				html.append(
-				  "<button class='btn btn-danger' type='submit'>" + 
+				  "<button class='btn btn-danger btn-sm' type='submit'>" + 
 				    "<span class='glyphicon glyphicon-flag'></span> Flag" +
 				  "</button>" +
 				"</form></div>");
 			}
 		} else if ( userType.equals("admin") ) {
 			html.append(
-		  "<div class='col-md-3  pull-left'>" +
+		  "<div class='col-md-1  pull-left'>" +
 			"<form action='DeleteQuizServlet' method='POST'>" +
 			  "<input type='hidden' name='quizID' value=" + quizID + " />" +
-			  "<button class='btn btn-danger' 'type='submit'>" + 
+			  "<button class='btn btn-danger btn-sm' 'type='submit'>" + 
 			    "<span title='Delete quiz' class='glyphicon glyphicon-trash'></span> Delete" +
 			  "</button>" +
 			"</form>" +
@@ -243,7 +258,7 @@
 							<%= quizSummary %>
 							<br><span class="badge"><%= numQuestions %> questions</span>
 							<div class="row">
-								<%= getQuizLinks(userType, quizID, quizName, flagNote) %>
+								<%= getQuizLinks(userType, quizID, quizName, supportsPracticeMode, flagNote) %>
 							</div>
 						</p>	
 					</div>
@@ -272,9 +287,9 @@
       						</h3><br>
       					</dd>
       					<dt>categories</dt>
-      					<dd><%= printLabels(categories, "label-warning") %><br><br></dd>
+      					<dd><%= printLabels(categories, "label-warning", "categories") %><br><br></dd>
       					<dt>tags</dt>
-      					<dd><%= printLabels(tags, "label-success") %></dd>
+      					<dd><%= printLabels(tags, "label-success", "tags") %></dd>
 					</dl> 
       				
 

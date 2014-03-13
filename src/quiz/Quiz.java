@@ -46,6 +46,7 @@ public class Quiz {
 		this.connection = connection;
 		this.quizID = quizID;
 		ResultSet quizInfo = connection.getQuizInformation(quizID);
+		quizInfo.first();
 		quizName = quizInfo.getString("quizName");
 		quizCreation = quizInfo.getDate("quizCreation"); //NEED TO TEST THIS java.sql.date to java.util.date conversion
 		quizCreatorUserID = quizInfo.getInt("quizCreatoruserID");
@@ -54,7 +55,7 @@ public class Quiz {
 		immediateCorrection = quizInfo.getBoolean("immediateCorrection?");
 	
 		//CAN ALSO MAKE QUESTIONS 'ON THE FLY'
-		populateQuestions();
+		//populateQuestions();
 	}
 
 	/**
