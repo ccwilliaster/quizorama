@@ -18,6 +18,7 @@ public class QuizHistory {
 	public static ArrayList<Rating> getRatingsByQuiz(int quizID, DBConnection connection) throws SQLException{
 		ArrayList<Rating> result = new ArrayList<Rating>();
 		ResultSet ratings = connection.getRatings(quizID);
+		ratings.beforeFirst();
 		while(ratings.next()) {
 			int userID = ratings.getInt("userID");
 			int ratingValue = ratings.getInt("ratingValue");
@@ -33,6 +34,7 @@ public class QuizHistory {
 	public static ArrayList<Rating> getRatingsByUser(int userID, DBConnection connection) throws SQLException {
 		ArrayList<Rating> result = new ArrayList<Rating>();
 		ResultSet ratings = connection.getRatingsByUserID(userID);
+		ratings.beforeFirst();
 		while(ratings.next()) {
 			int quizID = ratings.getInt("quizID");
 			int ratingValue = ratings.getInt("ratingValue");
@@ -46,8 +48,10 @@ public class QuizHistory {
 	public static ArrayList<Score> getHistories(Integer userID, Integer quizID, DBConnection connection) throws SQLException {
 		ArrayList<Score> result = new ArrayList<Score>();
 		ResultSet histories = (userID == null) ? connection.getHistories(quizID) : connection.getHistoriesByUserID(userID);
+		histories.beforeFirst();
 		while (histories.next()) {
 			quizID = histories.getInt("quizID");
+			userID = histories.getInt("userID");
 			int score = histories.getInt("score");
 			java.util.Date date = (java.util.Date) histories.getObject("dateTaken");
 			Score currentScore = new Score(quizID, userID, score, date);
@@ -108,6 +112,7 @@ public class QuizHistory {
 	public static ArrayList<QuizCreation> getQuizzes(Integer userID, DBConnection connection) throws SQLException {
 		ArrayList<QuizCreation> result = new ArrayList<QuizCreation>();
 		ResultSet quizzes = (userID == null) ? connection.getAllQuizzes() : connection.getQuizzesCreatedByUserID(userID);
+		quizzes.beforeFirst();
 		while (quizzes.next()) {
 			int quizID = quizzes.getInt("quizID");
 			userID = quizzes.getInt("quizCreatoruserID");
@@ -149,6 +154,7 @@ public class QuizHistory {
 	public static ArrayList<String> getPopularQuizzes(DBConnection connection) throws SQLException {
 		ArrayList<String> result = new ArrayList<String>();
 		ResultSet allRatings = connection.getAllRatings();
+		allRatings.beforeFirst();
 		HashMap<Integer, Integer> popQuizzes = new HashMap<Integer, Integer>();
 		while(allRatings.next()) {
 			int quizID = allRatings.getInt("quizID");
@@ -183,6 +189,7 @@ public class QuizHistory {
 	public static ArrayList<String> getCategories(int quizID, DBConnection connection) throws SQLException {	
 		ArrayList<String> result = new ArrayList<String>();
 		ResultSet categories = connection.getCategories(quizID);
+		categories.beforeFirst();
 		while (categories.next()) {
 			result.add(categories.getString("categoryName"));
 		}
@@ -191,6 +198,7 @@ public class QuizHistory {
 	public static ArrayList<String> getTags(int quizID, DBConnection connection) throws SQLException {
 		ArrayList<String> result = new ArrayList<String>();
 		ResultSet tags = connection.getTags(quizID);
+		tags.beforeFirst();
 		while(tags.next()) {
 			result.add(tags.getString("tagName"));
 		}
@@ -200,6 +208,7 @@ public class QuizHistory {
 		int numValues = 0;
 		int total = 0;
 		ResultSet ratings = connection.getRatings(quizID);
+		ratings.beforeFirst();
 		while (ratings.next()) {
 			total += ratings.getInt("ratingValue");
 			numValues++;

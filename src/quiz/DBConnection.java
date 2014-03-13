@@ -235,9 +235,9 @@ public class DBConnection {
 		return sql.execute();
 	}
 	
-	public boolean addQuizHistory(int quizID, int userID, int score) throws SQLException {
+	public int addQuizHistory(int quizID, int userID, int score) throws SQLException {
 		String set = "INSERT INTO " + quizHistoryTable + 
-			" (quizID, userID, dateTaken, score, completed?, timeStamp) VALUES ( ?, ?, ?, ?, ?, ? )";
+			" (quizID, userID, dateTaken, score, `completed?`, timeStamp) VALUES ( ?, ?, ?, ?, ?, ? )";
 		PreparedStatement sql = conn.prepareStatement(set);
 		java.util.Date utilDate = new java.util.Date();
 		Date date = new Date(utilDate.getTime());
@@ -247,7 +247,8 @@ public class DBConnection {
 		sql.setInt(4, score);
 		sql.setInt(5,1); //Completed = true
 		sql.setDate(6, date);
-		return sql.execute();
+		int success = sql.executeUpdate();
+		return success;
 	} //addQuizHistory
 
 	public boolean isValidUserName(String userName) throws SQLException {
@@ -642,7 +643,7 @@ public class DBConnection {
 		String insert = "insert into " + userAchievementsTable + " (userID, achievementID) VALUES (?, ?);";
 		PreparedStatement sql = conn.prepareStatement(insert, Statement.RETURN_GENERATED_KEYS);
 		sql.setInt(1, userID);
-		sql.setInt(1, achievementID);
+		sql.setInt(2, achievementID);
 		int affectedRows = sql.executeUpdate();
 		if (affectedRows == 0) {
 			throw new SQLException("Creating achievement failed, no rows affected.");
