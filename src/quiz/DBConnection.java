@@ -235,7 +235,7 @@ public class DBConnection {
 		return sql.execute();
 	}
 	
-	public int addQuizHistory(int quizID, int userID, int score) throws SQLException {
+	public boolean addQuizHistory(int quizID, int userID, int score) throws SQLException {
 		String set = "INSERT INTO " + quizHistoryTable + 
 			" (quizID, userID, dateTaken, score, `completed?`, timeStamp) VALUES ( ?, ?, ?, ?, ?, ? )";
 		PreparedStatement sql = conn.prepareStatement(set);
@@ -248,7 +248,11 @@ public class DBConnection {
 		sql.setInt(5,1); //Completed = true
 		sql.setDate(6, date);
 		int success = sql.executeUpdate();
-		return success;
+		boolean worked = false;
+		if (success > 0) {
+			worked = true;
+		}
+		return worked;
 	} //addQuizHistory
 
 	public boolean isValidUserName(String userName) throws SQLException {

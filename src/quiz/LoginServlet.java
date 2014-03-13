@@ -95,7 +95,7 @@ public class LoginServlet extends HttpServlet {
 		User user = new User(userID, userName, dbConnection);
 		HttpSession httpSession = request.getSession();
 		httpSession.setAttribute("user", user);
-		RequestDispatcher requestDispatcher = request.getRequestDispatcher("userpage.jsp");
+		RequestDispatcher requestDispatcher = request.getRequestDispatcher("userpage.jsp?userID=" + userID);
 		requestDispatcher.forward(request, response);
 	} //doPost
 	
