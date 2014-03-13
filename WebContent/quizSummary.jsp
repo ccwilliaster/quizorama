@@ -260,7 +260,7 @@
 							<div class="row">
 								<%= getQuizLinks(userType, quizID, quizName, supportsPracticeMode, flagNote) %>
 							</div>
-						</p>	
+						</p>
 					</div>
 				</div>
 				<br><br>

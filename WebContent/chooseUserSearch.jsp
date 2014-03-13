@@ -36,15 +36,15 @@
 			e.printStackTrace();
 		}
 		
-		for (Integer quizId : userMap.keySet()) {
+		for (Integer userId : userMap.keySet()) {
 			out.println("<li>");
-			out.println("<input name='quizId' type='hidden' value='" + quizId + "'/>");
-			out.println("<a href='createMessage.jsp?type=" + Message.TYPE_FRIEND + "' >" + userMap.get(quizId) + "</a>");
+			out.println("<input name='quizId' type='hidden' value='" + userId + "'/>");
+			out.println("<a href='createMessage.jsp?type=" + Message.TYPE_FRIEND + "&toUserName=" + userMap.get(userId) + "' >" + userMap.get(userId) + "</a>");
 			out.println("</li>");
 		}
 
 %>
-</div>
 </ul>
+</div>
 </body>
 </html>
