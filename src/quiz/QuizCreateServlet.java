@@ -72,7 +72,7 @@ public class QuizCreateServlet extends HttpServlet {
 			request.getSession().setAttribute("Quiz", quiz);
 			
 			//Allow a user to select the next type of question
-			askForNextQuestion(response);
+			askForNextQuestion(request, response, true); 
 			
 		} //if
 		else if(request.getParameter("origin").equals("QuizCreateServlet")) {
@@ -142,7 +142,7 @@ public class QuizCreateServlet extends HttpServlet {
 			}
 
 			//Last thing:
-			askForNextQuestion(response);
+			askForNextQuestion(request, response, false);
 		} //else if
 		else if(request.getParameter("origin").equals("CreateQuizFB.jsp")) {
 			String questionPreText = request.getParameter("pre");
@@ -172,7 +172,7 @@ public class QuizCreateServlet extends HttpServlet {
 			}
 			
 			//Last thing:
-			askForNextQuestion(response);
+			askForNextQuestion(request, response, false);
 		} //else if
 		else if(request.getParameter("origin").equals("CreateQuizMC.jsp")) {
 			String questionText = request.getParameter("question");
@@ -199,7 +199,7 @@ public class QuizCreateServlet extends HttpServlet {
 			}
 			
 			//Last thing:
-			askForNextQuestion(response);
+			askForNextQuestion(request, response, false);
 		} //else if
 		else if(request.getParameter("origin").equals("CreateQuizPR.jsp")) {
 			String questionText = request.getParameter("question");
@@ -227,7 +227,7 @@ public class QuizCreateServlet extends HttpServlet {
 			}
 
 			//Last thing:
-			askForNextQuestion(response);
+			askForNextQuestion(request, response, false);
 		} //else if
 		
 		else {
@@ -265,27 +265,21 @@ public class QuizCreateServlet extends HttpServlet {
 		return question;
 	}
 
-	private void askForNextQuestion(HttpServletResponse response) throws IOException {
-
-		//Create a very simple page asking the user what the next question type will be
+	private void askForNextQuestion(HttpServletRequest request, HttpServletResponse response, 
+			boolean firstQuestion) throws IOException, ServletException {
+		StringBuilder options = new StringBuilder();
+		options.append(
+			"<option value=\"" + QTYPE_QR + "\">Question Response Question</option>" +
+			"<option value=\"" + QTYPE_MC + "\">Multiple Choice Question</option>" +
+			"<option value=\"" + QTYPE_FB + "\">Fill-In-The-Blank Question</option>" +
+			"<option value=\"" + QTYPE_PR + "\">Picture Response Question</option>");
 		
-		PrintWriter out = response.getWriter();
-		out.println("<!DOCTYPE html>");
-		out.println("<head>");
-		out.println("<meta charset=\"UTF-8\" />"); 
-		out.println("<title>Create a question...</title>"); 
-		out.println("</head>");
-		out.println("<body>");
-		out.println("<h1>What type of question would you like to create?</h1>");
-		out.println("<form action=\"QuizCreateServlet\" method=\"post\" >");
-		out.println("<input name=\"origin\" type=\"hidden\" value=\"QuizCreateServlet\" >");
-		out.println("Question Type: <select name=\"questionType\"> <option value=\"done\">No More Questions!</option>");
-		out.println("<option value=\"" + QTYPE_QR + "\">Question Response Question</option>");
-		out.println("<option value=\"" + QTYPE_MC + "\">Multiple Choice Question</option>");
-		out.println("<option value=\"" + QTYPE_FB + "\">Fill-In-The-Blank Question</option>");
-		out.println("<option value=\"" + QTYPE_PR + "\">Picture Response Question</option></select>");
-		out.println("<button>Go!</button>");
-		out.println("</form>");
+		if (!firstQuestion) {
+			options.append("<option value=\"done\">No More Questions!</option>");
+		}
+			
+		request.setAttribute("options", options.toString());
+		request.getRequestDispatcher("askForNextQuestion.jsp").forward(request, response);
 	}
 
 	private Quiz createNewQuiz(HttpServletRequest request) throws SQLException {
@@ -303,23 +297,24 @@ public class QuizCreateServlet extends HttpServlet {
 		boolean immediateCorrection = false;
 		boolean practiceMode = false;
 		
-		for (int i = 0; i < checkBoxes.length; i++ ) {
-			if (checkBoxes[i].equals(RANDOM_PARAM)) {
-				randomOrder = true;
-			} //if
-			else if (checkBoxes[i].equals(ONEPAGE_PARAM)) {
-				singlePage = true;
-			} //else if
-			else if (checkBoxes[i].equals(PRACTICE_PARAM)) {
-				practiceMode = true;
-			} //else if
-			else if (checkBoxes[i].equals(IMMEDIATECORR_PARAM)) {
-				immediateCorrection = true;
-			} //else if
-			
-		} //for
+		if (checkBoxes != null && checkBoxes.length > 0) {
+			for (int i = 0; i < checkBoxes.length; i++ ) {
+				if (checkBoxes[i].equals(RANDOM_PARAM)) {
+					randomOrder = true;
+				} //if
+				else if (checkBoxes[i].equals(ONEPAGE_PARAM)) {
+					singlePage = true;
+				} //else if
+				else if (checkBoxes[i].equals(PRACTICE_PARAM)) {
+					practiceMode = true;
+				} //else if
+				else if (checkBoxes[i].equals(IMMEDIATECORR_PARAM)) {
+					immediateCorrection = true;
+				} //else if
 				
-			return new Quiz(quizName, userID, singlePage,randomOrder,immediateCorrection, practiceMode, dbConnection);
+			} //for
+		}
+		return new Quiz(quizName, userID, singlePage,randomOrder,immediateCorrection, practiceMode, dbConnection);
 	}
 
 }
