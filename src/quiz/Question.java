@@ -3,11 +3,12 @@ package quiz;
 import java.sql.*;
 import java.util.*;
 
-public abstract class Question implements Comparable<Question> {
-	public static final int QTYPE_QR = 0;
-	public static final int QTYPE_FB = 1;
-	public static final int QTYPE_MC = 2;
-	public static final int QTYPE_PR = 3;
+public abstract class Question implements Comparable {
+	public static final int QTYPE_QR = 1;
+	public static final int QTYPE_FB = 2;
+	public static final int QTYPE_MC = 3;
+	public static final int QTYPE_PR = 4;
+	public static final int QTYPE_MA = 5;
 	
 	final int questionId;
 	String questionText;
@@ -26,7 +27,7 @@ public abstract class Question implements Comparable<Question> {
 		addAnswers(db);
 	}
 	
-	public abstract void addAnswers(DBConnection db) throws NumberFormatException, SQLException;	
+	public abstract void addAnswers(DBConnection db) throws NumberFormatException, SQLException;
 	
 	public String showQuestion() {
 		String html = "<p>" + questionText + "</p>";
@@ -73,6 +74,7 @@ public abstract class Question implements Comparable<Question> {
 		return quizId;
 	}
 
+		
 	public int checkAnswers(ArrayList<String> guesses) {
 		return answers.checkAnswers(guesses);
 	}
@@ -90,7 +92,8 @@ public abstract class Question implements Comparable<Question> {
 	}
 	
 	@Override
-	public int compareTo(Question other) {
+	public int compareTo(Object o) {
+		Question other = (Question)o;
 		return questionNum - other.questionNum;
 	}
 	
