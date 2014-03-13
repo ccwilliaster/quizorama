@@ -1,7 +1,6 @@
 package quiz;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.sql.SQLException;
@@ -32,7 +31,7 @@ public class LoginServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		RequestDispatcher requestDispatcher = request.getRequestDispatcher("homepage.html");
+		RequestDispatcher requestDispatcher = request.getRequestDispatcher("homepage.jsp");
 		requestDispatcher.forward(request, response);
 		return;
 	} //doGet
