@@ -380,6 +380,51 @@ public class DBConnection {
 		return sql.executeQuery();		
 	} //getHistories
 	
+	public ResultSet getTagTypes() throws SQLException {
+		String select = "SELECT * FROM " + tagsTable + ";";
+		PreparedStatement sql = conn.prepareStatement(select);
+		return sql.executeQuery();
+	} //getTagTypes
+	
+	public ResultSet getCategoryTypes() throws SQLException {
+		String select = "SELECT * FROM " + categoriesTable + ";";
+		PreparedStatement sql = conn.prepareStatement(select);
+		return sql.executeQuery();
+	} //getCategoriesTypes
+	
+	public ResultSet searchForQuiz(String quizFilter, String tagFilter, String catFilter) throws SQLException {
+		String tagAddOn = "";
+		String catAddOn = "";
+		if (tagFilter == null) {
+			tagFilter = "%";
+			tagAddOn = "or b.tagID is null ";
+		} //if
+		if (catFilter == null) {
+			catFilter = "%";
+			catAddOn = "or c.categoryID is null ";
+		} //if
+		if (quizFilter == null || quizFilter.equals("")) {
+			quizFilter = "%";
+		}
+		
+		String select = "SELECT * FROM " + quizTable + " a LEFT JOIN " + quizTagsTable + " b"
+				+ " ON a.quizID = b.quizID LEFT JOIN " + quizCategoriesTable + " c ON a.quizID = c.quizID "
+				+ "WHERE a.quizName like ? AND (b.tagID like ? + " + tagAddOn + ") AND ( c.categoryID like ? "
+				+ catAddOn + ");";
+		PreparedStatement sql = conn.prepareStatement(select);
+		sql.setString(1, quizFilter);
+		sql.setString(2, tagFilter);
+		sql.setString(3, catFilter);
+		return sql.executeQuery();		
+	} //searchForQuiz
+	
+	public ResultSet searchForUser(String userFilter) throws SQLException {
+		String select = "SELECT * FROM " + userTable + "WHERE userName like ?;";
+		PreparedStatement sql = conn.prepareStatement(select);
+		sql.setString(1, userFilter);
+		return sql.executeQuery();
+	} //searchForUser
+	
 	public ResultSet getTags(int quizID) throws SQLException {
 		String select = "SELECT a.quizID, a.quizName, c.tagName FROM " + quizTable + " a LEFT JOIN "
 			+ quizTagsTable + " b ON a.quizID = b.quizID LEFT JOIN "
@@ -413,6 +458,12 @@ public class DBConnection {
 		sql.setInt(1, questionId);
 		return sql.executeQuery();
 	} //getAnswerInfo
+	
+	public ResultSet getAllQuizzes() throws SQLException {
+		String select = "SELECT * FROM " + quizTable + ";";
+		PreparedStatement sql = conn.prepareStatement(select);
+		return sql.executeQuery();
+	} //getAllQuizzes
 
 	public void addQuiz(Quiz quiz) throws SQLException {
 		ResultSet genKey = null;

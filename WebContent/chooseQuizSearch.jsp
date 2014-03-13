@@ -22,7 +22,13 @@
 <%@ page import="java.sql.*" %> 
 <% 
 		DBConnection dbConnection = (DBConnection) application.getAttribute("DBConnection");
-		ResultSet quizzes = dbConnection.getAllQuizzes();
+		String quizFilter = request.getParameter("quizFilter");
+		int tagFilterValue = Integer.parseInt(request.getParameter("tagFilter"));
+		int catFilterValue = Integer.parseInt(request.getParameter("catFilter"));
+		String tagFilter = tagFilterValue == -1 ? null : String.valueOf(tagFilterValue);
+		String catFilter = catFilterValue == -1 ? null : String.valueOf(catFilterValue);
+		
+		ResultSet quizzes = dbConnection.searchForQuiz(quizFilter, tagFilter, catFilter);
 		Map<Integer, String> quizMap = new HashMap<Integer, String>();
 		session.setAttribute("quiz", null);
 		try {

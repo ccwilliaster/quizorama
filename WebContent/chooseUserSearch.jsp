@@ -22,24 +22,24 @@
 <%@ page import="java.sql.*" %> 
 <% 
 		DBConnection dbConnection = (DBConnection) application.getAttribute("DBConnection");
-		ResultSet quizzes = dbConnection.getAllQuizzes();
-		Map<Integer, String> quizMap = new HashMap<Integer, String>();
-		session.setAttribute("quiz", null);
+		String userFilter = request.getParameter("userFilter");
+		ResultSet users = dbConnection.searchForUser(userFilter);
+		Map<Integer, String> userMap = new HashMap<Integer, String>();
 		try {
-			quizzes.beforeFirst();
-			while (quizzes.next()) {
-				String quizName = quizzes.getString("quizName");
-				int quizId = quizzes.getInt("quizID");
-				quizMap.put(quizId, quizName);
+			users.beforeFirst();
+			while (users.next()) {
+				String userName = users.getString("quizName");
+				int userId = users.getInt("quizID");
+				userMap.put(userId, userName);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		
-		for (Integer quizId : quizMap.keySet()) {
+		for (Integer quizId : userMap.keySet()) {
 			out.println("<li>");
 			out.println("<input name='quizId' type='hidden' value='" + quizId + "'/>");
-			out.println("<a href='QuizControllerServlet?id=" + quizId + "' >" + quizMap.get(quizId) + "</a>");
+			out.println("<a href='createMessage.jsp?type=" + Message.TYPE_FRIEND + "' >" + userMap.get(quizId) + "</a>");
 			out.println("</li>");
 		}
 
