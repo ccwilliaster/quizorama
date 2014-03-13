@@ -39,7 +39,7 @@
 		} //while
 		%>
 	</select> <br><br>
-	<input class="btn btn-default" type="submit" value="Create Quiz"> <br><br>
+	<input class="btn btn-default" type="submit" value="Search Quizzes"> <br><br>
 </form>
 </body>
 </html>

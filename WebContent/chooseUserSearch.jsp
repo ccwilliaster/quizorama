@@ -8,13 +8,13 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><link href="./css/bootstrap.css" rel="stylesheet">
 <script type="text/javascript" src="./js/jquery.js"></script>
 <script type="text/javascript" src="./js/bootstrap.js"></script>
-<title>Take a Quiz!</title>
+<title>Make a friend!</title>
 </head>
 <body>
 <div class="container">
-<h1>Choose a Quiz to try:</h1>
+<h1>Choose a user to befriend:</h1>
 <p></p>
-<p>Quizzes: </p>
+<p>Users: </p>
 <p></p>
 <ul>
 <%@ page import="quiz.*" %> 
@@ -22,14 +22,14 @@
 <%@ page import="java.sql.*" %> 
 <% 
 		DBConnection dbConnection = (DBConnection) application.getAttribute("DBConnection");
-		String userFilter = request.getParameter("userFilter");
+		String userFilter = request.getParameter("userNameFilter");
 		ResultSet users = dbConnection.searchForUser(userFilter);
 		Map<Integer, String> userMap = new HashMap<Integer, String>();
 		try {
 			users.beforeFirst();
 			while (users.next()) {
-				String userName = users.getString("quizName");
-				int userId = users.getInt("quizID");
+				String userName = users.getString("userName");
+				int userId = users.getInt("userID");
 				userMap.put(userId, userName);
 			}
 		} catch (SQLException e) {

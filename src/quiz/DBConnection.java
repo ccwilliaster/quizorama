@@ -416,11 +416,11 @@ public class DBConnection {
 	public ResultSet searchForQuiz(String quizFilter, String tagFilter, String catFilter) throws SQLException {
 		String tagAddOn = "";
 		String catAddOn = "";
-		if (tagFilter == null) {
+		if (tagFilter == null || tagFilter.equals("")) {
 			tagFilter = "%";
 			tagAddOn = "or b.tagID is null ";
 		} //if
-		if (catFilter == null) {
+		if (catFilter == null || catFilter.equals("")) {
 			catFilter = "%";
 			catAddOn = "or c.categoryID is null ";
 		} //if
@@ -440,8 +440,9 @@ public class DBConnection {
 	} //searchForQuiz
 	
 	public ResultSet searchForUser(String userFilter) throws SQLException {
-		String select = "SELECT * FROM " + userTable + "WHERE userName like ?;";
+		String select = "SELECT * FROM " + userTable + " WHERE userName like ?;";
 		PreparedStatement sql = conn.prepareStatement(select);
+		userFilter = "%" + userFilter + "%";
 		sql.setString(1, userFilter);
 		return sql.executeQuery();
 	} //searchForUser
@@ -651,5 +652,14 @@ public class DBConnection {
 		if (!genKey.first())
 			throw new SQLException("Creating achievement failed, no gen key obtained.");			
 		return true;
+	}
+
+	public int getUserType(int userID) throws SQLException {
+			String userNameGet = "SELECT userType FROM users WHERE userID = ?";
+			PreparedStatement sql = conn.prepareStatement(userNameGet);
+			sql.setInt(1, userID);
+			ResultSet rs = sql.executeQuery();
+			rs.first();
+			return rs.getInt(1);
 	}
 }

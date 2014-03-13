@@ -15,7 +15,7 @@
 
 <form action="chooseUserSearch.jsp" method="get">
 	User Name Filter: <input name="userNameFilter"> <br><br>
-	<input class="btn btn-default" type="submit" value="Create Quiz"> <br><br>
+	<input class="btn btn-default" type="submit" value="Search Users"> <br><br>
 </form>
 </body>
 </html>

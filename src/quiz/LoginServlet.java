@@ -54,7 +54,6 @@ public class LoginServlet extends HttpServlet {
 				passwordHash = PasswordHash.createHash(password);
 
 				userID = dbConnection.createUser(userName, passwordHash);
-		
 			} catch (SQLException e) {
 				request.setAttribute("error", "Cannot create account with provided information");
 				goToFail(request, response);
@@ -62,6 +61,7 @@ public class LoginServlet extends HttpServlet {
 			}
 			catch (NoSuchAlgorithmException ignore) { } 
 			catch (InvalidKeySpecException ignore) { } //catch
+			
 		} //if
 		else if (origin.equals("Login")) {
 			//Check to see if the password is correct. 

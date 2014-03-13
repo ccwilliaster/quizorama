@@ -72,13 +72,13 @@
 					} else {
 						out.println( getAnchor("Home", "homepage.jsp", false) );
 					} if ("quizzes".equals( activeTab )) {
-						out.println( getAnchor("Quizzes", "quizsearch.jsp", true) );
+						out.println( getAnchor("Quizzes", "quizSearch.jsp", true) );
 					} else {
-						out.println( getAnchor("Quizzes", "quizsearch.jsp", false) );
+						out.println( getAnchor("Quizzes", "quizSearch.jsp", false) );
 					} if ("users".equals( activeTab )) {
-						out.println( getAnchor("Users", "usersearch.jsp", true) );
+						out.println( getAnchor("Users", "userSearch.jsp", true) );
 					} else {
-						out.println( getAnchor("Users", "usersearch.jsp", false) );
+						out.println( getAnchor("Users", "userSearch.jsp", false) );
 					} if ("messages".equals( activeTab )) {
 						out.println( getAnchor("Messages", "ReadMessagesServlet?navtab=inbox", true) + "</ul>");
 					} else {

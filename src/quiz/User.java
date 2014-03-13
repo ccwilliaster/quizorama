@@ -12,8 +12,8 @@ import java.sql.SQLException;
  *
  */
 public class User {
-	public final static int TYPE_ADMIN = 0;
-	public final static int TYPE_USER = 1;
+	public final static int TYPE_ADMIN = 1;
+	public final static int TYPE_USER = 2;
 	private int userID;
 	private String userName;
 	private int userType;
@@ -30,6 +30,7 @@ public class User {
 		this.userID = userID;
 		this.userName = userName;
 		this.dbConnection = dbConnection;
+		this.userType = TYPE_USER;
 	} //Constructor
 
 	public User(int userID, String userName, int userType, DBConnection dbConnection) {
