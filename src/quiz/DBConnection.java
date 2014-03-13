@@ -7,6 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 
 /**
  * This class controls the connection from the quiz website to the database
@@ -34,6 +35,8 @@ public class DBConnection {
 	private final String categoriesTable = "categories";
 	private final String userQuizRatingsTable = "userQuizRatings";
 	private final String friendshipTable = "friendships";
+	private final String userAchievementsTable = "userAchievements";
+	private final String achievementsTable = "achievements";
 	private Connection conn;
 		
 	public DBConnection() throws ClassNotFoundException, SQLException {
@@ -564,4 +567,70 @@ public class DBConnection {
 
 		return sql.execute();
 	} //updateQuizRating
+	public ResultSet getQuizzesCreatedByUserID(int userID) throws SQLException {
+		String select = "SELECT * FROM " + quizTable + " WHERE quizCreatoruserID = ?";
+		PreparedStatement sql = conn.prepareStatement(select);
+		sql.setInt(1, userID);
+		return sql.executeQuery();		
+	} 
+	public ResultSet getAllRatings() throws SQLException {
+		String select = "SELECT * FROM " + userQuizRatingsTable;
+		PreparedStatement sql = conn.prepareStatement(select);
+		return sql.executeQuery();
+	} 
+	private static final int NUM_RECENT_MESSAGES = 3;
+	public ArrayList<Message> getRecentMessages(int userID) throws SQLException{
+		ResultSet rs = getUserMessages(userID);
+		ArrayList<Message> messages = Message.loadMessages(rs, null, userID, null);
+		ArrayList<Message> recent = new ArrayList<Message>();
+		ArrayList<Message> result = new ArrayList<Message>();
+		for (int i = 0; i < messages.size(); i++) {
+			int recentIndex = 0;
+			while(recentIndex < recent.size() && 
+					recent.get(recentIndex).getDate().compareTo(messages.get(i).getDate()) < 0) {
+				recentIndex++;
+			}
+			recent.add(recentIndex , messages.get(i));
+		}
+		for (int i = 0; i < recent.size(); i++) {
+			if (i >= NUM_RECENT_MESSAGES) break;
+			result.add(recent.get(i));
+		}
+		return result;
+	}
+	public ArrayList<Integer> getFriends(int userID) throws SQLException {
+		ArrayList<Integer> result = new ArrayList<Integer>();
+		ResultSet rs = getAllUsers();
+		while (rs.next()) {
+			int possibleFriendID = rs.getInt("userID");
+			if (possibleFriendID != userID && usersAreFriends(userID, possibleFriendID)) {
+				result.add(possibleFriendID);
+			}
+		}
+		return result;
+	}
+	public ResultSet getuserAchievements(int userID) throws SQLException {
+		String select = "SELECT * FROM " + userAchievementsTable + " WHERE userID = ?";
+		PreparedStatement sql = conn.prepareStatement(select);
+		sql.setInt(1, userID);
+		ResultSet rs = sql.executeQuery();
+		return rs;
+	}
+	//Adrian could you take a look here?
+	public boolean setAchievement(int userID, int achievementID, String description) throws SQLException{
+		ResultSet genKey = null;
+		String insert = "insert into " + achievementsTable + " (achievementName, achievementDescription) VALUES (?, ?);";
+		PreparedStatement sql = conn.prepareStatement(insert, Statement.RETURN_GENERATED_KEYS);
+		sql.setString(1, Achievements.achievementNames[achievementID]);
+		sql.setString(2, description);
+		int affectedRows = sql.executeUpdate();
+		if (affectedRows == 0) {
+			throw new SQLException("Creating achievement failed, no rows affected.");
+	    }
+		
+		genKey = sql.getGeneratedKeys();
+		if (!genKey.first())
+			throw new SQLException("Creating achievement failed, no gen key obtained.");			
+		return true;
+	}
 }
