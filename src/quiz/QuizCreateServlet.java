@@ -99,7 +99,21 @@ public class QuizCreateServlet extends HttpServlet {
 				requestDispatcher.forward(request, response);
 			} //else if
 			else {
-				//We have chosen not to add any more questions. Finalize the quiz and send the user back to homepage
+				//All questions and answers have been completed and inserted into the db.
+				//Remove the quiz attribute and then redirect to the user page.
+				request.getSession().removeAttribute("quiz");
+				User user = (User) request.getSession().getAttribute("user");
+				DBConnection dbConnection = (DBConnection) this.getServletContext().getAttribute("DBConnection");
+				try {
+					Achievements.wroteQuiz(user.getUserID(), dbConnection);
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					RequestDispatcher requestDispatcher = request.getRequestDispatcher("CreateQuizPR.jsp");
+					requestDispatcher.forward(request, response);
+				}
+				RequestDispatcher requestDispatcher = request.getRequestDispatcher("userpage.jsp");
+				requestDispatcher.forward(request, response);
 			} //Else
 
 		} //else if
@@ -215,7 +229,6 @@ public class QuizCreateServlet extends HttpServlet {
 			//Last thing:
 			askForNextQuestion(response);
 		} //else if
-		
 		
 		else {
 			RequestDispatcher requestDispatcher = request.getRequestDispatcher("CreateQuiz.jsp");

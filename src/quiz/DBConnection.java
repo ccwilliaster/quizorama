@@ -24,7 +24,7 @@ public class DBConnection {
 	private final String db_password = MyDBInfo.MYSQL_PASSWORD;
 	private final String db_database = MyDBInfo.MYSQL_DATABASE_NAME;
 	private final String userTable = "users";
-	private final String messagesTable = "message";
+	private final String messagesTable = "messages";
 	private final String quizTable = "quizzes";
 	private final String quizQuestionTable = "quizQuestions";
 	private final String questionAnswerTable = "quizAnswers";

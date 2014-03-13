@@ -44,7 +44,7 @@
 		}
 
 %>
-</div>
 </ul>
+</div>
 </body>
 </html>
