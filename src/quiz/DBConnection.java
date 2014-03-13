@@ -73,6 +73,25 @@ public class DBConnection {
 		return sql.executeQuery();
 	} //getAnswersForQuestion
 
+	public boolean deleteQuiz(int quizID) throws SQLException {
+		String delete = 
+		"DELETE " +
+		"quizzes, quizHistory, scores, userQuizRatings, quizTags, quizCategories, " +
+		"quizAnswers, quizQuestions FROM " +
+		"quizzes LEFT JOIN quizHistory     on quizzes.quizID = quizHistory.quizID" +
+		 	   " LEFT JOIN scores          on quizzes.quizID = scores.quizID" +
+			   " LEFT JOIN userQuizRatings on quizzes.quizID = userQuizRatings.quizID" +
+			   " LEFT JOIN quizTags        on quizzes.quizID = quizTags.quizID" +
+			   " LEFT JOIN quizCategories  on quizzes.quizID = quizCategories.quizID" +
+			   " LEFT JOIN quizAnswers     on quizzes.quizID = quizAnswers.quizID" +
+			   " LEFT JOIN quizQuestions   on quizzes.quizID = quizQuestions.quizID" +
+		 " WHERE quizzes.quizID = ?";
+		
+		PreparedStatement sql = conn.prepareStatement(delete);
+		sql.setInt(1, quizID);
+		return sql.execute();
+	} // deletes all entries in the DB which contain a reference to this quizID
+	
 	/**
 	 * This function queries the database to get all of the user messages related to 
 	 * a particular user and returns them. Usually called by the Message class when 

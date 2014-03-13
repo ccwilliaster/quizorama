@@ -20,13 +20,12 @@
 	// Error checking
 	if (messages == null) { messages = new ArrayList<Message>(); }
 	if (user == null || user.getUserID() == -1) { 
-		msgUpdate = "Login or make an account to view messages."; 
+		msgUpdate = "Log in or make an account to view messages."; 
 	} else {
 		userName = user.getUserName();
 		userID   = user.getUserID();
 		title = userName + "'s messages";
 	}
-
 %>
 <html>
 <head>
@@ -115,7 +114,7 @@
 					    		Quiz challenge</a>
 					    	</li>
 					    	<% 
-					    		if (true /*user.isAdmin() */) {
+					    		if ( user != null && user.isAdmin() ) {
 					    			out.println(
 					    			"<li role=\"presentation\" class=\"divider\"></li>" + 
 					    			"<li><a href=\"NewMessageServlet?type=" + Message.TYPE_ANNOUNCEMENT +

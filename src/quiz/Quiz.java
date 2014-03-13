@@ -63,7 +63,7 @@ public class Quiz {
 		allQuestions = new ArrayList<Question>();
 	
 		//CAN ALSO MAKE QUESTIONS 'ON THE FLY'
-		populateQuestions();
+		//populateQuestions();
 	}
 
 	/**

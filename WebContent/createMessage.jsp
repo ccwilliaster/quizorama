@@ -23,14 +23,8 @@
 	// See if there was any sort of error
 	String error = (String) request.getAttribute("error");
 	
-	// Get user info for navbar
-	String userName = null;
-	Integer userID  = null;
+	// Toggle submit button based on guest status
 	User user = (User) session.getAttribute("user");
-	if (user != null) {
-		userName = user.getUserName();
-		userID   = user.getUserID();
-	}
 %>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
@@ -48,7 +42,13 @@
 					<%= request.getAttribute("html")  %>
 					<div class="row">
 						<br>
-						<input class="btn btn-default" type="submit" value="Submit">
+				<% 
+					if (user != null && user.getUserID() != -1) {
+						out.println("<input class='btn btn-default' type='submit' value='Submit'>");
+					} else {
+						out.println("<input class='disabled btn btn-default' type='submit' value='Submit'>");
+					}
+				%>
 					</div>
 		 		</form>
 		 	</div>

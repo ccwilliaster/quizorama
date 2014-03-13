@@ -52,9 +52,10 @@ public class NewMessageServlet extends HttpServlet {
 			String messageType      = request.getParameter("type");
 			String hasContent       = request.getParameter("hasContent");
 						
-			// Three possibilities:
-			if (messageType == null) { // get type from user
+			if (userID == -1) { // guest user
+				gotoGuestUser(request, response);
 				
+			} else if (messageType == null) { // get type from user
 				String html = getTypeDropDown(true); 
 				request.setAttribute("html", html);
 				request.getRequestDispatcher("createMessage.jsp").forward(request, response);
@@ -68,6 +69,9 @@ public class NewMessageServlet extends HttpServlet {
 				gotoCreateMessage(request, response, userID, messageIntType, connection);
 			}
 		
+		} catch (NullPointerException n) { // no user
+			gotoGuestUser(request, response);
+			
 		} catch (InputMismatchException badinput) { // direct to input form again
 			try {
 				request.setAttribute("error", 
@@ -82,6 +86,18 @@ public class NewMessageServlet extends HttpServlet {
 			e.printStackTrace();
 			request.getRequestDispatcher("error.jsp").forward(request, response);
 		}
+	}
+	
+	/**
+	 * Responds to a guest user
+	 */
+	private void 
+	gotoGuestUser(HttpServletRequest request, HttpServletResponse response) 
+	throws ServletException, IOException { 
+		String html = 
+			"<h3 style='color:#d9534f'>You must log in or create an account to create a message!</h3>";
+		request.setAttribute("html", html);
+		request.getRequestDispatcher("createMessage.jsp").forward(request, response);
 	}
 	
 	/**

@@ -159,17 +159,6 @@ public class Message implements Comparable<Message>{
 		return dateFormat.format( date );
 	}
 	
-//	/**
-//	 * Updates the messageRead attribute of the Message to reflect that
-//	 * the message has been opened by the toUserID User
-//	 */
-//	public void setMessageRead(DBConnection connection) throws SQLException {
-//		if (messageRead == false) {
-//			messageRead = true;
-//			connection.updateMessage( this );
-//		}
-//	}
-	
 	/**
 	 * Getter that returns the type of the Message
 	 * @return message type
