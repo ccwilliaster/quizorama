@@ -58,7 +58,7 @@
 			out.println("</tbody></table>");
 			
 		} else {
-			out.println("<h4><em>Sorry! No quizes met your search criteria</em>");
+			out.println("<h4><em>Sorry! No quizzes met your search criteria</em>");
 			out.println("<small>try another search <a class='btn btn-primary' ");
 			out.println("href='quizSearch.jsp'>here</a></small></h4>");
 		}	

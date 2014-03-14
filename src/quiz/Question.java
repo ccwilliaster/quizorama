@@ -35,6 +35,11 @@ public abstract class Question implements Comparable {
 		return html;
 	}
 	
+	public String showQuestionText() {
+		String html = "<p>" + questionText + "</p>";
+		return html;
+	}
+	
 	public String showAnswerOptions() {
 		return answers.showAnswerOptions();
 	}

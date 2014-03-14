@@ -44,6 +44,11 @@
 					out.println( "<p>Please log in to have your quiz attempt counted!</p>");
 				}
 				out.println( "<a href='quizSummary.jsp?quizID=" + quiz.getQuizID() + "'>Quiz Summary Page</a>");
+				out.println( "<p>Here are the quiz answers: </p>");
+				for (Question q : quiz.getAllQuestions()) {
+					out.println(q.showQuestionText());
+					out.println(q.showAnswerOptions());
+				}
 			
 			%>
  		</div>
