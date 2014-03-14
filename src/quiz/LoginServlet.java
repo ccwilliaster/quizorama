@@ -77,6 +77,7 @@ public class LoginServlet extends HttpServlet {
 					return;
 				}
 			} catch (SQLException e) {
+				e.printStackTrace();
 				request.setAttribute("error", "An error occured, please try again.");
 				goToFail(request, response);
 				return;
