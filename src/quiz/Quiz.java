@@ -471,5 +471,9 @@ public class Quiz {
 		}
 		return total;
 	}
+	
+	public ArrayList<Question> getAllQuestions() {
+		return allQuestions;
+	}
 
 }

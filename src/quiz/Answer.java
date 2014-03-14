@@ -40,6 +40,9 @@ public abstract class Answer {
 	
 	public String showAnswer() {
 		if (answers == null) return null;
+		if (answers.size() == 0) {
+			return "<p></p>";
+		}
 		String html = "<p>" + answers.get(0) + "</p>";
 		return html;
 	}

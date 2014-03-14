@@ -21,5 +21,13 @@ public class PictureResponseQuestion extends Question {
 		html += answers.getAnswersHtml();
 		return html;
 	}
+	
+	@Override
+	public String showQuestionText() {
+		String html = "<p>Identify the picture:</p>";
+		html += ("<p><img src='" + questionText + "' alt='Picture not found' width='200'/></p>");
+		return html;
+	}
+	
 
 }

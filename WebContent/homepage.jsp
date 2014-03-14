@@ -20,20 +20,22 @@
 	}
 	
 	Cookie[] cookies = request.getCookies();
-	for (int i = 0; i < cookies.length; i++) {
-		Cookie c = cookies[i];
-		if (c.getName().equals(LoginServlet.COOKIE_NAME)) {
-			int userID = dbConnection.getUserIDFromCookie(c.getValue());
-			if ( userID != -1) {
-				String userName = dbConnection.getUserName(userID);
-				user = new User(userID, userName, dbConnection);
-				session.setAttribute("user", user);
-				String userpage = "userpage.jsp?userID=" + userID;
-				response.sendRedirect(userpage);
-				return;
+	if (cookies != null) {
+		for (int i = 0; i < cookies.length; i++) {
+			Cookie c = cookies[i];
+			if (c.getName().equals(LoginServlet.COOKIE_NAME)) {
+				int userID = dbConnection.getUserIDFromCookie(c.getValue());
+				if ( userID != -1) {
+					String userName = dbConnection.getUserName(userID);
+					user = new User(userID, userName, dbConnection);
+					session.setAttribute("user", user);
+					String userpage = "userpage.jsp?userID=" + userID;
+					response.sendRedirect(userpage);
+					return;
+				} //if
 			} //if
-		} //if
-	} //for
+		} //for
+	}
 %>
 <html>
 <head>

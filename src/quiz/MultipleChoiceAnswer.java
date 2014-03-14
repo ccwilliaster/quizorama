@@ -53,8 +53,15 @@ public class MultipleChoiceAnswer extends Answer {
 
 	@Override
 	public String showAnswerOptions() {
-		String html = "Correct answer is: ";
+		String html = "<p>Correct answer is: ";
 		html += correctAnswer;
+		html += "</p>";
+		return html;
+	}
+	
+	@Override
+	public String showAnswer() {
+		String html = "<p>" + correctAnswer + "</p>";
 		return html;
 	}
 	
