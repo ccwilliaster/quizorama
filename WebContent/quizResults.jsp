@@ -30,9 +30,9 @@
 						boolean first = true;
 						for (String achievement : achievements) {
 							if (!first) {
-								out.println(achievement);
-							} else {
 								out.println(", " + achievement);
+							} else {
+								out.println(achievement);
 							}
 						}
 					}
