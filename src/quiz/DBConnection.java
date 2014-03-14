@@ -431,12 +431,16 @@ public class DBConnection {
 		} //if
 		if (quizFilter == null || quizFilter.equals("")) {
 			quizFilter = "%";
-		}
+		} //if
+		else {
+			quizFilter = "%" + quizFilter + "%";
+		} //else
 		
 		String select = "SELECT * FROM " + quizTable + " a LEFT JOIN " + quizTagsTable + " b"
 				+ " ON a.quizID = b.quizID LEFT JOIN " + quizCategoriesTable + " c ON a.quizID = c.quizID "
-				+ "WHERE a.quizName like ? AND (b.tagID like ? + " + tagAddOn + ") AND ( c.categoryID like ? "
-				+ catAddOn + ");";
+				+ " WHERE ( a.quizName like ? ) AND (b.tagID like ? " + tagAddOn + " ) AND ( c.categoryID like ? "
+				+ catAddOn + " );";
+		System.out.println("Select statement for the quizSearch: " + select);
 		PreparedStatement sql = conn.prepareStatement(select);
 		sql.setString(1, quizFilter);
 		sql.setString(2, tagFilter);
