@@ -25,8 +25,16 @@
 				out.println( "<p>You just finished " + quiz.getQuizName() + "!</p>");
 				if (user != null) {
 					ArrayList<String> achievements = Achievements.finishedQuiz(user.getUserID(), quiz.getQuizID(), quiz.getScore(), quiz.isPracticeModeOn(), db);
-					for (String achievement : achievements) {
-						out.println(achievement);
+					if (achievements.size() > 0) {
+						out.println( "<p></p><p>You have new achievements: ");
+						boolean first = true;
+						for (String achievement : achievements) {
+							if (!first) {
+								out.println(achievement);
+							} else {
+								out.println(", " + achievement);
+							}
+						}
 					}
 					if (quiz.isPracticeModeOn()) {
 						out.println( "<p>You completed this quiz in practice mode. If you want your quiz recorded, take it for real!</p>" );
