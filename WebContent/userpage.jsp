@@ -55,149 +55,222 @@
 <% if (userIDError) { %>
 	<h1>This Page Should be Called with a userID parameter specified!</h1>
 <% } else if (!userOwnPage) { %>
-	<h1><%= connection.getUserName(userPageID) %></h1>
-	<% if (user == null) { %>
-		<a href="homepage.jsp">Log In</a>
-	<% } else if (connection.usersAreFriends(user.getUserID(), userPageID)) { %>
-		<%= FriendRequestServlet.getRemoveFriendLink("Remove Friend", user.getUserID(), userPageID) %>
-	<% } else { %>
-		<%= FriendRequestServlet.getMakeFriendRequestLink("Add Friend") %>
-	<% } %>
-	<h3>Recent Scores</h3>
-	<table>
-		<tr><th>Score</th><th>Quiz</th><th>User</th></tr>
-		<% for(int i = 0; i < recentScores.size(); i++) { %>
-			<tr><%= recentScores.get(i) %></tr>
+<div class="row">
+	<div class="col-md-8">
+		<h1 style="color:#428bca"><%= connection.getUserName(userPageID) %>
+		<% if (user == null) { %>
+			<a class="btn btn-danger" href="homepage.jsp">Log in for more info</a>
+		<% } else if (connection.usersAreFriends(user.getUserID(), userPageID)) { %>
+			<%= FriendRequestServlet.getRemoveFriendLink("Remove Friend", user.getUserID(), userPageID) %>
+		<% } else { %>
+			<%= FriendRequestServlet.getMakeFriendRequestLink("Add Friend") %>
 		<% } %>
-	</table>
-	<h3>Recent Quizzes Created By <%= connection.getUserName(userPageID) %></h3>
-	<table>
-		<tr><th>Quiz</th><th>User</th></tr>
-		<% for(int i = 0; i < recentQuizzesByUser.size(); i++) { %>
-			<tr><%= recentQuizzesByUser.get(i) %></tr>
-		<% } %>
-	</table>
-	<h3>Achievements</h3>
-	<ul>
-		<% ArrayList<String> names = Achievements.getAchievementNames(userPageID, connection); %>
-		<% for (int i = 0; i < names.size(); i++) { %>
-			<li><%=names.get(i) %></li>
-		<% } %>
-	</ul>
-<% } else { %>
-	<h1>Welcome Back, <%= user.getUserName() %></h1>
-	<ul>
-		<li>
-			<h3>Announcements</h3>
-			<% Set<Integer> announcementType = new HashSet<Integer>();
-			announcementType.add(Message.TYPE_ANNOUNCEMENT);
-			ResultSet allUserMessages = connection.getUserMessages(userPageID);
-			ArrayList<Message> usersAnnouncements = Message.loadMessages( allUserMessages, announcementType, userPageID, null ); %>
-			<a href="userMessages.jsp">See All Messages</a>
-			<% 	for (Message message: usersAnnouncements) {
-					out.println("<div class=\"container\">");
-					out.println("<br>");
-					out.println(message.displayAsHTML(connection));
-					out.println("<br>");
-					out.println("</div>"); 
-				}	%>
-		</li>
-		<li>
-			<h3>Popular Quizzes</h3>			
-			<table>
-				<tr><th>Quiz</th><th>Quiz Creator</th></tr>
-				<% for(int i = 0; i < popQuizzes.size(); i++) { %>
-					<tr><%= popQuizzes.get(i) %></tr>
-				<% } %>
-			</table>
-		</li>
-		<li>
-			<h3>Recent Quizzes Created</h3>
-			<table>
-				<tr><th>Quiz</th><th>User</th></tr>
-				<% for(int i = 0; i < recentQuizzes.size(); i++) { %>
-					<tr><%= recentQuizzes.get(i) %></tr>
-				<% } %>
-			</table>
-		</li>
-		<li>	
-			<h3>Recent Scores</h3>
-			<table>
-				<tr><th>Score</th><th>Quiz</th><th>User</th></tr>
-				<% for(int i = 0; i < recentScores.size(); i++) { %>
-					<tr><%= recentScores.get(i) %></tr>
-				<% } %>
-			</table>
-		</li>
-		<li>	
-			<h3>Recent Quizzes You Created</h3>
-			<table>
-				<tr><th>Quiz</th><th>User</th></tr>
-				<% for(int i = 0; i < recentQuizzesByUser.size(); i++) { %>
-					<tr><%= recentQuizzesByUser.get(i) %></tr>
-				<% } %>
-			</table>
-		</li>
-		<li>
-			<h3>Achievements Earned:</h3>
-				<ul>
-					<% ArrayList<String> names = Achievements.getAchievementNames(userPageID, connection); %>
-					<% for (int j = 0; j < names.size(); j++) { %>
-						<li><%=names.get(j) %></li>
-					<% } %>
-				</ul>
-		</li>
-		<li><h3>Recent Messages Received</h3>
-			<a href="userMessages.jsp">See All Messages</a>
-			<% 	for (Message message: recentMessages) {
-					out.println("<div class=\"container\">");
-					out.println("<br>");
-					out.println(message.displayAsHTML(connection));
-					out.println("<br>");
-					out.println("</div>"); 
-				}	%>
-		</li>
-		<li><h3>Friend Activity</h3>
-			<ul>
-				<% for(int i = 0; i < friends.size(); i++) { %>
-					<li><a class="btn btn-default btn-xs" href="userpage.jsp?userID=<%=friends.get(i)%>"><%=connection.getUserName(friends.get(i)) %></a>
-							<%=FriendRequestServlet.getRemoveFriendLink("Remove Friend", userPageID, friends.get(i)) %>
-						<ul>
-							<li>Recent Scores
-								<table>
-									<tr><th>Score</th><th>Quiz</th><th>User</th></tr>
-									<% ArrayList<String> friendRecentScores = QuizHistory.getRecentScores(friends.get(i), null, connection); %>
-									<% for(int j = 0; j < friendRecentScores.size(); j++) { %>
-										<tr><%= friendRecentScores.get(j) %></tr>
-									<% } %>
-								</table>
-							</li>
-							<li>Recent Quizzes Created
-								<table>
-									<tr><th>Quiz</th><th>User</th></tr>
-									<% ArrayList<String> friendRecentQuizzes = QuizHistory.getRecentQuizCreations(friends.get(i), connection); %>
-									<% for(int j = 0; j < friendRecentQuizzes.size(); j++) { %>
-										<tr><%= friendRecentQuizzes.get(j) %></tr>
-									<% } %>
-								</table>
-							</li>
-							<li>Achievements Earned
-								<ul>
-									<% ArrayList<String> friendNames = Achievements.getAchievementNames(friends.get(i), connection); %>
-									<% for (int j = 0; j < friendNames.size(); j++) { %>
-										<li><%=friendNames.get(j) %></li>
-									<% } %>
-								</ul>
-							</li>
-						</ul>
-					</li>
-				<% } %>
-			</ul>
-		</li>
-	</ul>
-<% } %>
+		</h1>
 	</div>
-	<a href="CreateQuiz.jsp">Create A New Quiz!</a>
+</div>
+	<div class="row">
+		<div class="col-md-4">
+ 				<div class="thumbnail">
+    				<div class="caption">
+						<h3 style="color:#428bca">Recent scores</h3>
+						<table>
+							<tr><th>Score</th><th>Quiz</th><th>User</th></tr>
+							<% for(int i = 0; i < recentScores.size(); i++) { %>
+								<tr><%= recentScores.get(i) %></tr>
+							<% } %>
+						</table>
+					</div>
+			
+				</div>
+			</div>
+		<div class="col-md-4">
+ 			<div class="thumbnail">
+    			<div class="caption">
+					<h3 style="color:#428bca">Recent Quizzes Created By <%= connection.getUserName(userPageID) %></h3>
+					<table>
+						<tr><th>Quiz</th><th>User</th></tr>
+						<% for(int i = 0; i < recentQuizzesByUser.size(); i++) { %>
+							<tr><%= recentQuizzesByUser.get(i) %></tr>
+						<% } %>
+					</table>
+				</div>
+			</div>
+		</div>	
+		<div class="col-md-4">
+ 			<div class="thumbnail">
+    			<div class="caption">
+					<h3 style="color:#428bca">Achievements</h3>
+					<ul class="list-group">
+						<% ArrayList<String> names = Achievements.getAchievementNames(userPageID, connection); %>
+						<% for (int i = 0; i < names.size(); i++) { %>
+							<strong>
+								<li class="list-group-item" style="color:#d9534f"><%=names.get(i) %></li>
+							</strong>
+						<% } %>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+<% } else { %>
+	<h1 style="color:#428bca">Welcome Back, <%= user.getUserName() %>!</h1><br>
+		<div class="row">
+			<div class="col-md-4">
+   				<div class="thumbnail">
+      				<div class="caption">
+						<h3 style="color:#428bca">Recent messages</h3>
+						<ul class="list-group">	
+						<% 	for (Message message: recentMessages) {
+							out.println(message.displayCompact(connection));
+						}	%>
+						</ul>
+						<a class='btn btn-primary btn-sm' href="userMessages.jsp">See All Messages</a>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-4">
+   				<div class="thumbnail">
+      				<div class="caption">
+						<h3 style="color:#d9534f">Recent announcements</h3>
+						<% Set<Integer> announcementType = new HashSet<Integer>();
+							announcementType.add(Message.TYPE_ANNOUNCEMENT);
+							ResultSet allUserMessages = connection.getUserMessages(userPageID);
+							ArrayList<Message> usersAnnouncements = Message.loadMessages( allUserMessages, announcementType, userPageID, null ); %>
+						<% 	for (Message message: usersAnnouncements) {
+							out.println(message.displayAsAlert(connection));
+						}	%>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-4">
+	 			<div class="thumbnail">
+	    			<div class="caption">
+						<h3 style="color:#428bca">Achievements earned</h3>
+						<ul class="list-group">
+							<% ArrayList<String> names = Achievements.getAchievementNames(userPageID, connection); %>
+							<% for (int i = 0; i < names.size(); i++) { %>
+								<strong>
+									<li class="list-group-item" style="color:#d9534f"><%=names.get(i) %></li>
+								</strong>
+							<% } %>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-3">
+   				<div class="thumbnail">
+      				<div class="caption">
+						<h3 style="color:#428bca">Popular quizzes</h3>
+						<table>
+							<tr><th>Quiz</th><th>Quiz Creator</th></tr>
+							<% for(int i = 0; i < popQuizzes.size(); i++) { %>
+								<tr><%= popQuizzes.get(i) %></tr>
+							<% } %>
+						</table>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-3">
+   				<div class="thumbnail">
+      				<div class="caption">
+						<h3 style="color:#428bca">Recently created quizzes</h3>
+						<table>
+							<tr><th>Quiz</th><th>User</th></tr>
+							<% for(int i = 0; i < recentQuizzes.size(); i++) { %>
+								<tr><%= recentQuizzes.get(i) %></tr>
+							<% } %>
+						</table>
+					</div>
+				</div>
+			</div>	
+			<div class="col-md-3">
+   				<div class="thumbnail">
+      				<div class="caption">
+						<h3 style="color:#428bca">Quizzes<em><span style="color:#d9534f"> You</em></span> recently created</h3>
+						<table>
+							<tr><th>Quiz</th><th>User</th></tr>
+							<% for(int i = 0; i < recentQuizzesByUser.size(); i++) { %>
+								<tr><%= recentQuizzesByUser.get(i) %></tr>
+							<% } %>
+						</table>
+					</div>
+				</div>
+			</div>	
+			<div class="col-md-3">
+   				<div class="thumbnail">
+      				<div class="caption">
+						<h3 style="color:#428bca">Recent Scores</h3>
+						<table>
+							<tr><th>Score</th><th>Quiz</th><th>User</th></tr>
+							<% for(int i = 0; i < recentScores.size(); i++) { %>
+								<tr><%= recentScores.get(i) %></tr>
+							<% } %>
+						</table>
+					</div>
+				</div>
+			</div>	
+		</div>
+		
+<!-- FRIENDS -->
+	<h2 style="color:#d9534f">Friend Activity</h2>
+		<div class="panel panel-default">
+			<div class="panel-body">
+				<% for(int i = 0; i < friends.size(); i++) { %>
+					<div class="row">
+						<a class="btn btn-primary" 
+						   href="userpage.jsp?userID=<%=friends.get(i)%>">
+						   <%=connection.getUserName(friends.get(i)) %>
+						</a>
+						<%=FriendRequestServlet.getRemoveFriendLink("Remove Friend", userPageID, friends.get(i)) %>
+						<div class="col-md-4">
+			   				<div class="thumbnail">
+			      				<div class="caption">
+									<h3 style="color:#428bca">Their recent scores</h3>
+									<table>
+										<tr><th>Score</th><th>Quiz</th><th>User</th></tr>
+										<% ArrayList<String> friendRecentScores = QuizHistory.getRecentScores(friends.get(i), null, connection); %>
+										<% for(int j = 0; j < friendRecentScores.size(); j++) { %>
+											<tr><%= friendRecentScores.get(j) %></tr>
+										<% } %>
+									</table>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-4">
+			   				<div class="thumbnail">
+			      				<div class="caption">
+									<h3 style="color:#428bca">Recent quizzes they've made</h3>
+									<table>
+										<tr><th>Quiz</th><th>User</th></tr>
+										<% ArrayList<String> friendRecentQuizzes = QuizHistory.getRecentQuizCreations(friends.get(i), connection); %>
+										<% for(int j = 0; j < friendRecentQuizzes.size(); j++) { %>
+											<tr><%= friendRecentQuizzes.get(j) %></tr>
+										<% } %>
+									</table>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-4">
+				 			<div class="thumbnail">
+				    			<div class="caption">
+									<h3 style="color:#428bca">Their recent achievements</h3>
+									<ul class="list-group">
+										<% ArrayList<String> friendNames = Achievements.getAchievementNames(friends.get(i), connection); %>
+										<% for (int j = 0; j < friendNames.size(); j++) { %>
+											<li><%=friendNames.get(j) %></li>
+										<% } %>	
+									</ul>
+								</div>
+							</div>
+						</div>						
+					</div>	
+				<% } %>
+			<% } %>
+			</div>
+		</div>
+	</div>
 </div>
 </body>
 </html>
