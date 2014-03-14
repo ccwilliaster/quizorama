@@ -13,6 +13,8 @@ Features implemented:
        but cannot take quizzes, create quizzes, flag quizzes, send messages, 
        or friend other users
    - Login system, with password hashing and salt
+      - Password hashing was taken from the internet at http://crackstation.net/hashing-security.htm
+      - Cookie generation was added to the PasswordHash class by the authors
    - achievements based on the number of quizzes created and taken, 
      displayed on user summary pages
    - standard and admin users can friend and unfriend each other
