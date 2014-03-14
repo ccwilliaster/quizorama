@@ -19,6 +19,7 @@
 	if (ID != null) {
 		userIDError = false;
 		userPageID = Integer.parseInt(ID);
+		String test = "";
 		recentScores = QuizHistory.getRecentScores(userPageID, null, connection);
 		recentQuizzesByUser = QuizHistory.getRecentQuizCreations(userPageID, connection);
 		String userPageName = connection.getUserName(userPageID);

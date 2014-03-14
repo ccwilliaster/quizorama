@@ -50,12 +50,14 @@ public class QuizHistory {
 		ResultSet histories = (userID == null) ? connection.getHistories(quizID) : connection.getHistoriesByUserID(userID);
 		histories.beforeFirst();
 		while (histories.next()) {
-			quizID = histories.getInt("quizID");
+			int currQuizID = histories.getInt("quizID");
 			userID = histories.getInt("userID");
-			int score = histories.getInt("score");
-			java.util.Date date = (java.util.Date) histories.getObject("dateTaken");
-			Score currentScore = new Score(quizID, userID, score, date);
-			result.add(currentScore);
+			if (quizID == null || (quizID != null && quizID == currQuizID)) {
+				int score = histories.getInt("score");
+				java.util.Date date = (java.util.Date) histories.getObject("dateTaken");
+				Score currentScore = new Score(currQuizID, userID, score, date);
+				result.add(currentScore);
+			}
 		}
 		return result;
 	}
@@ -64,6 +66,7 @@ public class QuizHistory {
 	 */
 	public static ArrayList<String> getRecentScores(Integer userID, Integer quizID, DBConnection connection) throws SQLException {
 		ArrayList<String> result = new ArrayList<String>();
+		if (userID == null && quizID == null) return result;
 		ArrayList<Score> recentScores = new ArrayList<Score>();
 		ArrayList<Score> scores = getHistories(userID, quizID, connection);
 		for (int i = 0; i < scores.size(); i++) {
@@ -88,18 +91,19 @@ public class QuizHistory {
 	 */
 	public static ArrayList<String> getTopScores(Integer userID, Integer quizID, DBConnection connection) throws SQLException {
 		ArrayList<String> result = new ArrayList<String>();
-		ArrayList<Integer> topScores = new ArrayList<Integer>();
+		ArrayList<Score> topScores = new ArrayList<Score>();
 		ArrayList<Score> scores = getHistories(userID, quizID, connection);
 		for (int i = 0; i < scores.size(); i++) {
 			int topScoreIndex = 0;
-			while(topScoreIndex < topScores.size() && topScores.get(topScoreIndex) > scores.get(i).getScore()) {
+			while(topScoreIndex < topScores.size() && topScores.get(topScoreIndex).getScore() > scores.get(i).getScore()) {
 				topScoreIndex++;
 			}
-			topScores.add(topScoreIndex ,scores.get(i).getScore());
+			topScores.add(topScoreIndex ,scores.get(i));
 		}
 		for (int i = 0; i < topScores.size(); i++) {
 			if (i >= NUM_TOP_SCORES) break;
-			int score = topScores.get(i);
+			int score = topScores.get(i).getScore();
+			userID = topScores.get(i).getUserID();
 			String format = "<td>" + score + "</td><td><a class='btn btn-default btn-xs' href='userpage.jsp?userID=" 
 							+ userID + "'>" + connection.getUserName(userID) + "</a></td>";
 			result.add(format);
@@ -176,6 +180,7 @@ public class QuizHistory {
 			if (i >= NUM_POP_SCORES) break;
 			int quizID = popList.get(i);
 			ResultSet quizInfo = connection.getQuizInformation(quizID);
+			quizInfo.first();
 			String format = "<td>" + quizInfo.getString("quizName") + "</td><td><a class='btn btn-default btn-xs' href='userpage.jsp?userID=" 
 							+ quizInfo.getInt("quizCreatoruserID") + "'>" + connection.getUserName(quizInfo.getInt("quizCreatoruserID")) + "</a></td>";
 			result.add(format);

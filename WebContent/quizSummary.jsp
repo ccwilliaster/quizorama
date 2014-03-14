@@ -49,10 +49,9 @@
 		else { userType = "standard"; }
 	}
 
-	// TODO: pull from quizHistory
-	ArrayList<String> topScores    = new ArrayList<String>(); 
-	ArrayList<String> recentScores = new ArrayList<String>();
-	ArrayList<String> userScores   = new ArrayList<String>();
+	ArrayList<String> topScores    = QuizHistory.getTopScores(null, quizID, connection); 
+	ArrayList<String> recentScores = QuizHistory.getRecentScores(null, quizID, connection);
+	ArrayList<String> userScores   = QuizHistory.getTopScores(userID, quizID, connection);
 %>
 <%! // Helper functions
 	public final int NUM_SCORES = 10; // number of scores to display
