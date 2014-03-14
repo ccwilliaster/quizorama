@@ -47,6 +47,7 @@ public class QuizCreateServlet extends HttpServlet {
 		//Redirect to the CreateQuiz.jsp webpage
 		RequestDispatcher requestDispatcher = request.getRequestDispatcher("CreateQuiz.jsp");
 		requestDispatcher.forward(request, response);
+		return;
 	}
 
 	/**
@@ -64,16 +65,21 @@ public class QuizCreateServlet extends HttpServlet {
 				e.printStackTrace();
 				RequestDispatcher requestDispatcher = request.getRequestDispatcher("error.jsp");
 				requestDispatcher.forward(request, response);
+				return;
 			} //catch
 			
-			
+			if (quiz == null) {
+				RequestDispatcher requestDispatcher = request.getRequestDispatcher("error.jsp");
+				requestDispatcher.forward(request, response);
+				return;
+			}
 			
 			//Stash the quiz in the session object
 			request.getSession().setAttribute("Quiz", quiz);
 			
 			//Allow a user to select the next type of question
 			askForNextQuestion(request, response, true); 
-			
+			return;
 		} //if
 		else if(request.getParameter("origin").equals("QuizCreateServlet")) {
 			//We have just chosen a type of question, so let's re-direct the user to that question type:
@@ -82,21 +88,25 @@ public class QuizCreateServlet extends HttpServlet {
 				//Redirect to the questionResponse jsp
 				RequestDispatcher requestDispatcher = request.getRequestDispatcher("CreateQuizQR.jsp");
 				requestDispatcher.forward(request, response);
+				return;
 			} //if
 			else if (questionType.equals(QTYPE_FB)) {
 				//Redirect to the questionResponse jsp
 				RequestDispatcher requestDispatcher = request.getRequestDispatcher("CreateQuizFB.jsp");
 				requestDispatcher.forward(request, response);
+				return;
 			} //else if
 			else if (questionType.equals(QTYPE_MC)) {
 				//Redirect to the questionResponse jsp
 				RequestDispatcher requestDispatcher = request.getRequestDispatcher("CreateQuizMC.jsp");
 				requestDispatcher.forward(request, response);
+				return;
 			} //else if
 			else if (questionType.equals(QTYPE_PR)) {
 				//Redirect to the questionResponse jsp
 				RequestDispatcher requestDispatcher = request.getRequestDispatcher("CreateQuizPR.jsp");
 				requestDispatcher.forward(request, response);
+				return;
 			} //else if
 			else {
 				//All questions and answers have been completed and inserted into the db.
@@ -111,9 +121,11 @@ public class QuizCreateServlet extends HttpServlet {
 					e.printStackTrace();
 					RequestDispatcher requestDispatcher = request.getRequestDispatcher("CreateQuizPR.jsp");
 					requestDispatcher.forward(request, response);
+					return;
 				}
 				RequestDispatcher requestDispatcher = request.getRequestDispatcher("userpage.jsp");
 				requestDispatcher.forward(request, response);
+				return;
 			} //Else
 
 		} //else if
@@ -127,6 +139,7 @@ public class QuizCreateServlet extends HttpServlet {
 				e.printStackTrace();
 				RequestDispatcher requestDispatcher = request.getRequestDispatcher("CreateQuiz.jsp");
 				requestDispatcher.forward(request, response);
+				return;
 			}
 			
 			String answerText = request.getParameter("response");
@@ -139,10 +152,12 @@ public class QuizCreateServlet extends HttpServlet {
 				e.printStackTrace();
 				RequestDispatcher requestDispatcher = request.getRequestDispatcher("CreateQuiz.jsp");
 				requestDispatcher.forward(request, response);
+				return;
 			}
 
 			//Last thing:
 			askForNextQuestion(request, response, false);
+			return;
 		} //else if
 		else if(request.getParameter("origin").equals("CreateQuizFB.jsp")) {
 			String questionPreText = request.getParameter("pre");
@@ -156,6 +171,7 @@ public class QuizCreateServlet extends HttpServlet {
 				e.printStackTrace();
 				RequestDispatcher requestDispatcher = request.getRequestDispatcher("CreateQuiz.jsp");
 				requestDispatcher.forward(request, response);
+				return;
 			}
 			
 			String answerText = request.getParameter("blank");
@@ -169,10 +185,12 @@ public class QuizCreateServlet extends HttpServlet {
 				e.printStackTrace();
 				RequestDispatcher requestDispatcher = request.getRequestDispatcher("CreateQuiz.jsp");
 				requestDispatcher.forward(request, response);
+				return;
 			}
 			
 			//Last thing:
 			askForNextQuestion(request, response, false);
+			return;
 		} //else if
 		else if(request.getParameter("origin").equals("CreateQuizMC.jsp")) {
 			String questionText = request.getParameter("question");
@@ -183,6 +201,7 @@ public class QuizCreateServlet extends HttpServlet {
 				e.printStackTrace();
 				RequestDispatcher requestDispatcher = request.getRequestDispatcher("CreateQuiz.jsp");
 				requestDispatcher.forward(request, response);
+				return;
 			}
 
 			String answerText = request.getParameter("mc_correct");
@@ -196,10 +215,12 @@ public class QuizCreateServlet extends HttpServlet {
 				e.printStackTrace();
 				RequestDispatcher requestDispatcher = request.getRequestDispatcher("CreateQuiz.jsp");
 				requestDispatcher.forward(request, response);
+				return;
 			}
 			
 			//Last thing:
 			askForNextQuestion(request, response, false);
+			return;
 		} //else if
 		else if(request.getParameter("origin").equals("CreateQuizPR.jsp")) {
 			String questionText = request.getParameter("question");
@@ -211,6 +232,7 @@ public class QuizCreateServlet extends HttpServlet {
 				e.printStackTrace();
 				RequestDispatcher requestDispatcher = request.getRequestDispatcher("CreateQuiz.jsp");
 				requestDispatcher.forward(request, response);
+				return;
 			}
 			
 			String answerText = request.getParameter("response");
@@ -224,17 +246,20 @@ public class QuizCreateServlet extends HttpServlet {
 				e.printStackTrace();
 				RequestDispatcher requestDispatcher = request.getRequestDispatcher("CreateQuiz.jsp");
 				requestDispatcher.forward(request, response);
+				return;
 			}
 
 			//Last thing:
 			askForNextQuestion(request, response, false);
+			return;
 		} //else if
 		
 		else {
 			RequestDispatcher requestDispatcher = request.getRequestDispatcher("CreateQuiz.jsp");
 			requestDispatcher.forward(request, response);
+			return;
 		} //else
-	}
+	} //doPost
 
 	private void createAnswer(HttpServletRequest request, String answerText, Question question) throws SQLException {
 		
@@ -279,8 +304,7 @@ public class QuizCreateServlet extends HttpServlet {
 		}
 		
 		request.setAttribute("options", options.toString());
-		RequestDispatcher dispatch = request.getRequestDispatcher("askForNextQuestion.jsp");
-		dispatch.forward(request, response);
+		request.getRequestDispatcher("askForNextQuestion.jsp").forward(request, response);
 		return;
 	}
 
@@ -290,6 +314,9 @@ public class QuizCreateServlet extends HttpServlet {
 		ServletContext servletContext = this.getServletContext();
 		DBConnection dbConnection = (DBConnection) servletContext.getAttribute("DBConnection");
 		User user = (User) request.getSession().getAttribute("user");
+		if (user == null || dbConnection == null) {
+			return null;
+		}
 		int userID = user.getUserID();
 		
 		String[] checkBoxes = request.getParameterValues("quizParams");

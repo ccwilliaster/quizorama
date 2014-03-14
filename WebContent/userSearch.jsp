@@ -12,7 +12,7 @@
 	<title>Search for users</title>
 </head>
 <body>
-	<tag:navbar session="<%= session %>" activeTab="quizzes" />
+	<tag:navbar session="<%= session %>" activeTab="users" />
 	<div class="container">
 		<div class="jumbotron">
 			<h2 style="color:#428bca">Search for other users here</h2>	
