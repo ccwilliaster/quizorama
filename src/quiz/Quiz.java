@@ -20,23 +20,23 @@ public class Quiz {
 	private static final int PICTURE_RESPONSE = 4;
 
 	/** Quiz attributes in the database */
-	private int quizID;
 	private String quizName;
 	private Date quizCreation;
 	private int quizCreatorUserID;
 	private boolean singlePage;
 	private boolean randomOrder;
 	private boolean immediateCorrection;
-	private boolean practiceMode;
+	private boolean allowsPracticeMode;
+	private boolean practiceModeOn;
 
 	/** Necessary internal variables */
 	private DBConnection connection;
 	private ArrayList<Question> questionList;
-	private boolean inPracticeMode; //Used for when the quiz is indeed in practice mode
 	private ArrayList<Question> allQuestions;
 	
 	//MAY NOT NEED THIS, JUST IN CASE WE NEED QUESTION ORDER AFTER QUIZ IS OVER
 	private ArrayList<Question> questionOrder;
+	private int quizID;
 	private int score;
 	private int possibleScore;
 	private long startTime; //SHOULD THIS BE A LONG/USING currentTimeMillis()
@@ -63,9 +63,20 @@ public class Quiz {
 		allQuestions = new ArrayList<Question>();
 	
 		//CAN ALSO MAKE QUESTIONS 'ON THE FLY'
-		//populateQuestions();
+		ResultSet questions = connection.getQuizQuestions(quizID);
+		questions.beforeFirst();
+		while (questions.next()) {
+			int questionID = questions.getInt("questionID");
+			String questionText = questions.getString("question");
+			int questionType = questions.getInt("questionTypeID");
+			int questionNum = questions.getInt("questionNumber");
+			//ResultSet questionInfo = connection.getQuestionInfo(questionID); USE THIS TO TELL QUESTION WHAT TYPE IT IS
+			Question currQuestion = getQuestionObject(questionID, questionText, questionType, questionNum);
+			questionList.add(currQuestion);
+			allQuestions.add(currQuestion);
+		}
 	}
-
+	
 	/**
 	 * This constructor takes in all of the fields necessary to create a quiz and then 
 	 * updates the database with all of this information.
@@ -86,7 +97,7 @@ public class Quiz {
 		this.singlePage = singlePage;
 		this.randomOrder = randomOrder;
 		this.immediateCorrection = immediateCorrection;
-		this.practiceMode = practiceMode;
+		this.allowsPracticeMode = practiceMode;
 		this.quizID = -1;
 		questionList = new ArrayList<Question>();
 		
@@ -95,21 +106,19 @@ public class Quiz {
 		//CAN ALSO MAKE QUESTIONS 'ON THE FLY'
 		populateQuestions(); //This will not add anything to the list if nothing exists.
 	}
-	
+
 	private void populateQuestions() throws SQLException {
 		ResultSet questions = connection.getQuizQuestions(quizID);
-		questions.beforeFirst();
 		while (questions.next()) {
 			int questionID = questions.getInt("questionID");
 			String questionText = questions.getString("question");
-			int questionType = questions.getInt("questionTypeID");
-			int questionNum = questions.getInt("questionNumber");
+			int questionType = questions.getInt("questionType");
+			int questionNum = questions.getInt("questionNum");
 			//ResultSet questionInfo = connection.getQuestionInfo(questionID); USE THIS TO TELL QUESTION WHAT TYPE IT IS
 			Question currQuestion = getQuestionObject(questionID, questionText, questionType, questionNum);
 			questionList.add(currQuestion);
-			allQuestions.add(currQuestion);
 		}
-	}
+	} //populateQuestions
 
 	//ali's added method
 	private Question getQuestionObject(int questionID, String questionText, int questionType, int questionNum) throws SQLException {
@@ -333,7 +342,7 @@ public class Quiz {
 			total += histories.getInt("score");
 			numScores++;
 		}
-		return numScores == 0 ? 0 : total / numScores;
+		return (numScores == 0) ? 0 : ((double)total / numScores);
 	}
 	/*
 	 * Returns the number of questions this quiz has
@@ -390,9 +399,9 @@ public class Quiz {
 	
 	/* Returns immediateCorrection */
 	public boolean getPractiveMode() {
-		return practiceMode;
+		return allowsPracticeMode;
 	}
-
+	
 	/* Returns the quizCreation */
 	public Date getQuizCreation() {
 		return quizCreation;
@@ -441,20 +450,26 @@ public class Quiz {
 	public int getPossibleScore() {
 		return possibleScore;
 	}
-
-	/**
-	 * @return the inPracticeMode
-	 */
-	public boolean isInPracticeMode() {
-		return inPracticeMode;
+	
+	public boolean turnOnPracticeMode() {
+		if (allowsPracticeMode) {
+			practiceModeOn = true;
+		} else {
+			practiceModeOn = false;
+		}
+		return practiceModeOn;
 	}
-
-	/**
-	 * @param inPracticeMode the inPracticeMode to set
-	 */
-	public void setInPracticeMode(boolean inPracticeMode) {
-		this.inPracticeMode = inPracticeMode;
+	
+	public boolean isPracticeModeOn() {
+		return practiceModeOn;
 	}
-
+	
+	public int getPossiblePoints() {
+		int total = 0;
+		for (Question q : questionList) {
+			total += q.possiblePoints();
+		}
+		return total;
+	}
 
 }

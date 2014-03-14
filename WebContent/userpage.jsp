@@ -46,7 +46,7 @@
 	<title><%= title %></title>
 </head>
 <body>
-	<tag:navbar session="<%= session %>" activeTab="quizzes" />
+	<tag:navbar session="<%= session %>" activeTab="home" />
 	<div class="container">
 		<div class="jumbotron">
 <% if (userIDError) { %>

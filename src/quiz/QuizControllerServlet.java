@@ -18,6 +18,7 @@ import javax.servlet.http.HttpSession;
 @WebServlet("/QuizControllerServlet")
 public class QuizControllerServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	private String practice = "";
 	
     /**
      * @see HttpServlet#HttpServlet()
@@ -45,10 +46,14 @@ public class QuizControllerServlet extends HttpServlet {
 			Quiz currQuiz           = (Quiz) session.getAttribute("quiz");
 				
 			if (currQuiz == null) { // first time servlet is being called
-				Integer quizID = Integer.parseInt(request.getParameter("id"));
+				Integer quizID = Integer.parseInt(request.getParameter("quizID"));
 				currQuiz = new Quiz(quizID, connection);
 				session.setAttribute("quiz", currQuiz);
 				currQuiz.startQuiz();
+				practice = request.getParameter("practice");
+				if (practice != null) {
+					currQuiz.turnOnPracticeMode();
+				}
 				
 			} else { // Submit the results from previous liveQuiz.jsp
 				if (currQuiz.getSinglePage()) {

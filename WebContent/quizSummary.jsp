@@ -24,13 +24,13 @@
 	
 	Quiz quiz                    = new Quiz(quizID, connection);
 	String quizName              = quiz.getQuizName();
-	String quizSummary           = "TODO"; //quiz.getQuizSummary();
+	String quizSummary           = quiz.getQuizSummary();
 	Integer creatorID            = quiz.getquizCreatoruserID(); 
 	String creatorName           = connection.getUserName(creatorID);
 	double numStars              = Math.floor( quiz.getRating() ); // no half stars
 	Integer numQuestions         = quiz.getNumQuestions();
 	double avgScore              = quiz.getAverageScore();
-	boolean supportsPracticeMode = true; //quiz.getPractiveMode();
+	boolean supportsPracticeMode = quiz.getPractiveMode();
 	ArrayList<String> categories = quiz.getCategories();
 	ArrayList<String> tags       = quiz.getTags();
 	String flagNote = (String) request.getAttribute("flagNote"); // if user just flagged quiz
@@ -149,7 +149,7 @@
 		          "<input type='hidden' name='quizID' value=" + quizID + " />" +
 			      "<button class='btn btn-primary btn-sm' type='submit'>Take Quiz</button>" +
 			      "<button class='btn btn-success btn-sm' name='practice'" + 
-			       "title='Practice quiz' type='submit'>Practice</button>" +
+			       " title='Practice quiz' value='practice' type='submit'>Practice</button>" +
 			    "</form></div></div>");
 			} else { html.append(
 			"<div class='col-md-3'>" +
@@ -281,7 +281,7 @@
       					<dt>average score</dt>
       					<dd>
       						<h3><span class="label label-primary">
-      							<%= percent.format(100.0*avgScore/numQuestions) + " %" %>
+      							<%= avgScore %> out of <%= quiz.getPossiblePoints() %>
       						</span>
       						</h3><br>
       					</dd>
