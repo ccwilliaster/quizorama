@@ -1,10 +1,7 @@
 package quiz;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
@@ -144,7 +141,7 @@ public class QuizCreateServlet extends HttpServlet {
 			
 			String answerText = request.getParameter("response");
 			if (request.getParameter("otherResponsesCheck") != null && request.getParameter("otherResponsesCheck").equals("yes")) {
-				answerText.concat("|" + request.getParameter("otherResponses"));
+				answerText = answerText + "~" + request.getParameter("otherResponses");
 			}
 			try {
 				createAnswer(request, answerText, question);
@@ -176,7 +173,7 @@ public class QuizCreateServlet extends HttpServlet {
 			
 			String answerText = request.getParameter("blank");
 			if (request.getParameter("otherResponsesCheck") != null && request.getParameter("otherResponsesCheck").equals("yes")) {
-				answerText.concat("|" + request.getParameter("otherResponses"));
+				answerText = answerText + "~" + request.getParameter("otherResponses");
 			}
 			
 			try {
@@ -204,10 +201,10 @@ public class QuizCreateServlet extends HttpServlet {
 				return;
 			}
 
-			String answerText = request.getParameter("mc_correct");
-			answerText.concat("|!" + request.getParameter("mc1"));
-			answerText.concat("|!" + request.getParameter("mc2"));
-			answerText.concat("|!" + request.getParameter("mc3"));
+			String answerText = request.getParameter("mc_correct") + 
+				"~!" + request.getParameter("mc1") +
+				"~!" + request.getParameter("mc2") +
+				"~!" + request.getParameter("mc3");
 			
 			try {
 				createAnswer(request, answerText, question);
@@ -237,7 +234,7 @@ public class QuizCreateServlet extends HttpServlet {
 			
 			String answerText = request.getParameter("response");
 			if (request.getParameter("otherResponsesCheck") != null && request.getParameter("otherResponsesCheck").equals("yes")) {
-				answerText.concat("|" + request.getParameter("otherResponses"));
+				answerText = answerText + "~" + request.getParameter("otherResponses");
 			}
 			
 			try {
