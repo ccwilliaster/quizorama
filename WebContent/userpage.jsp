@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<%@ taglib  prefix="tag" tagdir="/WEB-INF/tags" %>
 <%@ page import="quiz.*,java.util.*,java.sql.*" %>
 <% 
 	DBConnection connection = (DBConnection) application.getAttribute("DBConnection");
@@ -45,6 +45,9 @@
 	<title><%= title %></title>
 </head>
 <body>
+	<tag:navbar session="<%= session %>" activeTab="quizzes" />
+	<div class="container">
+		<div class="jumbotron">
 <% if (userIDError) { %>
 	<h1>This Page Should be Called with a userID parameter specified!</h1>
 <% } else if (!userOwnPage) { %>
@@ -86,7 +89,7 @@
 			announcementType.add(Message.TYPE_ANNOUNCEMENT);
 			ResultSet allUserMessages = connection.getUserMessages(userPageID);
 			ArrayList<Message> usersAnnouncements = Message.loadMessages( allUserMessages, announcementType, userPageID, null ); %>
-			<a href="showUserMessages.jsp">See All Messages</a>
+			<a href="userMessages.jsp">See All Messages</a>
 			<% 	for (Message message: usersAnnouncements) {
 					out.println("<div class=\"container\">");
 					out.println("<br>");
@@ -189,5 +192,7 @@
 		</li>
 	</ul>
 <% } %>
+	</div>
+</div>
 </body>
 </html>

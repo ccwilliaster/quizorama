@@ -536,7 +536,7 @@ public class DBConnection {
 	
 	public int addAnswer(String answerText, int quizID, int questionID) throws SQLException {
 		ResultSet genKey = null;
-		String insert = "insert into " + quizQuestionTable + " (questionID, quizID, answer) VALUES (?, ?, ?);";
+		String insert = "insert into " + questionAnswerTable + " (questionID, quizID, answer) VALUES (?, ?, ?);";
 		PreparedStatement sql = conn.prepareStatement(insert, Statement.RETURN_GENERATED_KEYS);
 		sql.setInt(1, questionID);
 		sql.setInt(2, quizID);
