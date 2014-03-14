@@ -3,6 +3,7 @@
 <%@ taglib  prefix="tag" tagdir="/WEB-INF/tags" %>
 <%@ page import="quiz.*,java.util.*,java.sql.*" %>
 <% 
+	String activeTab = "users";
 	DBConnection connection = (DBConnection) application.getAttribute("DBConnection");
 	ArrayList<String> recentScores = null;
 	ArrayList<String> recentQuizzesByUser = null;
@@ -33,9 +34,11 @@
 				recentMessages = connection.getRecentMessages(userID);
 				friends = connection.getFriends(userID);
 				title = "Hello " + userPageName;
+				activeTab = "home";
 			}
 		}
 	}
+
 %>
 <html>
 <head>
@@ -46,7 +49,7 @@
 	<title><%= title %></title>
 </head>
 <body>
-	<tag:navbar session="<%= session %>" activeTab="home" />
+	<tag:navbar session="<%= session %>" activeTab="<%= activeTab %>" />
 	<div class="container">
 		<div class="jumbotron">
 <% if (userIDError) { %>

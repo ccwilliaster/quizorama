@@ -304,4 +304,34 @@ public class Message implements Comparable<Message>{
 		);
 		return html.toString();
 	}
+	/**
+	 * Returns the message in an alert form with the fromUser and 
+	 * @return
+	 */
+	public String displayAsAlert(DBConnection connection) throws SQLException {
+		StringBuilder html = new StringBuilder();
+		html.append(
+		"<div class='container'" +
+		  "<div class='col-md-4'" +
+		    "<div class='alert alert-danger alert-dismissable' >" + 
+		      "<button type='button' class='close' data-dismiss='alert' >x</button>" +
+			  "<h4 class='alert-heading'>Admin:" + connection.getUserName(fromUserID) + "</h4>" + 
+			  content +
+			"</div>" +
+		  "</div>" +
+		"</div>");
+		return html.toString();
+	}
+	/**
+	 * Return the message as a compact list group item
+	 */
+	public String displayCompact(DBConnection connection) throws SQLException {
+		StringBuilder html = new StringBuilder();
+		html.append(
+		"<li class='list-group-item'>" +
+		  "<h4 class='list-group-item-heading'>" + connection.getUserName(fromUserID) + "</h4>" +
+		  "<p class='list-group-item-text'" + subject + "</p>" +
+		"</li>");
+		return html.toString();
+	}
 }

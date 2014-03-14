@@ -24,8 +24,8 @@
 		StringBuilder html = new StringBuilder();
 		if (active) { html.append("<li class='active'>"); }
 		else        { html.append("<li>"); }
-		
-		html.append("<a href='" + href + "'>" + text + "</a></li>");
+
+		html.append("<a href='" + href + "'>" + text + "</a></li>"); 
 		return html.toString();
 	}
 
@@ -46,6 +46,25 @@
 			"</div>";
 			
 		return html;
+	}
+	
+	public String getQuizzesDropdown(String userName, String text, boolean active) {
+		if ( userName.equals("Guest") || userName.equals("") ) {
+			return getAnchor("Quizzes", "quizSearch.jsp", active);
+		}
+		StringBuilder html = new StringBuilder();
+		if (active) { html.append("<li class='active dropdown'>"); }
+		else        { html.append("<li class='dropdown'>"); }
+		
+		html.append(
+		 "<a href='#' class='dropdown-toggle' data-toggle='dropdown'>" +
+           text + " <b class='caret'></b></a>" +
+           "<ul class='dropdown-menu'>" +
+      	     getAnchor("Search quizes", "quizSearch.jsp", false) +
+       	     getAnchor("Create new quiz!", "CreateQuiz.jsp", false) +
+	      "</ul>" +
+		"</li>");	
+		return html.toString();
 	}
 %>
 
@@ -72,9 +91,9 @@
 					} else {
 						out.println( getAnchor("Home", "homepage.jsp", false) );
 					} if ("quizzes".equals( activeTab )) {
-						out.println( getAnchor("Quizzes", "quizSearch.jsp", true) );
+						out.println( getQuizzesDropdown(userName, "Quizzes", true) );
 					} else {
-						out.println( getAnchor("Quizzes", "quizSearch.jsp", false) );
+						out.println( getQuizzesDropdown(userName, "Quizzes", false) );
 					} if ("users".equals( activeTab )) {
 						out.println( getAnchor("Users", "userSearch.jsp", true) );
 					} else {
