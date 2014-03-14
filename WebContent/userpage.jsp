@@ -86,7 +86,7 @@
 			announcementType.add(Message.TYPE_ANNOUNCEMENT);
 			ResultSet allUserMessages = connection.getUserMessages(userPageID);
 			ArrayList<Message> usersAnnouncements = Message.loadMessages( allUserMessages, announcementType, userPageID, null ); %>
-			<a href="showUserMessages.jsp">See All Messages</a>
+			<a href="userMessages.jsp">See All Messages</a>
 			<% 	for (Message message: usersAnnouncements) {
 					out.println("<div class=\"container\">");
 					out.println("<br>");
@@ -141,7 +141,7 @@
 				</ul>
 		</li>
 		<li><h3>Recent Messages Received</h3>
-			<a href="showUserMessages.jsp">See All Messages</a>
+			<a href="userMessages.jsp">See All Messages</a>
 			<% 	for (Message message: recentMessages) {
 					out.println("<div class=\"container\">");
 					out.println("<br>");
