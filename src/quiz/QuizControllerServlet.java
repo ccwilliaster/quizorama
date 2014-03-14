@@ -46,7 +46,7 @@ public class QuizControllerServlet extends HttpServlet {
 			Quiz currQuiz           = (Quiz) session.getAttribute("quiz");
 				
 			if (currQuiz == null) { // first time servlet is being called
-				Integer quizID = Integer.parseInt(request.getParameter("id"));
+				Integer quizID = Integer.parseInt(request.getParameter("quizID"));
 				currQuiz = new Quiz(quizID, connection);
 				session.setAttribute("quiz", currQuiz);
 				currQuiz.startQuiz();
