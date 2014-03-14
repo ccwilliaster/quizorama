@@ -289,7 +289,7 @@
       					</dd>
       					<dt>categories</dt>
       					<dd><%= printLabels(categories, "label-warning", "categories") %><br><br></dd>
-      					<% if (categories.size() < 1) {
+      					<% if (categories.size() < 2) {
       						//Only 1 category is allowed
       						out.print("<dd><a href=addQuizTag.jsp?quizID=" + Integer.toString(quiz.getQuizID()) + " >Add to another category...</a>");
       					} //if
