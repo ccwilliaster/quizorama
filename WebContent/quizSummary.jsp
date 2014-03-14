@@ -6,6 +6,7 @@
 
 <%
 	DecimalFormat percent = new DecimalFormat("##0.#");
+	DecimalFormat score = new DecimalFormat("#,##0.0#");
 	DBConnection connection;
 	Integer quizID     = null;
 	Integer userRating = null;
@@ -19,7 +20,8 @@
 	if (request.getParameterMap().containsKey("quizID")) { // error handling
 		 quizID     = Integer.parseInt( request.getParameter("quizID") );
 	} else {
-		request.getRequestDispatcher("error.jsp").forward(request, response); 
+		request.getRequestDispatcher("error.jsp").forward(request, response);
+		return;
 	}
 	
 	Quiz quiz                    = new Quiz(quizID, connection);
@@ -281,14 +283,21 @@
       					<dt>average score</dt>
       					<dd>
       						<h3><span class="label label-primary">
-      							<%= avgScore %> out of <%= quiz.getPossiblePoints() %>
+      							<%= score.format(avgScore) %> out of <%= quiz.getPossiblePoints() %>
       						</span>
       						</h3><br>
       					</dd>
       					<dt>categories</dt>
       					<dd><%= printLabels(categories, "label-warning", "categories") %><br><br></dd>
+      					<% if (categories.size() < 1) {
+      						//Only 1 category is allowed
+      						out.print("<dd><a href=addQuizTag.jsp?quizID=" + Integer.toString(quiz.getQuizID()) + " >Add to another category...</a>");
+      					} //if
+      					%>
+      					
       					<dt>tags</dt>
       					<dd><%= printLabels(tags, "label-success", "tags") %></dd>
+      					<dd><a href=<% out.print("addQuizTag.jsp?quizID=" + Integer.toString(quiz.getQuizID())); %> >Add to another tag...</a>
 					</dl> 
       				
 

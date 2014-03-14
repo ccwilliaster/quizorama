@@ -609,7 +609,9 @@ public class DBConnection {
 	private static final int NUM_RECENT_MESSAGES = 3;
 	public ArrayList<Message> getRecentMessages(int userID) throws SQLException{
 		ResultSet rs = getUserMessages(userID);
-		Set<Integer> validTypes = new HashSet<Integer>() {{ 
+		Set<Integer> validTypes = new HashSet<Integer>() {
+			private static final long serialVersionUID = -5488924326330841157L;
+		{
 			add(Message.TYPE_NOTE);  
 			add(Message.TYPE_CHALLENGE);
 			add(Message.TYPE_FRIEND);
@@ -666,7 +668,7 @@ public class DBConnection {
 		if (!genKey.first())
 			throw new SQLException("Creating achievement failed, no gen key obtained.");			
 		return true;
-	}
+	} //setAchievement
 
 	public int getUserType(int userID) throws SQLException {
 			String userNameGet = "SELECT userType FROM users WHERE userID = ?";
@@ -675,5 +677,54 @@ public class DBConnection {
 			ResultSet rs = sql.executeQuery();
 			rs.first();
 			return rs.getInt(1);
+	} //getUserType
+	
+	public boolean addTag(int quizID, int tagID) throws SQLException {
+		String insert = "insert into " + quizTagsTable + " (quizID, tagID) VALUES (?, ?);";
+		PreparedStatement sql = conn.prepareStatement(insert, Statement.RETURN_GENERATED_KEYS);
+		sql.setInt(1, quizID);
+		sql.setInt(2, tagID);
+		int affectedRows = sql.executeUpdate();
+		if (affectedRows == 0) {
+			throw new SQLException("Creating achievement failed, no rows affected.");
+	    }
+		
+		ResultSet genKey = sql.getGeneratedKeys();
+		if (!genKey.first())
+			throw new SQLException("Creating achievement failed, no gen key obtained.");
+		return true;
+	} //addTag
+	
+	public boolean addCat(int quizID, int catID) throws SQLException {
+		String insert = "insert into " + quizCategoriesTable + " (quizID, categoryID) VALUES (?, ?);";
+		PreparedStatement sql = conn.prepareStatement(insert, Statement.RETURN_GENERATED_KEYS);
+		sql.setInt(1, quizID);
+		sql.setInt(2, catID);
+		int affectedRows = sql.executeUpdate();
+		if (affectedRows == 0) {
+			throw new SQLException("Creating achievement failed, no rows affected.");
+	    }
+		
+		ResultSet genKey = sql.getGeneratedKeys();
+		if (!genKey.first())
+			throw new SQLException("Creating achievement failed, no gen key obtained.");
+		return true;
+	} //addCat
+
+	public int addNewTag(String newTag) throws SQLException {
+		//TODO: Create new Tag to tag table, return the generated key
+		String insert = "insert into " + tagsTable + " (tagName) VALUES (?);";
+		PreparedStatement sql = conn.prepareStatement(insert, Statement.RETURN_GENERATED_KEYS);
+		sql.setString(1, newTag);
+		int affectedRows = sql.executeUpdate();
+		if (affectedRows == 0) {
+			throw new SQLException("Creating achievement failed, no rows affected.");
+	    } //if
+		
+		ResultSet genKey = sql.getGeneratedKeys();
+		if (!genKey.first())
+			throw new SQLException("Creating achievement failed, no gen key obtained.");		
+		return genKey.getInt(1);
 	}
+	
 }

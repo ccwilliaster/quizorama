@@ -41,10 +41,10 @@
 										<option value="-1" selected>Any Category</option>
 									<% //Get the DBConnection to give a resultSet of the tagTypes to populate options
 									   DBConnection dbConnection = (DBConnection) application.getAttribute("DBConnection");
-									   ResultSet rs = dbConnection.getTagTypes();
+									   ResultSet rs = dbConnection.getCategoryTypes();
 									   rs.beforeFirst();
 									   while(rs.next()) {
-									   	out.println("<option value=\"" + rs.getInt("tagID") + "\">" + rs.getString("tagName") + "</option>");
+									   	out.println("<option value=\"" + rs.getInt("categoryID") + "\">" + rs.getString("categoryName") + "</option>");
 									   } //while
 									%>
 									</select>
