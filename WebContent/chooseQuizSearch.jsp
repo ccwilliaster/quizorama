@@ -3,7 +3,6 @@
 <%@ page import="java.util.*" %> 
 <%@ page import="java.sql.*" %> 
 <%@ taglib  prefix="tag" tagdir="/WEB-INF/tags" %>
-<tag:navbar session="<%= session %>" activeTab="quizzes" /> 
 <!DOCTYPE html>
 <html>
 <head>

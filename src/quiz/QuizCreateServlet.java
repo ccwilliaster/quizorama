@@ -127,6 +127,7 @@ public class QuizCreateServlet extends HttpServlet {
 				e.printStackTrace();
 				RequestDispatcher requestDispatcher = request.getRequestDispatcher("CreateQuiz.jsp");
 				requestDispatcher.forward(request, response);
+				return;
 			}
 			
 			String answerText = request.getParameter("response");
@@ -139,6 +140,7 @@ public class QuizCreateServlet extends HttpServlet {
 				e.printStackTrace();
 				RequestDispatcher requestDispatcher = request.getRequestDispatcher("CreateQuiz.jsp");
 				requestDispatcher.forward(request, response);
+				return;
 			}
 
 			//Last thing:
