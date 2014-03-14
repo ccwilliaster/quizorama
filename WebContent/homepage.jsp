@@ -1,11 +1,15 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
 <%@ page import="quiz.User" %>
+<%@ page import="quiz.LoginServlet" %>
+<%@ page import="quiz.DBConnection" %>
 <%@ taglib  prefix="tag" tagdir="/WEB-INF/tags" %>
 <!DOCTYPE html>
-<%  // Check if there was an error
+<%
+	// Check if there was an error
 	String error = (String) request.getAttribute("error"); 
 
+	DBConnection dbConnection = (DBConnection) application.getAttribute("DBConnection");
 	// If user is logged in, forward to their own home page
 	User user = (User) session.getAttribute("user");
 	if (user != null && user.getUserID() != -1) {
@@ -13,6 +17,19 @@
 		String userpage = "userpage.jsp?userID=" + userID;
 		response.sendRedirect(userpage);
 	}
+	
+	Cookie[] cookies = request.getCookies();
+	for (int i = 0; i < cookies.length; i++) {
+		Cookie c = cookies[i];
+		if (c.getName().equals(LoginServlet.COOKIE_NAME)) {
+			int userID = dbConnection.getUserIDFromCookie(c.getValue());
+			if ( userID != -1) {
+				String userpage = "userpage.jsp?userID=" + userID;
+				response.sendRedirect(userpage);
+				return;
+			} //if
+		} //if
+	} //for
 %>
 <html>
 <head>

@@ -725,6 +725,34 @@ public class DBConnection {
 		if (!genKey.first())
 			throw new SQLException("Creating achievement failed, no gen key obtained.");		
 		return genKey.getInt(1);
-	}
+	} //addNewTag
+	
+	public boolean createCookie(int userID, String cookie) throws SQLException {
+		String update = "UPDATE " + userTable + " SET cookie = ? WHERE userID = ?;";
+		PreparedStatement sql = conn.prepareStatement(update, Statement.RETURN_GENERATED_KEYS);
+		sql.setString(1, cookie);
+		sql.setInt(2, userID);
+		int affectedRows = sql.executeUpdate();
+		if (affectedRows == 0) {
+			throw new SQLException("Creating achievement failed, no rows affected.");
+	    } //if		
+		
+		return true;
+	} //createCookie
+	
+	public int getUserIDFromCookie(String cookieIn) throws SQLException {
+		
+		String select = "SELECT * FROM " + userTable + " WHERE cookie = ?;";
+		PreparedStatement sql = conn.prepareStatement(select);
+		sql.setString(1, cookieIn);
+		ResultSet userRow = sql.executeQuery();
+		if (!userRow.first()) {
+			//Nothing returned, so no userID!
+			return -1;
+	    } //if		
+		
+		//Get back the first userID that matches the cookie
+		return userRow.getInt("userID");
+	} //checkCookie
 	
 }

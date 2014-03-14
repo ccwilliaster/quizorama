@@ -40,7 +40,7 @@
 									<select class="form-control" name="catAdd" id="catAdd">
 										<option value="-1" selected>Select A Category</option>
 									<% //Get the DBConnection to give a resultSet of the tagTypes to populate options
-									   ResultSet rs = dbConnection.getTagTypes();
+									   ResultSet rs = dbConnection.getCategoryTypes();
 									   rs.beforeFirst();
 									   while(rs.next()) {
 									   	out.println("<option value=\"" + rs.getInt("categoryID") + "\">" + rs.getString("categoryName") + "</option>");
@@ -51,6 +51,7 @@
 							</div>
 							<div class="form-group">
 								<div class="col-md-offset-3 col-md-3">
+									<input name="quizID" type="hidden" value=<%= quizID %>>
 									<input class="btn btn-primary" type="submit" value="Add to Category">
 								</div>
 							</div>
