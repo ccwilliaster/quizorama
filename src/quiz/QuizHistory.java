@@ -81,12 +81,48 @@ public class QuizHistory {
 			if (i >= NUM_RECENT_SCORES) break;
 			int score = recentScores.get(i).getScore();
 			userID = recentScores.get(i).getUserID();
-			String format = "<td>" + score + "</td><td>" + connection.getQuizName(recentScores.get(i).getQuizID()) + "</td><td><a class='btn btn-default btn-xs' href='userpage.jsp?userID=" 
-							+ userID + "'>" + connection.getUserName(userID) + "</a></td>";
+			int currQuizID  = recentScores.get(i).getQuizID();
+			String quizName = connection.getQuizName(currQuizID);
+			String format = 
+				"<td>" + score + "</td><td><a class='btn btn-primary btn-xs' href='quizSummary.jsp?quizID=" + 
+				currQuizID + "'>" + quizName + "</a></td>" +
+				"<td><a class='btn btn-default btn-xs' href='userpage.jsp?userID=" +
+				userID + "'>" + connection.getUserName(userID) + "</a></td>";
 			result.add(format);
 		}
 		return result;
 	}
+	
+	/* Gets the NUM_RECENT_SCORES number of recent scores associated with this user
+	 * ID. Returns an arrayList of the string format specified by Chris.
+	 */
+	public static ArrayList<String> getRecentScoresNoName(Integer userID, Integer quizID, DBConnection connection) throws SQLException {
+		ArrayList<String> result = new ArrayList<String>();
+		if (userID == null && quizID == null) return result;
+		ArrayList<Score> recentScores = new ArrayList<Score>();
+		ArrayList<Score> scores = getHistories(userID, quizID, connection);
+		for (int i = 0; i < scores.size(); i++) {
+			int recentScoreIndex = 0;
+			while(recentScoreIndex < recentScores.size() && 
+					recentScores.get(recentScoreIndex).getDate().compareTo(scores.get(i).getDate()) > 0) {
+				recentScoreIndex++;
+			}
+			recentScores.add(recentScoreIndex , scores.get(i));
+		}
+		for (int i = 0; i < recentScores.size(); i++) {
+			if (i >= NUM_RECENT_SCORES) break;
+			int score = recentScores.get(i).getScore();
+			userID = recentScores.get(i).getUserID();
+			String format = 
+				"<td>" + score + "</td>" +
+				"<td><a class='btn btn-default btn-xs' href='userpage.jsp?userID=" +
+				userID + "'>" + connection.getUserName(userID) + "</a></td>";
+			result.add(format);
+		}
+		return result;
+	}
+	
+	
 	/* Gets the NUM_TOP_SCORES number of recent scores associated with this user
 	 * ID. Returns an arrayList of the string format specified by Chris.
 	 */
@@ -148,8 +184,11 @@ public class QuizHistory {
 		for (int i = 0; i < recent.size(); i++) {
 			if (i >= NUM_RECENT_SCORES) break;
 			QuizCreation curr = recent.get(i);
-			String format = "<td>" + curr.getQuizName() + "</td><td><a class='btn btn-default btn-xs' href='userpage.jsp?userID=" 
-					+ curr.getUserID() + "'>" + connection.getUserName(curr.getUserID()) + "</a></td>";
+			String format = 
+				"<td><a class='btn btn-primary btn-xs' href='quizSummary.jsp?quizID=" + 
+				curr.getQuizID() + "'>" + curr.getQuizName() + "</a></td>" + 
+				"<td><a class='btn btn-default btn-xs' href='userpage.jsp?userID=" +
+				curr.getUserID() + "'>" + connection.getUserName(curr.getUserID()) + "</a></td>";
 			result.add(format);
 		}
 		return result;
@@ -182,8 +221,12 @@ public class QuizHistory {
 			int quizID = popList.get(i);
 			ResultSet quizInfo = connection.getQuizInformation(quizID);
 			quizInfo.first();
-			String format = "<td>" + quizInfo.getString("quizName") + "</td><td><a class='btn btn-default btn-xs' href='userpage.jsp?userID=" 
-							+ quizInfo.getInt("quizCreatoruserID") + "'>" + connection.getUserName(quizInfo.getInt("quizCreatoruserID")) + "</a></td>";
+			String format = 
+				"<td><a class='btn btn-primary btn-xs' href='quizSummary.jsp?quizID=" +
+				quizInfo.getInt("quizID") + "'>" + quizInfo.getString("quizName") + "</a></td>" +
+				"<td><a class='btn btn-default btn-xs' href='userpage.jsp?userID=" +
+				quizInfo.getInt("quizCreatoruserID") + "'>" + 
+				connection.getUserName(quizInfo.getInt("quizCreatoruserID")) + "</a></td>";
 			result.add(format);
 		}
 		return result;

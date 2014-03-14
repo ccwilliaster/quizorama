@@ -124,7 +124,7 @@
 							out.println(message.displayCompact(connection));
 						}	%>
 						</ul>
-						<a class='btn btn-primary btn-sm' href="userMessages.jsp">See All Messages</a>
+						<a class='btn btn-primary btn-sm' href="ReadMessagesServlet?navtab=inbox">See All Messages</a>
 					</div>
 				</div>
 			</div>
@@ -218,12 +218,18 @@
 		<div class="panel panel-default">
 			<div class="panel-body">
 				<% for(int i = 0; i < friends.size(); i++) { %>
+					<br>
 					<div class="row">
-						<a class="btn btn-primary" 
-						   href="userpage.jsp?userID=<%=friends.get(i)%>">
-						   <%=connection.getUserName(friends.get(i)) %>
-						</a>
-						<%=FriendRequestServlet.getRemoveFriendLink("Remove Friend", userPageID, friends.get(i)) %>
+						<div class="col-md-8 pull-left">
+							<a class="btn btn-primary" 
+							   href="userpage.jsp?userID=<%=friends.get(i)%>">
+							   <%=connection.getUserName(friends.get(i)) %>
+							</a>
+							<%=FriendRequestServlet.getRemoveFriendLink("Remove Friend", userPageID, friends.get(i)) %>
+						<br><br>
+						</div>
+					</div>
+					<div class="row">
 						<div class="col-md-4">
 			   				<div class="thumbnail">
 			      				<div class="caption">
@@ -241,7 +247,7 @@
 						<div class="col-md-4">
 			   				<div class="thumbnail">
 			      				<div class="caption">
-									<h3 style="color:#428bca">Recent quizzes they've made</h3>
+									<h3 style="color:#428bca">Their recently created quizzes</h3>
 									<table>
 										<tr><th>Quiz</th><th>User</th></tr>
 										<% ArrayList<String> friendRecentQuizzes = QuizHistory.getRecentQuizCreations(friends.get(i), connection); %>
@@ -255,11 +261,13 @@
 						<div class="col-md-4">
 				 			<div class="thumbnail">
 				    			<div class="caption">
-									<h3 style="color:#428bca">Their recent achievements</h3>
+									<h3 style="color:#428bca">Their recent achievements</h3>									
 									<ul class="list-group">
 										<% ArrayList<String> friendNames = Achievements.getAchievementNames(friends.get(i), connection); %>
 										<% for (int j = 0; j < friendNames.size(); j++) { %>
-											<li><%=friendNames.get(j) %></li>
+											<strong>
+											<li class="list-group-item" style="color:#d9534f"><%=friendNames.get(j) %></li>
+											</strong>
 										<% } %>	
 									</ul>
 								</div>
