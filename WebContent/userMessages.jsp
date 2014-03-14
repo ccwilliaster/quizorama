@@ -109,7 +109,7 @@
 					    		Quiz challenge</a>
 					    	</li>
 					    	<% 
-					    		if ( user != null && user.isAdmin() ) {
+					    		if ( user != null & user.getUserID() != -1 & user.isAdmin() ) {
 					    			out.println(
 					    			"<li role=\"presentation\" class=\"divider\"></li>" + 
 					    			"<li><a href=\"NewMessageServlet?type=" + Message.TYPE_ANNOUNCEMENT +
