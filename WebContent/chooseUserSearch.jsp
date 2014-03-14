@@ -1,25 +1,28 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" 
  pageEncoding="UTF-8" %>
- <%@ taglib  prefix="tag" tagdir="/WEB-INF/tags" %>
-<tag:navbar session="<%= session %>" activeTab="quizzes" /> 
-<!DOCTYPE html>
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><link href="./css/bootstrap.css" rel="stylesheet">
-<script type="text/javascript" src="./js/jquery.js"></script>
-<script type="text/javascript" src="./js/bootstrap.js"></script>
-<title>Make a friend!</title>
-</head>
-<body>
-<div class="container">
-<h1>Choose a user to befriend:</h1>
-<p></p>
-<p>Users: </p>
-<p></p>
-<ul>
+<%@ taglib  prefix="tag" tagdir="/WEB-INF/tags" %>
 <%@ page import="quiz.*" %> 
 <%@ page import="java.util.*" %> 
 <%@ page import="java.sql.*" %> 
+<!DOCTYPE html>
+<html>
+<head>
+	<link href="./css/bootstrap.css" rel="stylesheet">
+	<script type="text/javascript" src="./js/jquery.js"></script>
+	<script type="text/javascript" src="./js/bootstrap.js"></script>
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+	<title>User search results</title>
+</head>
+<body>
+	<tag:navbar session="<%= session %>" activeTab="quizzes" />
+	<div class="container">
+		<div class="jumbotron">
+			<h2 style="color:#428bca">Follow links below to view a user's page</h2>
+			<h2><small>Search results:</small></h2>
+			<div class="row">
+				<div class="col-md-8">
+					<div class="thumbnail">
+						<br><br>
 <% 
 		DBConnection dbConnection = (DBConnection) application.getAttribute("DBConnection");
 		String userFilter = request.getParameter("userNameFilter");
@@ -35,16 +38,24 @@
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		
-		for (Integer userId : userMap.keySet()) {
-			out.println("<li>");
-			out.println("<input name='quizId' type='hidden' value='" + userId + "'/>");
-			out.println("<a href='createMessage.jsp?type=" + Message.TYPE_FRIEND + "&toUserName=" + userMap.get(userId) + "' >" + userMap.get(userId) + "</a>");
-			out.println("</li>");
+		if (userMap.size() > 0) {
+			for (Integer userId : userMap.keySet()) {
+				out.println("<div class='row text-center'><div class='col-md-8'>");
+				out.println("<a class='btn btn-danger btn-sm' href='userpage.jsp?userID=" + userId + "'>");
+				out.println(userMap.get(userId) + "</a></div></div>");
+			}
+		} else {
+			out.println("<div class='text-center' style='font-size:large'>");
+			out.println("<em>Sorry! No users were found for the query '");
+			out.println("<span style='color:#d9534f'>" + userFilter + "</span>'</em>");
+			out.println("<br>You can try another search <a class='btn btn-primary btn-xs' ");
+			out.println("href='userSearch.jsp'>here</a>");
 		}
-
+		out.println("<br><br>");
 %>
-</ul>
-</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </body>
 </html>

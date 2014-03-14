@@ -2,20 +2,43 @@
     pageEncoding="ISO-8859-1"%>
 <%@ page import="quiz.*, java.sql.*" %>
 <%@ taglib  prefix="tag" tagdir="/WEB-INF/tags" %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html>
 <head>
 	<link href="./css/bootstrap.css" rel="stylesheet">
 	<script type="text/javascript" src="./js/jquery.js"></script>
 	<script type="text/javascript" src="./js/bootstrap.js"></script>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Search for a quiz here</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+	<title>Search for users</title>
 </head>
 <body>
-
-<form action="chooseUserSearch.jsp" method="get">
-	User Name Filter: <input name="userNameFilter"> <br><br>
-	<input class="btn btn-default" type="submit" value="Search Users"> <br><br>
-</form>
+	<tag:navbar session="<%= session %>" activeTab="quizzes" />
+	<div class="container">
+		<div class="jumbotron">
+			<h2 style="color:#428bca">Search for other users here</h2>	
+			<h2><small>You may find users based on their user name</small></h2>
+			<div class="row">
+				<div class="col-md-8">
+					<div class="thumbnail">
+						<br><br>
+						<form class="form-horizontal" role="form" action="chooseUserSearch.jsp" method="get">
+							<div class="form-group">
+								<label for="userNameFilter" class="col-md-3 control-label">User name filter:</label>
+								<div class="col-md-5">
+									<input name="userNameFilter" id="userNameFilter" class="form-control">
+								</div>
+							</div>
+							<div class="form-group">
+								<div class="col-md-offset-3 col-md-3">
+									<input class="btn btn-primary" type="submit" value="Search users">
+								</div>
+							</div>
+						</form>
+						<br><br>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </body>
 </html>

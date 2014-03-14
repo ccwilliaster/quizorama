@@ -2,44 +2,74 @@
     pageEncoding="ISO-8859-1"%>
 <%@ page import="quiz.*, java.sql.*" %>
 <%@ taglib  prefix="tag" tagdir="/WEB-INF/tags" %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html>
 <head>
 	<link href="./css/bootstrap.css" rel="stylesheet">
 	<script type="text/javascript" src="./js/jquery.js"></script>
 	<script type="text/javascript" src="./js/bootstrap.js"></script>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Search for a quiz here</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+	<title>Search quizzes</title>
 </head>
 <body>
-
-<form action="chooseQuizSearch.jsp" method="get">
-	Quiz Name Filter: <input name="quizFilter"> <br><br>
-	Select a tag, if applicable: 
-	<select name="tagFilter">
-		<option value="-1" selected>Any Tag</option>
-		<% //Get the DBConnection to give a resultSet of the tagTypes to populate options
-		DBConnection dbConnection = (DBConnection) application.getAttribute("DBConnection");
-		ResultSet rs = dbConnection.getTagTypes();
-		rs.beforeFirst();
-		while(rs.next()) {
-			out.println("<option value=\"" + rs.getInt("tagID") + "\">" + rs.getString("tagName") + "</option>");
-		} //while
-		%>	
-	</select>
-	<br><br>
-	Select a category, if applicable:
-	<select name="catFilter">
-		<option value="-1" selected>Any Category</option>
-		<% //Get the DBConnection to give a resultSet of the tagTypes to populate options
-		rs = dbConnection.getCategoryTypes();
-		rs.beforeFirst();
-		while(rs.next()) {
-			out.println("<option value=\"" + rs.getInt("categoryID") + "\">" + rs.getString("categoryName") + "</option>");
-		} //while
-		%>
-	</select> <br><br>
-	<input class="btn btn-default" type="submit" value="Search Quizzes"> <br><br>
-</form>
+	<tag:navbar session="<%= session %>" activeTab="quizzes" />
+	<div class="container">
+		<div class="jumbotron">
+			<h2 style="color:#428bca">Search for available quizes here!</h2>
+			<h2><small>You can search by name as well as by quiz categories and tags</small></h2>
+			<div class="row">
+				<div class="col-md-10">
+					<div class="thumbnail">
+						<br><br>
+						<form class="form-horizontal" role="form" action="chooseQuizSearch.jsp" method="get">
+							<div class="form-group">
+								<label for="quizFilter" class="col-md-3 control-label">Quiz name filter:</label>
+								<div class="col-md-4">
+									<input name="quizFilter" id="quizFilter" class="form-control">
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="catFilter" class="col-md-3 control-label">Optional category filter:</label>
+								<div class="col-md-4">
+									<select class="form-control" name="catFilter" id="catFilter">
+										<option value="-1" selected>Any Category</option>
+									<% //Get the DBConnection to give a resultSet of the tagTypes to populate options
+									   DBConnection dbConnection = (DBConnection) application.getAttribute("DBConnection");
+									   ResultSet rs = dbConnection.getTagTypes();
+									   rs.beforeFirst();
+									   while(rs.next()) {
+									   	out.println("<option value=\"" + rs.getInt("tagID") + "\">" + rs.getString("tagName") + "</option>");
+									   } //while
+									%>
+									</select>
+								</div>
+							</div>	
+							<div class="form-group">
+								<label for="tagFilter" class="col-md-3 control-label">Optional tag filter:</label>
+								<div class="col-md-4">
+									<select class="form-control" name="tagFilter" id="tagFilter">
+										<option value="-1" selected>Any Tag</option>
+									<% //Get the DBConnection to give a resultSet of the tagTypes to populate options
+									   rs = dbConnection.getTagTypes();
+									   rs.beforeFirst();
+									   while(rs.next()) {
+									   	out.println("<option value=\"" + rs.getInt("tagID") + "\">" + rs.getString("tagName") + "</option>");
+									   } //while
+									%>
+									</select>
+								</div>
+							</div>
+							<div class="form-group">
+								<div class="col-md-offset-3 col-md-3">
+									<input class="btn btn-primary" type="submit" value="Search Quizzes">
+								</div>
+							</div>
+						</form>
+						<br><br>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </body>
 </html>
