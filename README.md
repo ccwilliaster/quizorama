@@ -1,8 +1,8 @@
 quizorama - cs108 final project
 ========================================================================
 Team members (4): Tyler Conklin, Ali Fauci, Adrian Spanu, Chris Williams
--note: 
- Adrian and Chris are 'local' distance students (w/in 25 miles of campus)
+
+--note: Adrian and Chris are 'local' distance students (w/in 25 miles of campus)
 ========================================================================
 
 Features implemented:
