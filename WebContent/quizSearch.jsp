@@ -15,6 +15,12 @@
 	<tag:navbar session="<%= session %>" activeTab="quizzes" />
 	<div class="container">
 		<div class="jumbotron">
+			<% 
+			if ( (String) request.getAttribute("alert") != null) {
+				out.println("<h2 style='color:#d9534f'>" + 
+						     (String) request.getAttribute("alert") + "</h2><br>");
+			}
+			%>
 			<h2 style="color:#428bca">Search for available quizes here!</h2>
 			<h2><small>You can search by name as well as by quiz categories and tags</small></h2>
 			<div class="row">

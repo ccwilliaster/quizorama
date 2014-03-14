@@ -311,15 +311,11 @@ public class Message implements Comparable<Message>{
 	public String displayAsAlert(DBConnection connection) throws SQLException {
 		StringBuilder html = new StringBuilder();
 		html.append(
-		"<div class='container'" +
-		  "<div class='col-md-4'" +
 		    "<div class='alert alert-danger alert-dismissable' >" + 
 		      "<button type='button' class='close' data-dismiss='alert' >x</button>" +
-			  "<h4 class='alert-heading'>Admin:" + connection.getUserName(fromUserID) + "</h4>" + 
+			  "<h4 class='alert-heading'>Admin: " + connection.getUserName(fromUserID) + "</h4>" + 
 			  content +
-			"</div>" +
-		  "</div>" +
-		"</div>");
+		  "</div>");
 		return html.toString();
 	}
 	/**
@@ -329,8 +325,9 @@ public class Message implements Comparable<Message>{
 		StringBuilder html = new StringBuilder();
 		html.append(
 		"<li class='list-group-item'>" +
-		  "<h4 class='list-group-item-heading'>" + connection.getUserName(fromUserID) + "</h4>" +
-		  "<p class='list-group-item-text'" + subject + "</p>" +
+		  "<h4 class='list-group-item-heading'>" + connection.getUserName(fromUserID) + 
+		  "<small>    " + printShortDate() + "</small></h4>" +
+		  "<h5 style='color:DimGray'>" + subject + "</h5>   " + 
 		"</li>");
 		return html.toString();
 	}

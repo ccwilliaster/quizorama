@@ -60,7 +60,7 @@
 		 "<a href='#' class='dropdown-toggle' data-toggle='dropdown'>" +
            text + " <b class='caret'></b></a>" +
            "<ul class='dropdown-menu'>" +
-      	     getAnchor("Search quizes", "quizSearch.jsp", false) +
+      	     getAnchor("Search quizzes", "quizSearch.jsp", false) +
        	     getAnchor("Create new quiz!", "CreateQuiz.jsp", false) +
 	      "</ul>" +
 		"</li>");	

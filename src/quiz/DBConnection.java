@@ -8,6 +8,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * This class controls the connection from the quiz website to the database
@@ -292,7 +294,7 @@ public class DBConnection {
 	} // returns the corresponding quizID for the specified quizName
 	
 	public String getQuizName(int quizID) throws SQLException {
-		String userIDGet = "SELECT quizID FROM " + quizTable + " WHERE quizID = ?";
+		String userIDGet = "SELECT quizName FROM " + quizTable + " WHERE quizID = ?";
 		PreparedStatement sql = conn.prepareStatement(userIDGet);
 		sql.setInt(1, quizID);
 		ResultSet rs = sql.executeQuery();
@@ -607,7 +609,12 @@ public class DBConnection {
 	private static final int NUM_RECENT_MESSAGES = 3;
 	public ArrayList<Message> getRecentMessages(int userID) throws SQLException{
 		ResultSet rs = getUserMessages(userID);
-		ArrayList<Message> messages = Message.loadMessages(rs, null, userID, null);
+		Set<Integer> validTypes = new HashSet<Integer>() {{ 
+			add(Message.TYPE_NOTE);  
+			add(Message.TYPE_CHALLENGE);
+			add(Message.TYPE_FRIEND);
+		}};
+		ArrayList<Message> messages = Message.loadMessages(rs, validTypes, userID, null);
 		ArrayList<Message> recent = new ArrayList<Message>();
 		ArrayList<Message> result = new ArrayList<Message>();
 		for (int i = 0; i < messages.size(); i++) {

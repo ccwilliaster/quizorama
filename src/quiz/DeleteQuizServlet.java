@@ -41,9 +41,11 @@ public class DeleteQuizServlet extends HttpServlet {
 			ServletContext context  = getServletContext();
 			DBConnection connection = (DBConnection) context.getAttribute("DBConnection");
 			Integer quizID          = Integer.parseInt( request.getParameter("quizID") );
+			String quizName         = connection.getQuizName(quizID);
 			
 			connection.deleteQuiz( quizID );
-			response.sendRedirect("quizsearch.jsp");
+			request.setAttribute("alert", "Quiz " + quizName + " deleted successfully");
+			request.getRequestDispatcher("quizSearch.jsp").forward(request, response);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
