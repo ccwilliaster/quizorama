@@ -134,7 +134,7 @@ public class QuizCreateServlet extends HttpServlet {
 
 			Question question = null;
 			try {
-				question = createQuestion(request, questionText);
+				question = createQuestion(request, questionText, Question.QTYPE_QR);
 			} catch (SQLException e) {
 				e.printStackTrace();
 				RequestDispatcher requestDispatcher = request.getRequestDispatcher("CreateQuiz.jsp");
@@ -166,7 +166,7 @@ public class QuizCreateServlet extends HttpServlet {
 
 			Question question = null;
 			try {
-				question = createQuestion(request, questionText);
+				question = createQuestion(request, questionText, Question.QTYPE_FB);
 			} catch (SQLException e) {
 				e.printStackTrace();
 				RequestDispatcher requestDispatcher = request.getRequestDispatcher("CreateQuiz.jsp");
@@ -196,7 +196,7 @@ public class QuizCreateServlet extends HttpServlet {
 			String questionText = request.getParameter("question");
 			Question question = null;
 			try {
-				question = createQuestion(request, questionText);
+				question = createQuestion(request, questionText, Question.QTYPE_MC);
 			} catch (SQLException e) {
 				e.printStackTrace();
 				RequestDispatcher requestDispatcher = request.getRequestDispatcher("CreateQuiz.jsp");
@@ -227,7 +227,7 @@ public class QuizCreateServlet extends HttpServlet {
 
 			Question question = null;
 			try {
-				question = createQuestion(request, questionText);
+				question = createQuestion(request, questionText, Question.QTYPE_PR);
 			} catch (SQLException e) {
 				e.printStackTrace();
 				RequestDispatcher requestDispatcher = request.getRequestDispatcher("CreateQuiz.jsp");
@@ -277,7 +277,7 @@ public class QuizCreateServlet extends HttpServlet {
 		question.addAnswers(dbConnection); 
 	}
 
-	private Question createQuestion(HttpServletRequest request, String questionText) throws SQLException {
+	private Question createQuestion(HttpServletRequest request, String questionText, int qType) throws SQLException {
 		//Create a question and then add it to the list of questions that exists in the quiz
 		DBConnection dbConnection = (DBConnection) this.getServletContext().getAttribute("DBConnection");
 
@@ -285,7 +285,19 @@ public class QuizCreateServlet extends HttpServlet {
 		Quiz quiz = (Quiz) request.getSession().getAttribute("Quiz");
 		int questionID = dbConnection.addQuestion(questionText, Question.QTYPE_QR, quiz.getNextQuestionNum(), quiz.getQuizID());
 
-		Question question = new QuestionResponseQuestion(questionID, questionText, Question.QTYPE_QR, quiz.getNextQuestionNum(), quiz.getQuizID(), dbConnection);
+		Question question = null;
+		
+		if (qType == Question.QTYPE_QR )
+			question = new QuestionResponseQuestion(questionID, questionText, qType, quiz.getNextQuestionNum(), quiz.getQuizID(), dbConnection);
+		else if( qType == Question.QTYPE_FB)
+			question = new FillBlankQuestion(questionID, questionText, qType, quiz.getNextQuestionNum(), quiz.getQuizID(), dbConnection);
+		else if( qType == Question.QTYPE_MC)
+			question = new MultipleChoiceQuestion(questionID, questionText, qType, quiz.getNextQuestionNum(), quiz.getQuizID(), dbConnection);
+		else if( qType == Question.QTYPE_PR)
+			question = new PictureResponseQuestion(questionID, questionText, qType, quiz.getNextQuestionNum(), quiz.getQuizID(), dbConnection);
+		else
+			return null;
+			
 		quiz.addQuestion(question);
 		return question;
 	}
@@ -309,7 +321,6 @@ public class QuizCreateServlet extends HttpServlet {
 	}
 
 	private Quiz createNewQuiz(HttpServletRequest request) throws SQLException {
-		System.out.println("In the new quiz creation.");
 		String quizName = (String) request.getParameter("quizName");
 		ServletContext servletContext = this.getServletContext();
 		DBConnection dbConnection = (DBConnection) servletContext.getAttribute("DBConnection");
