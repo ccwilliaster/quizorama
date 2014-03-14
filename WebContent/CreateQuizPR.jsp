@@ -43,7 +43,7 @@
 				    	</div>
 				    </div>
 				    <div class="form-group">
-						<label for="post" class="col-sm-3 control-label">Pipe (|) delimited list of other responses:</label>
+						<label for="post" class="col-sm-3 control-label">Tilda (~) delimited list of other responses:</label>
 						<div class="col-sm-7">
 							<input class="form-control" name="otherResponses">
 						</div>
