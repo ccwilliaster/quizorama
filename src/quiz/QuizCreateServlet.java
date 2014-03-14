@@ -277,9 +277,10 @@ public class QuizCreateServlet extends HttpServlet {
 		if (!firstQuestion) {
 			options.append("<option value=\"done\">No More Questions!</option>");
 		}
-			
+		
 		request.setAttribute("options", options.toString());
 		request.getRequestDispatcher("askForNextQuestion.jsp").forward(request, response);
+		return;
 	}
 
 	private Quiz createNewQuiz(HttpServletRequest request) throws SQLException {
