@@ -614,7 +614,7 @@ public class DBConnection {
 		for (int i = 0; i < messages.size(); i++) {
 			int recentIndex = 0;
 			while(recentIndex < recent.size() && 
-					recent.get(recentIndex).getDate().compareTo(messages.get(i).getDate()) < 0) {
+					recent.get(recentIndex).getDate().compareTo(messages.get(i).getDate()) > 0) {
 				recentIndex++;
 			}
 			recent.add(recentIndex , messages.get(i));
