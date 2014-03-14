@@ -107,21 +107,25 @@ public class QuizCreateServlet extends HttpServlet {
 			} //else if
 			else {
 				//All questions and answers have been completed and inserted into the db.
-				//Remove the quiz attribute and then redirect to the user page.
+				//Remove the quiz attribute and then redirect to the quiz search page with notification
+				
+				Quiz quiz = (Quiz) request.getSession().getAttribute("Quiz");
+				String quizName = quiz.getQuizName(); // pull for notification
+				
 				request.getSession().removeAttribute("quiz");
 				User user = (User) request.getSession().getAttribute("user");
 				DBConnection dbConnection = (DBConnection) this.getServletContext().getAttribute("DBConnection");
 				try {
 					Achievements.wroteQuiz(user.getUserID(), dbConnection);
 				} catch (SQLException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 					RequestDispatcher requestDispatcher = request.getRequestDispatcher("CreateQuizPR.jsp");
 					requestDispatcher.forward(request, response);
 					return;
 				}
-				RequestDispatcher requestDispatcher = request.getRequestDispatcher("userpage.jsp?userID=" + user.getUserID());
-				requestDispatcher.forward(request, response);
+				
+				request.setAttribute("alert", "Your quiz " + quizName + " was created successfully!");
+				request.getRequestDispatcher("quizSearch.jsp").forward(request, response);
 				return;
 			} //Else
 
@@ -302,15 +306,15 @@ public class QuizCreateServlet extends HttpServlet {
 	private void askForNextQuestion(HttpServletRequest request, HttpServletResponse response, 
 			boolean firstQuestion) throws IOException, ServletException {
 		StringBuilder options = new StringBuilder();
+		
+		if (!firstQuestion) {
+			options.append("<option value=\"done\">No More Questions!</option>");
+		}
 		options.append(
 			"<option value=\"" + QTYPE_QR + "\">Question Response Question</option>" +
 			"<option value=\"" + QTYPE_MC + "\">Multiple Choice Question</option>" +
 			"<option value=\"" + QTYPE_FB + "\">Fill-In-The-Blank Question</option>" +
 			"<option value=\"" + QTYPE_PR + "\">Picture Response Question</option>");
-		
-		if (!firstQuestion) {
-			options.append("<option value=\"done\">No More Questions!</option>");
-		}
 		
 		request.setAttribute("options", options.toString());
 		request.getRequestDispatcher("askForNextQuestion.jsp").forward(request, response);

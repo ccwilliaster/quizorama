@@ -39,11 +39,16 @@
 			e.printStackTrace();
 		}
 		if (userMap.size() > 0) {
+			out.println("<table class='table table-hover'>" +
+						"<thead><tr><th>#</th><th>User</th></tr></thead><tbody>");
+			int i = 1;
 			for (Integer userId : userMap.keySet()) {
-				out.println("<div class='row text-center'><div class='col-md-8'>");
-				out.println("<a class='btn btn-danger btn-sm' href='userpage.jsp?userID=" + userId + "'>");
-				out.println(userMap.get(userId) + "</a></div></div>");
+				out.println("<tr><td><strong>" + i + "</strong></td><td>");
+				out.println("<a class='btn btn-danger btn-xs' href='userpage.jsp?userID=" + userId + "'>");
+				out.println(dbConnection.getUserName(userId) + "</a></td></tr>");
+				i++;
 			}
+			out.println("</tbody></table>");
 		} else {
 			out.println("<div class='text-center' style='font-size:large'>");
 			out.println("<em>Sorry! No users were found for the query '");

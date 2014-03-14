@@ -27,8 +27,10 @@
 	User user = (User) session.getAttribute("user");
 %>
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 	<link href="./css/bootstrap.css" rel="stylesheet">
+	<script type="text/javascript" src="./js/jquery.js"></script>
+	<script type="text/javascript" src="./js/bootstrap.js"></script>
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 	<title>New <%= messageType %></title>
 </head>
 <body>
