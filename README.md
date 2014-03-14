@@ -39,6 +39,7 @@ Features implemented:
    - Quiz flagging (non-admin users, not guests)
    - Quiz deletion (admin users)
    - Option for taking in practice mode, if the quiz creator allowed
+     - Note: our practice mode is not like the one suggested in the handout. Instead it simply allows the user to take the quiz without having their score recorded. 
 
 -- Search
    - all user types can search for users, filtering by user name
