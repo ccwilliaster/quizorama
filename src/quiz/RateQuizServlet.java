@@ -39,9 +39,8 @@ public class RateQuizServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) 
 	throws ServletException, IOException {
 		try{
-			System.out.println("in dopost");
-			ServletContext context  = getServletContext();
-			DBConnection connection = (DBConnection) context.getAttribute("DBConnection");
+			//System.out.println("in dopost");
+			DBConnection connection = (DBConnection) getServletContext().getAttribute("DBConnection");
 
 			int quizID = Integer.parseInt( request.getParameter("quizID") );
 			int userID = Integer.parseInt( request.getParameter("userID") );

@@ -14,14 +14,14 @@ public class MultipleChoiceAnswer extends Answer {
 			String answer = answers.get(i);
 			if (!answer.isEmpty()) {
 				if (answer.charAt(0) == '!') {
-					answer = answer.substring(1);
+					answer = answer.substring(1); //Get rid of the incorrect answers
 					answers.set(i, answer);
 				} else {
 					correctAnswer = answer;
-				}
-			}
-		}
-	}
+				} //else
+			} //if
+		} //for
+	} //Constructor
 
 	@Override
 	public int checkAnswers(List<String> answers) {
@@ -37,6 +37,7 @@ public class MultipleChoiceAnswer extends Answer {
 	@Override
 	public String getAnswersHtml() {
 		String html = "";
+		Collections.shuffle(answers);
 		for (String answer : answers) {
 			String location = "choices-" + questionId;
 			locations.add(location);
