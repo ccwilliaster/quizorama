@@ -289,9 +289,9 @@
       					</dd>
       					<dt>categories</dt>
       					<dd><%= printLabels(categories, "label-warning", "categories") %><br><br></dd>
-      					<% if (categories.size() < 2) {
+      					<% if (categories.size() < 1 || categories.get(0) == null) {
       						//Only 1 category is allowed
-      						out.print("<dd><a href=addQuizTag.jsp?quizID=" + Integer.toString(quiz.getQuizID()) + " >Add to another category...</a>");
+      						out.print("<dd><a href=addQuizCat.jsp?quizID=" + Integer.toString(quiz.getQuizID()) + " >Add to another category...</a>");
       					} //if
       					%>
       					
