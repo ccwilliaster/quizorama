@@ -194,6 +194,7 @@
 	</ul>
 <% } %>
 	</div>
+	<a href="CreateQuiz.jsp">Create A New Quiz!</a>
 </div>
 </body>
 </html>

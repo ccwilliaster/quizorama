@@ -495,7 +495,7 @@ public class DBConnection {
 		return sql.executeQuery();
 	} //getAllQuizzes
 
-	public void addQuiz(Quiz quiz) throws SQLException {
+	public int addQuiz(Quiz quiz) throws SQLException {
 		ResultSet genKey = null;
 		String insert = "insert into " + quizTable + " (quizName, quizCreatorUserID, `singlePage?`, `randomOrder?`, `immediateCorrection?`, `practiceMode?`) VALUES (?, ?, ?, ?, ?, ?);";
 		PreparedStatement sql = conn.prepareStatement(insert, Statement.RETURN_GENERATED_KEYS);
@@ -515,25 +515,25 @@ public class DBConnection {
 			throw new SQLException("Adding quiz failed, no gen key obtained.");
 		
 		quiz.setQuizID(genKey.getInt(1)); //Add the quizID to this new quiz that we have
+		return genKey.getInt(1);
 	} //addQuiz
 
 	public int addQuestion(String questionText, int qType,
 			int nextQuestionNum, int quizID) throws SQLException {
-		ResultSet genKey = null;
 		String insert = "insert into " + quizQuestionTable + " (quizID, questionTypeID, question, questionNumber) VALUES (?, ?, ?, ?);";
 		PreparedStatement sql = conn.prepareStatement(insert, Statement.RETURN_GENERATED_KEYS);
 		sql.setInt(1, quizID);
-		sql.setString(3, questionText);
 		sql.setInt(2, qType);
+		sql.setString(3, questionText);
 		sql.setInt(4, nextQuestionNum);
 		int affectedRows = sql.executeUpdate();
 		if (affectedRows == 0) {
-			throw new SQLException("Adding quiz failed, no rows affected.");
+			throw new SQLException("Adding question failed, no rows affected.");
 	    }
 		
-		genKey = sql.getGeneratedKeys();
+		ResultSet genKey = sql.getGeneratedKeys();
 		if (!genKey.first())
-			throw new SQLException("Adding quiz failed, no gen key obtained.");
+			throw new SQLException("Adding question failed, no gen key obtained.");
 		return genKey.getInt(1);
 	} //addQuestion
 	
@@ -544,14 +544,13 @@ public class DBConnection {
 		sql.setInt(1, questionID);
 		sql.setInt(2, quizID);
 		sql.setString(3, answerText);
-		System.out.println("Insert stmt: " + insert + "\n with questionID: " + questionID);
 		int affectedRows = sql.executeUpdate();
 		if (affectedRows == 0)
-			throw new SQLException("Adding quiz failed, no rows affected.");
+			throw new SQLException("Adding answer failed, no rows affected.");
 		
 		genKey = sql.getGeneratedKeys();
 		if (!genKey.first())
-			throw new SQLException("Adding quiz failed, no gen key obtained.");
+			throw new SQLException("Adding answer failed, no gen key obtained.");
 		return genKey.getInt(1);
 	} //addAnswer
 	
