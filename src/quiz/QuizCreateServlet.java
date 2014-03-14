@@ -280,7 +280,7 @@ public class QuizCreateServlet extends HttpServlet {
 
 		//Getting the quiz
 		Quiz quiz = (Quiz) request.getSession().getAttribute("Quiz");
-		int questionID = dbConnection.addQuestion(questionText, Question.QTYPE_QR, quiz.getNextQuestionNum(), quiz.getQuizID());
+		int questionID = dbConnection.addQuestion(questionText, qType, quiz.getNextQuestionNum(), quiz.getQuizID());
 
 		Question question = null;
 		
