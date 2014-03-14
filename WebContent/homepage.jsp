@@ -16,6 +16,7 @@
 		Integer userID  = user.getUserID();
 		String userpage = "userpage.jsp?userID=" + userID;
 		response.sendRedirect(userpage);
+		return;
 	}
 	
 	Cookie[] cookies = request.getCookies();
@@ -24,6 +25,9 @@
 		if (c.getName().equals(LoginServlet.COOKIE_NAME)) {
 			int userID = dbConnection.getUserIDFromCookie(c.getValue());
 			if ( userID != -1) {
+				String userName = dbConnection.getUserName(userID);
+				user = new User(userID, userName, dbConnection);
+				session.setAttribute("user", user);
 				String userpage = "userpage.jsp?userID=" + userID;
 				response.sendRedirect(userpage);
 				return;

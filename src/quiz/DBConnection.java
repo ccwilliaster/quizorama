@@ -38,6 +38,7 @@ public class DBConnection {
 	private final String userQuizRatingsTable = "userQuizRatings";
 	private final String friendshipTable = "friendships";
 	private final String userAchievementsTable = "userAchievements";
+	private final String userTypesTable = "userTypes";
 	private Connection conn;
 		
 	public DBConnection() throws ClassNotFoundException, SQLException {
@@ -397,8 +398,21 @@ public class DBConnection {
 		
 		genKey = sql.getGeneratedKeys();
 		if (!genKey.first())
-			throw new SQLException("Creating user failed, no gen key obtained.");			
-		return genKey.getInt(1);
+			throw new SQLException("Creating user failed, no gen key obtained.");
+		int userID = genKey.getInt(1);
+		
+		System.out.println("Created the user, about to insert userType");
+		insert = "insert into " + userTypesTable + " (userID, typeID) VALUES (?, ?);";
+		sql = conn.prepareStatement(insert, Statement.RETURN_GENERATED_KEYS);
+		sql.setInt(1, userID);
+		sql.setInt(2, User.TYPE_USER); //Default to user type
+		affectedRows = sql.executeUpdate();
+		System.out.println("Inserted the userType.");
+		if (affectedRows == 0) {
+			throw new SQLException("Creating userType failed, no rows affected.");
+	    }
+		
+		return userID;
 	} //createUser
 
 	public ResultSet getHistories(int quizID) throws SQLException {
