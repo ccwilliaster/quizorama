@@ -1,10 +1,6 @@
 package quiz;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
-
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -40,7 +36,6 @@ public class LifeCycleSetup implements ServletContextListener {
 		}
     			
 		servletContext.setAttribute("DBConnection", dbConnection);
-		System.out.println("DBConnection made");
     } //contextInitialized
 
 	/**
@@ -55,7 +50,8 @@ public class LifeCycleSetup implements ServletContextListener {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		System.out.println("DBConnection destroyed");
+
+    	servletContext.removeAttribute("DBConnection");
     } //contextDestroyed
 	
 }

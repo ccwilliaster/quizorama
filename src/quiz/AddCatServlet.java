@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * Servlet implementation class AddTagServlet
  */
-@WebServlet("/AddTagServlet")
+@WebServlet("/AddCatServlet")
 public class AddCatServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
