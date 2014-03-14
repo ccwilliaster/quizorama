@@ -80,6 +80,7 @@ public class QuizHistory {
 		for (int i = 0; i < recentScores.size(); i++) {
 			if (i >= NUM_RECENT_SCORES) break;
 			int score = recentScores.get(i).getScore();
+			userID = recentScores.get(i).getUserID();
 			String format = "<td>" + score + "</td><td>" + connection.getQuizName(recentScores.get(i).getQuizID()) + "</td><td><a class='btn btn-default btn-xs' href='userpage.jsp?userID=" 
 							+ userID + "'>" + connection.getUserName(userID) + "</a></td>";
 			result.add(format);
