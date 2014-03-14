@@ -52,7 +52,7 @@
 	}
 
 	ArrayList<String> topScores    = QuizHistory.getTopScores(null, quizID, connection); 
-	ArrayList<String> recentScores = QuizHistory.getRecentScores(null, quizID, connection);
+	ArrayList<String> recentScores = QuizHistory.getRecentScoresNoName(null, quizID, connection);
 	ArrayList<String> userScores   = QuizHistory.getTopScores(userID, quizID, connection);
 %>
 <%! // Helper functions
@@ -288,15 +288,15 @@
       						</h3><br>
       					</dd>
       					<dt>categories</dt>
-      					<dd><%= printLabels(categories, "label-warning", "categories") %><br><br></dd>
-      					<% if (categories.size() < 1 || categories.get(0) == null) {
+      					<dd><%= printLabels(categories, "label-warning", "categories") %></dd>
+                        <% if (categories.size() < 1 || categories.get(0) == null) {
       						//Only 1 category is allowed
-      						out.print("<dd><a href=addQuizCat.jsp?quizID=" + Integer.toString(quiz.getQuizID()) + " >Add to another category...</a>");
+      						out.print("<br><dd><a href=addQuizTag.jsp?quizID=" + Integer.toString(quiz.getQuizID()) + " >Add to another category...</a>");
       					} //if
       					%>
-      					
+      					<br><br>
       					<dt>tags</dt>
-      					<dd><%= printLabels(tags, "label-success", "tags") %></dd>
+      					<dd><%= printLabels(tags, "label-success", "tags") %></dd><br>
       					<dd><a href=<% out.print("addQuizTag.jsp?quizID=" + Integer.toString(quiz.getQuizID())); %> >Add to another tag...</a>
 					</dl> 
       				

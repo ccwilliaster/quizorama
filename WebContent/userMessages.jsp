@@ -58,11 +58,6 @@
 				
 	      	}); // Toggle messageTable off, messageHTML on
 			
-			$("#backButton").click(function() {
-				$('#backButton').hide();
-				$('#messageTable').show();
-				$('#messageHTML').html( "" );
-	      	}); // Toggle messageTable on, messageHTML off
 		});
 		
 	</script>
@@ -126,7 +121,9 @@
 					</li>	
 				</ul>
 				<div id="messageHTML"></div>
-				<div id="backButton"><a class="btn btn-primary">Back</a></div>
+				<div id="backButton">
+					<a href="ReadMessagesServlet?navtab=inbox" class="btn btn-primary">Back</a>
+				</div>
 				<table class="table table-hover" id="messageTable">
 					<thead><tr>
 						<th width="15%" style="color:#428bca">From</th>
