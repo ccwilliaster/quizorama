@@ -99,6 +99,14 @@ public class LoginServlet extends HttpServlet {
 		HttpSession httpSession = request.getSession();
 		httpSession.setAttribute("user", user);
 		Cookie userCookie = new Cookie(COOKIE_NAME, PasswordHash.createCookie());
+		try {
+			dbConnection.createCookie(userID, userCookie.getValue());
+		} catch (SQLException e) {
+			e.printStackTrace();
+			RequestDispatcher requestDispatcher = request.getRequestDispatcher("homepage.jsp");
+			requestDispatcher.forward(request, response);
+			return;
+		}
 		userCookie.setMaxAge(365 * 24 * 60 * 60); //One year
 		response.addCookie(userCookie);
 
