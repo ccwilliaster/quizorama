@@ -69,7 +69,7 @@ public class QuizHistory {
 		for (int i = 0; i < scores.size(); i++) {
 			int recentScoreIndex = 0;
 			while(recentScoreIndex < recentScores.size() && 
-					recentScores.get(recentScoreIndex).getDate().compareTo(scores.get(i).getDate()) < 0) {
+					recentScores.get(recentScoreIndex).getDate().compareTo(scores.get(i).getDate()) > 0) {
 				recentScoreIndex++;
 			}
 			recentScores.add(recentScoreIndex , scores.get(i));
@@ -135,7 +135,7 @@ public class QuizHistory {
 		for (int i = 0; i < all.size(); i++) {
 			int recentIndex = 0;
 			while(recentIndex < recent.size() && 
-					recent.get(recentIndex).getCreateDate().compareTo(all.get(i).getCreateDate()) < 0) {
+					recent.get(recentIndex).getCreateDate().compareTo(all.get(i).getCreateDate()) > 0) {
 				recentIndex++;
 			}
 			recent.add(recentIndex , all.get(i));

@@ -68,7 +68,11 @@ public class QuizCreateServlet extends HttpServlet {
 				return;
 			} //catch
 			
-			
+			if (quiz == null) {
+				RequestDispatcher requestDispatcher = request.getRequestDispatcher("error.jsp");
+				requestDispatcher.forward(request, response);
+				return;
+			}
 			
 			//Stash the quiz in the session object
 			request.getSession().setAttribute("Quiz", quiz);
@@ -311,8 +315,6 @@ public class QuizCreateServlet extends HttpServlet {
 		DBConnection dbConnection = (DBConnection) servletContext.getAttribute("DBConnection");
 		User user = (User) request.getSession().getAttribute("user");
 		if (user == null || dbConnection == null) {
-			RequestDispatcher requestDispatcher = request.getRequestDispatcher("CreateQuiz.jsp");
-			requestDispatcher.forward(request);
 			return null;
 		}
 		int userID = user.getUserID();
