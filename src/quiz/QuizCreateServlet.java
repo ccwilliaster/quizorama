@@ -234,8 +234,6 @@ public class QuizCreateServlet extends HttpServlet {
 			RequestDispatcher requestDispatcher = request.getRequestDispatcher("CreateQuiz.jsp");
 			requestDispatcher.forward(request, response);
 		} //else
-
-		return;
 	}
 
 	private void createAnswer(HttpServletRequest request, String answerText, Question question) throws SQLException {
@@ -281,7 +279,9 @@ public class QuizCreateServlet extends HttpServlet {
 		}
 		
 		request.setAttribute("options", options.toString());
-		request.getRequestDispatcher("askForNextQuestion.jsp").forward(request, response);
+		RequestDispatcher dispatch = request.getRequestDispatcher("askForNextQuestion.jsp");
+		dispatch.forward(request, response);
+		return;
 	}
 
 	private Quiz createNewQuiz(HttpServletRequest request) throws SQLException {
