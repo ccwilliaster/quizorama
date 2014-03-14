@@ -144,7 +144,7 @@
 				</ul>
 		</li>
 		<li><h3>Recent Messages Received</h3>
-			<a href="showUserMessages.jsp">See All Messages</a>
+			<a href="userMessages.jsp">See All Messages</a>
 			<% 	for (Message message: recentMessages) {
 					out.println("<div class=\"container\">");
 					out.println("<br>");

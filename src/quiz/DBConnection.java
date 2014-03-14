@@ -542,9 +542,8 @@ public class DBConnection {
 		sql.setInt(2, quizID);
 		sql.setString(3, answerText);
 		int affectedRows = sql.executeUpdate();
-		if (affectedRows == 0) {
+		if (affectedRows == 0)
 			throw new SQLException("Adding quiz failed, no rows affected.");
-	    }
 		
 		genKey = sql.getGeneratedKeys();
 		if (!genKey.first())
