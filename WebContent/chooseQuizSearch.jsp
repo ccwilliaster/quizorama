@@ -14,7 +14,7 @@
 	<title>Quiz search results</title>
 </head>
 <body>
-	<tag:navbar session="<%= session %>" activeTab="quizzes" />
+	<tag:navbar session="<%= session %>" activeTab="users" />
 	<div class="container">
 		<div class="jumbotron">
 			<h2 style="color:#428bca">Select a quiz to go to its summary page!</h2>
