@@ -515,7 +515,6 @@ public class DBConnection {
 			throw new SQLException("Adding quiz failed, no gen key obtained.");
 		
 		quiz.setQuizID(genKey.getInt(1)); //Add the quizID to this new quiz that we have
-		System.out.println("Quiz GenKey 1: " + genKey.getInt(1));
 		return genKey.getInt(1);
 	} //addQuiz
 
@@ -535,7 +534,6 @@ public class DBConnection {
 		ResultSet genKey = sql.getGeneratedKeys();
 		if (!genKey.first())
 			throw new SQLException("Adding question failed, no gen key obtained.");
-		System.out.println("Question GenKey 1: " + genKey.getInt(1));
 		return genKey.getInt(1);
 	} //addQuestion
 	
@@ -546,7 +544,6 @@ public class DBConnection {
 		sql.setInt(1, questionID);
 		sql.setInt(2, quizID);
 		sql.setString(3, answerText);
-		System.out.println("Insert stmt: " + insert + "\n with questionID: " + questionID);
 		int affectedRows = sql.executeUpdate();
 		if (affectedRows == 0)
 			throw new SQLException("Adding answer failed, no rows affected.");
@@ -554,7 +551,6 @@ public class DBConnection {
 		genKey = sql.getGeneratedKeys();
 		if (!genKey.first())
 			throw new SQLException("Adding answer failed, no gen key obtained.");
-		System.out.println("Answer GenKey 1: " + genKey.getInt(1));
 		return genKey.getInt(1);
 	} //addAnswer
 	

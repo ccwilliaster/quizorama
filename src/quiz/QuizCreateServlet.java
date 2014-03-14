@@ -123,7 +123,7 @@ public class QuizCreateServlet extends HttpServlet {
 					requestDispatcher.forward(request, response);
 					return;
 				}
-				RequestDispatcher requestDispatcher = request.getRequestDispatcher("userpage.jsp");
+				RequestDispatcher requestDispatcher = request.getRequestDispatcher("userpage.jsp?userID=" + user.getUserID());
 				requestDispatcher.forward(request, response);
 				return;
 			} //Else
@@ -268,9 +268,9 @@ public class QuizCreateServlet extends HttpServlet {
 		//Getting the quiz
 		Quiz quiz = (Quiz) request.getSession().getAttribute("Quiz");
 		
-		String[] multiAnswers = answerText.split("|");
+		String[] multiAnswers = answerText.split("~");
 		for (String thisAnswer : multiAnswers) {
-			dbConnection.addAnswer(thisAnswer, question.getQuestionId(), quiz.getQuizID());
+			dbConnection.addAnswer(thisAnswer,  quiz.getQuizID(), question.getQuestionId());
 		} //for
 		
 		//Populate all of the answers that we just put into the db to the question
