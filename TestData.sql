@@ -32,7 +32,7 @@ INSERT INTO questionTypes VALUES
 (1, "Question / Answer", "Single question, single answer. Easy."),
 (2, "Fill-In-The-Blank", "Get a line with a blank in it, pick the correct thing to write there."),
 (3, "Multiple Choice", "Single question, choose one answer from many."),
-(4, "Picture / Response", "Get an image as a question. Respond with the answer."),
+(4, "Picture / Response", "Get an image as a question. Respond with the answer.");
 
 INSERT INTO users VALUES 
 (1,"testUser",NULL,"",NULL),
