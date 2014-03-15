@@ -50,9 +50,9 @@ public abstract class Answer {
 	public String showAnswerOptions() {
 		String html = "";
 		if (answers.size() > 1) {
-			html += "<p>Correct answers are: ";
+			html += "<h5>Correct answers are: ";
 		} else if (answers.size() == 1) {
-			html += "<p>Correct answer is: ";
+			html += "<h5>Correct answer is: ";
 		}
 		boolean first = true;
 		for (String answer : answers) {
@@ -62,7 +62,7 @@ public abstract class Answer {
 			html += answer;
 			first = false;
 		}
-		html += "</p>";
+		html += "</h5>";
 		return html;
 	}
 	

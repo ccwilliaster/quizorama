@@ -313,16 +313,37 @@ public class DBConnection {
 	} // getUserName
 	
 	/**
-	 * Returns a result set of all userIDs which are of the type User.TYPE_ADMIN
+	 * Returns a set of all userIDs which are of the type User.TYPE_ADMIN
 	 */
-	public ResultSet getAdminUserIDs() throws SQLException {
+	public Set<Integer> getAdminUserIDsSet() throws SQLException {
+		Set<Integer> adminIDs = new HashSet<Integer>();
+		Integer currAdminID;
+		ResultSet rs;
+		
 		String adminGet     = "SELECT userID FROM types INNER JOIN userTypes" +
 		 					  " using (typeID) WHERE typeID = ?";
 		
 		PreparedStatement sql = conn.prepareStatement(adminGet);
 		sql.setInt(1, User.TYPE_ADMIN);
-		return sql.executeQuery();
+		rs = sql.executeQuery();
+		while ( rs.next() ) {
+			currAdminID = ( (Number) rs.getObject(1) ).intValue();
+			adminIDs.add(currAdminID);
+		}
+		return adminIDs;
 	}
+
+	public boolean userNameInUse(String userName) throws SQLException {
+		String userNameGet = 
+			"SELECT COUNT(*) from " + userTable + " WHERE LOWER(userName) LIKE LOWER(?)";
+		
+		PreparedStatement sql = conn.prepareStatement(userNameGet);
+		sql.setString(1, userName);
+		ResultSet rs = sql.executeQuery();
+		rs.first();
+		return rs.getInt(1) > 0;	
+	}
+	
 	/**
 	 * Creates a friend relationship in the database
 	 */
@@ -368,7 +389,7 @@ public class DBConnection {
 		ResultSet rs2 = friend2.executeQuery();
 		rs1.first();
 		rs2.first();
-		return ( rs1.getInt(1) + rs2.getInt(1) ) > 1;
+		return ( rs1.getInt(1) + rs2.getInt(1) ) == 2;
 	}
 	
 	public ResultSet getUser(int userID) throws SQLException {

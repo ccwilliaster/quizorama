@@ -27,10 +27,18 @@ public class User {
 	} //Constructor
 	
 	public User(int userID, String userName, DBConnection dbConnection) {
-		this.userID = userID;
-		this.userName = userName;
-		this.dbConnection = dbConnection;
-		this.userType = TYPE_USER;
+		try {
+			this.userID = userID;
+			this.userName = userName;
+			this.dbConnection = dbConnection;
+			if ( dbConnection.getAdminUserIDsSet().contains(userID) ) {
+				this.userType = TYPE_ADMIN; 
+			} else {
+				this.userType = TYPE_USER; 
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	} //Constructor
 
 	public User(int userID, String userName, int userType, DBConnection dbConnection) {

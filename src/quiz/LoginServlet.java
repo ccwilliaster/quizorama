@@ -52,6 +52,13 @@ public class LoginServlet extends HttpServlet {
 		
 		if (origin.equals("CreateAccount")) {
 			try {
+				// First check if user name is taken
+				if ( dbConnection.userNameInUse(userName) ) {
+					request.setAttribute("error", "Sorry! That username already exits!");
+					request.getRequestDispatcher("CreateAccount.jsp").forward(request, response);
+					return;
+				}
+
 				String passwordHash;
 				passwordHash = PasswordHash.createHash(password);
 

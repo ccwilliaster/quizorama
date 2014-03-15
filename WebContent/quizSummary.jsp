@@ -291,7 +291,7 @@
       					<dd><%= printLabels(categories, "label-warning", "categories") %></dd>
                         <% if (categories.size() < 1 || categories.get(0) == null) {
       						//Only 1 category is allowed
-      						out.print("<br><dd><a href=addQuizTag.jsp?quizID=" + Integer.toString(quiz.getQuizID()) + " >Add to another category...</a>");
+      						out.print("<br><dd><a href=addQuizCat.jsp?quizID=" + Integer.toString(quiz.getQuizID()) + " >Add to another category...</a>");
       					} //if
       					%>
       					<br><br>

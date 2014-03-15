@@ -155,18 +155,18 @@ public class Quiz {
 	 * 	printable string for the results.
 	 */
 	public String getResultsSummary(int userID) throws SQLException{
-		//NEED TO FIGURE OUT HOW TO GET USERID HERE OR IN DBCONNECTION
+		
 		if (!connection.addQuizHistory(quizID, userID, score)) throw new SQLException();
 		
-		String result = "<p> You scored " + score + " out of a possible " + possibleScore + " points.</p>";
+		String result = "<h3 style='color:#d9534f'> You scored " + score + " out of a possible " + possibleScore + " points.</h3>";
 		long end = System.currentTimeMillis();
 		long elapsed = end - startTime;
 		long hours = TimeUnit.MILLISECONDS.toHours(elapsed);
 		long minutes =  TimeUnit.MILLISECONDS.toMinutes(elapsed) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(elapsed));
 		long seconds = TimeUnit.MILLISECONDS.toSeconds(elapsed) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(elapsed));
 		String time = String.format("%02d:%02d:%02d", hours, minutes, seconds);
-		result += "\n<p> You took " + time + " to complete the quiz.</p>";
-		//MOST LIKELY NEED TO TRACK INCORRECT QUESTIONS TOO TO GIVE BACK HERE
+		
+		result += "<h3 style='color:#d9534f'> You took " + time + " to complete the quiz.</h3>";
 		return result;
 	}
 
