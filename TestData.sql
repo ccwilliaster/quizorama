@@ -54,16 +54,6 @@ INSERT INTO messages VALUES
 (3, 0, 3, 1, "Reminder", "Message to myself.", "2014-02-20 23:59:59", 0, 0, 0),
 (4, 0, 3, 2, "Quiz Me!", "Let's play a quiz together?", "2014-02-20 23:59:59", 0, 0, 0);
 
-INSERT INTO quizzes (quizName, quizCreatorUserID, `singlePage?`, `randomOrder?`, `immediateCorrection?`, `practiceMode?`) 
-VALUES 
-("Quiz1", 2, 0, 1, 0, 0),
-("Quiz2", 1, 1, 1, 0, 0),
-("Quiz3", 2, 0, 1, 1, 0),
-("Quiz4", 2, 1, 1, 1, 0),
-("Quiz5", 1, 0, 1, 0, 1),
-("Quiz6", 1, 1, 1, 0, 1),
-("Quiz6", 1, 1, 1, 1, 1);
-
 insert into quizzes values (1, "Normal Test", CURRENT_TIMESTAMP, 3, 0, 0, 0, 0);
 insert into quizzes values (2, "Random Order Test", CURRENT_TIMESTAMP, 3, 0, 0, 0, 0);
 insert into quizzes values (3, "Single Page Test", CURRENT_TIMESTAMP, 3, 1, 0, 0, 0);
