@@ -2,6 +2,8 @@ package quiz;
 
 import java.io.IOException;
 import java.sql.ResultSet;
+import java.util.Set;
+
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -46,11 +48,9 @@ public class FlagQuizServlet extends HttpServlet {
 			int userID              = user.getUserID();
 			int quizID              = Integer.parseInt( request.getParameter("quizID") );
 			String quizName         = request.getParameter("quizName");
-			ResultSet rsAdminIDs    = connection.getAdminUserIDs();
+			Set<Integer> adminIDs   = connection.getAdminUserIDsSet();
 
-			Integer currAdminID;
-			while ( rsAdminIDs.next() ) {
-				currAdminID = ( (Number) rsAdminIDs.getObject(1) ).intValue();
+			for (Integer currAdminID : adminIDs) {
 				QuizFlag.makeQuizFlag(quizID, quizName, userID, currAdminID, userName, connection);
 			}
 			

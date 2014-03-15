@@ -36,7 +36,7 @@ public abstract class Question implements Comparable {
 	}
 	
 	public String showQuestionText() {
-		String html = "<p>" + questionText + "</p>";
+		String html = "<h5>" + questionText + "</h5>";
 		return html;
 	}
 	
