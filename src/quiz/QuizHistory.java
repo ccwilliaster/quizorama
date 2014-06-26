@@ -69,6 +69,7 @@ public class QuizHistory {
 		if (userID == null && quizID == null) return result;
 		ArrayList<Score> recentScores = new ArrayList<Score>();
 		ArrayList<Score> scores = getHistories(userID, quizID, connection);
+		
 		for (int i = 0; i < scores.size(); i++) {
 			int recentScoreIndex = 0;
 			while(recentScoreIndex < recentScores.size() && 
